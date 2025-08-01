@@ -11,6 +11,7 @@ from core.session import connect_to_db, close_db_connection
 # imports endPoints
 from api.routes.usersEndpoint import router as user_endpoint
 from api.routes.suscripcionEndpoint import router as suscripcion_endpoint
+from api.routes.trabajoEndpoint import router as trabajo_endpoint
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,6 +36,7 @@ app = FastAPI(
 # Anexando los distintos endpoints
 app.include_router(user_endpoint)
 app.include_router(suscripcion_endpoint)
+app.include_router(trabajo_endpoint)
 
 print(f"ruta: {env_path}")
 print(f"Data base: {settings.DATABASE_URL}")
