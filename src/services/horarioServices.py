@@ -116,14 +116,13 @@ async def obtener_horarios_completos(conn: Connection) -> List[HorarioCompletoRe
         GROUP BY h."nroGrupo", h."horaInicio", h."horaFin"
         ORDER BY h."horaInicio"
         """
-        
         resultados = await conn.fetch(query)
         
         horarios = []
         for row in resultados:
             # Convertir la cadena JSON a lista de Python
             dias_info = json.loads(row["dias_info"]) if isinstance(row["dias_info"], str) else row["dias_info"]
-            
+
             horario_data = {
                 "nroGrupo": row["nroGrupo"],
                 "horaInicio": row["horaInicio"],
@@ -131,16 +130,13 @@ async def obtener_horarios_completos(conn: Connection) -> List[HorarioCompletoRe
                 "dias_asignados": dias_info  # Ahora es una lista, no una cadena
             }
             horarios.append(HorarioCompletoResponse(**horario_data))
-        
         return horarios
 
     except Exception as e:
         raise DatabaseException("obtener horarios completos", str(e))
 
 async def obtener_horarios_por_dia_service(conn: Connection, dia: str) -> List[GrupoConDetalles]:
-    """
-    Obtiene todos los grupos/horarios para un día específico
-    """
+    # Obtener todos los grupos/horarios para un día específico
     try:
         # Verificar que el día existe
         dia_exists = await conn.fetchval(

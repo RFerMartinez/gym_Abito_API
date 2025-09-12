@@ -17,6 +17,7 @@ from api.routes.usersEndpoint import router as user_endpoint                    
 from api.routes.suscripcionEndpoint import router as suscripcion_endpoint       # suscripcion
 from api.routes.trabajoEndpoint import router as trabajo_endpoint               # trabajo
 from api.routes.horarioEndpoint import router as horario_endpoint               # horarios (grupo y dia)
+from api.routes.ubicacionEndpoint import router as ubicacion_endpoint           # ubicacion (direccion)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -68,6 +69,7 @@ app.include_router(user_endpoint)
 app.include_router(suscripcion_endpoint)
 app.include_router(trabajo_endpoint)
 app.include_router(horario_endpoint)
+app.include_router(ubicacion_endpoint)
 
 print(f"ruta: {env_path}")
 print(f"Data base: {settings.DATABASE_URL}")
