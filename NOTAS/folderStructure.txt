@@ -1,0 +1,22 @@
+GYM_ABITO_API/
+│--NOTAS/
+│--public/
+│  |--img/
+│  |--pdf/
+│  |--static/
+│--src/
+│  |--api/
+│  |  |--dependencies/
+│  |  |--middleware/
+│  |  |--routes/
+│  |--core/
+│  |--schemas/
+│  |--services
+│  |--test
+│  |--utils
+│  |--main.py
+│--venv/
+│--.env
+│--.gitignore
+│--README.md
+│--requirements.txt

@@ -1,0 +1,76 @@
+mi_api_fastapi/
+├── .env.example                # Plantilla de variables de entorno
+├── .gitignore                  # Archivos a ignorar por Git
+├── Dockerfile                  # Configuración de Docker
+├── docker-compose.yml          # Configuración para entornos con Docker
+├── requirements/               # Requerimientos separados por entorno
+│   ├── base.txt                # Dependencias comunes
+│   ├── development.txt         # Dependencias de desarrollo
+│   ├── production.txt          # Dependencias de producción
+│   └── test.txt                # Dependencias para testing
+├── Makefile                    # Comandos útiles para el proyecto
+├── pyproject.toml              # Configuración de proyecto (poetry)
+├── README.md                   # Documentación del proyecto
+├── src/                        # Código fuente principal
+│   ├── __init__.py             
+│   ├── main.py                 # Punto de entrada de la aplicación
+│   ├── config/                 # Configuración de la aplicación
+│   │   ├── __init__.py
+│   │   ├── config.py           # Configuración principal
+│   │   ├── database.py         # Configuración de DB
+│   │   └── logging.py          # Configuración de logging
+│   ├── api/                    # Capa de la API
+│   │   ├── __init__.py
+│   │   ├── v1/                 # Versión 1 de la API
+│   │   │   ├── __init__.py
+│   │   │   ├── endpoints/      # Todos los endpoints
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── auth.py     # Endpoints de autenticación
+│   │   │   │   ├── items.py    # Endpoints de items
+│   │   │   │   └── users.py    # Endpoints de usuarios
+│   │   │   ├── dependencies/   # Dependencias de la API
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── auth.py     # Dependencias de auth
+│   │   │   │   └── common.py   # Dependencias comunes
+│   │   │   ├── models/         # Modelos Pydantic (schemas)
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── item.py
+│   │   │   │   ├── user.py
+│   │   │   │   └── response.py # Modelos de respuesta
+│   │   │   └── routers.py      # Configuración de routers
+│   ├── core/                   # Lógica central del negocio
+│   │   ├── __init__.py
+│   │   ├── security.py         # Lógica de seguridad (auth, tokens)
+│   │   └── utils.py           # Utilidades comunes
+│   ├── db/                     # Capa de base de datos
+│   │   ├── __init__.py
+│   │   ├── models/             # Modelos de SQLAlchemy
+│   │   │   ├── __init__.py
+│   │   │   ├── base.py         # Modelo base
+│   │   │   ├── item.py
+│   │   │   └── user.py
+│   │   ├── repositories/       # Patrón repositorio
+│   │   │   ├── __init__.py
+│   │   │   ├── item.py
+│   │   │   └── user.py
+│   │   └── session.py          # Sesión de base de datos
+│   ├── services/               # Lógica de servicios
+│   │   ├── __init__.py
+│   │   ├── item_service.py
+│   │   └── user_service.py
+│   └── tests/                  # Pruebas
+│       ├── __init__.py
+│       ├── conftest.py         # Configuración de pytest
+│       ├── integration/        # Pruebas de integración
+│       │   ├── __init__.py
+│       │   ├── test_items.py
+│       │   └── test_users.py
+│       └── unit/               # Pruebas unitarias
+│           ├── __init__.py
+│           ├── test_services/
+│           ├── test_repositories/
+│           └── test_utils.py
+└── scripts/                    # Scripts útiles
+    ├── __init__.py
+    ├── prestart.sh             # Script ejecutado antes del inicio
+    └── migrate_db.py           # Scripts de migración de DB

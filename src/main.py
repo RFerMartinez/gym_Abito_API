@@ -2,6 +2,9 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
+# Imports Dependencies
+from api.dependencies.auth import get_current_user
+
 # imports UTILs
 from contextlib import asynccontextmanager
 
@@ -13,20 +16,18 @@ from core.config import settings, env_path
 from core.session import connect_to_db, close_db_connection
 
 # imports endPoints
-from api.routes.usersEndpoint import router as user_endpoint                    # user
 from api.routes.suscripcionEndpoint import router as suscripcion_endpoint       # suscripcion
 from api.routes.trabajoEndpoint import router as trabajo_endpoint               # trabajo
 from api.routes.horarioEndpoint import router as horario_endpoint               # horarios (grupo y dia)
 from api.routes.ubicacionEndpoint import router as ubicacion_endpoint           # ubicacion (direccion)
+from api.routes.authEndpoint import router as auth_endpoint                     # auth (login, register)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Start app
     await connect_to_db()
     print("Conexión a la base de datos establecida")
-
     yield
-
     # Shutdown app
     await close_db_connection()
     print("Conexión a la base de datos cerrada")
@@ -65,15 +66,11 @@ async def generic_exception_handler(request: Request, exc: Exception):
     )
 
 # Anexando los distintos endpoints
-app.include_router(user_endpoint)
+app.include_router(auth_endpoint)
 app.include_router(suscripcion_endpoint)
 app.include_router(trabajo_endpoint)
 app.include_router(horario_endpoint)
 app.include_router(ubicacion_endpoint)
-
-print(f"ruta: {env_path}")
-print(f"Data base: {settings.DATABASE_URL}")
-print(f"Tipo de dato de DataBase: {type(settings.DATABASE_URL)}")
 
 if __name__ == "__main__":
     import uvicorn

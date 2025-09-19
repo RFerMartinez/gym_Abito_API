@@ -1,0 +1,48 @@
+OAuth2
+
+from fastapi import FastAPI, Form, Depends
+from fastapi.security import OAuth2PasswordBearer <- clase flujo para autenticacoin
+from fastapi.security import OAuth2PasswordRequestForm
+from typing import Annotated
+
+app = FastAPI()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+    "toekn" tiene que ser el nombre de un path-operation que exista en la aplicacion
+
+@app.post("/token") <- para generar el token
+def home(username = Form(), password = Form()):
+    retirn "token"
+
+@app.post("/token") <- para generar el token
+def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    user = users.get(form_data.username)
+    if not user:
+        raise HTTPException(status_code=400, detail="Incorrect username")
+    token = encode_token({"username": user["username"], "email": user["email"]})
+    return { "acces_token": token }
+
+
+def encode_token(payload: dict) -> str:
+    token = jwt.encode(
+        payload, <- username y email
+        "my-secret-key",
+        algorithm="HS256"
+    )
+    return "asdasdasd" <- utilizar "python-jose"
+
+def decode_token(token: Annotated[str, oauth2_scheme]) -> dict:
+    data = jwt.decode(
+        token,
+        "my-secret-key",
+        algorithms=["HS256"]
+    )
+    user = users.get(data["username"])
+    return {}
+
+ruta protegida:
+@app.get("/users/profile")
+def profile(my_user: Annotated[dict, Depends(decode_token)]):
+    return my_user
+

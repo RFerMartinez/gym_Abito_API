@@ -15,12 +15,26 @@ class Settings(BaseSettings):
     PROJECT_DESCRIPTION: str = DESCRIPTION
     PROJECT_CONTACT: dict = CONTACT
 
-    # -- CONFIG PARA BASE DE DATO
+    # -- CONFIG PARA BASE DE DATOS
     PSQL_SERVER: str
     PSQL_USER: str
     PSQL_PASSWORD: SecretStr
     PSQL_DB: str
-    PSQL_PORT: int = 5432
+    PSQL_PORT: int
+
+    # -- JWT
+    SECRET_KEY: str
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    REFRESH_TOKEN_EXPIRE_DAYS: int
+
+    # -- Email (verification service)
+    SMTP_SERVER: str
+    SMTP_PORT: int
+    SMTP_USER: str
+    SMTP_PASSWORD: SecretStr
+    FRONTEND_URL: str
+    BACKEND_URL: str
 
     @property
     def DATABASE_URL(self) -> PostgresDsn:
