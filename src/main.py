@@ -1,6 +1,7 @@
 # imports FastAPI
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 # Imports Dependencies
 from api.dependencies.auth import get_current_user
@@ -22,6 +23,9 @@ from api.routes.horarioEndpoint import router as horario_endpoint               
 from api.routes.ubicacionEndpoint import router as ubicacion_endpoint           # ubicacion (direccion)
 from api.routes.authEndpoint import router as auth_endpoint                     # auth (login, register)
 
+from api.routes.adminExample import router as admin_example_endpoint               # ejemplo admin
+from api.routes.alumnosExample import router as alumnos_example_endpoint           # ejemplo alumnos
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Start app
@@ -38,6 +42,20 @@ app = FastAPI(
     contact=settings.PROJECT_CONTACT,
     version="1.0.0",
     lifespan=lifespan
+)
+
+# Configuración CORS
+# Orífgenes permitidos
+origins = [
+    "http://localhost:8081",
+]
+# Agregar el middleware CORS a la aplicación
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Orígenes permitidos
+    allow_credentials=True,
+    allow_methods=["*"],  # Métodos permitidos
+    allow_headers=["*"],  # Encabezados permitidos
 )
 
 # Handler global para excepciones personalizadas
@@ -67,6 +85,8 @@ async def generic_exception_handler(request: Request, exc: Exception):
 
 # Anexando los distintos endpoints
 app.include_router(auth_endpoint)
+app.include_router(admin_example_endpoint)
+app.include_router(alumnos_example_endpoint)
 app.include_router(suscripcion_endpoint)
 app.include_router(trabajo_endpoint)
 app.include_router(horario_endpoint)
@@ -83,3 +103,5 @@ if __name__ == "__main__":
         reload=True,
         # log_level="info"
     )
+
+print(f"database_url: {settings.DATABASE_URL}")

@@ -66,8 +66,16 @@ class UserResponse(BaseModel):
     email: str
     usuario: str
     requiereCambioClave: bool
+    esAdmin: bool = Field(False, description="Indica si es administrador")
     
     model_config = ConfigDict(from_attributes=True)
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str
+    refresh_token: Optional[str] = None
+    requiere_cambio_contrasenia: bool
+    user: UserResponse
 
 # Esquema para verificación de email
 class EmailVerificationRequest(BaseModel):

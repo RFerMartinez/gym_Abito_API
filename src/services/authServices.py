@@ -119,3 +119,55 @@ async def verify_email_token(conn: Connection, token: str) -> Optional[str]:
     await delete_email_verification_token(conn, token)
     return email
 
+# ===================================
+# Verificación usuario/admin/Empleado
+# ===================================
+async def es_administrador(conn: Connection, dni: str) -> bool:
+    """Verifica si un usuario es administrador"""
+    result = await conn.fetchval(
+        'SELECT "esAdmin" FROM "Persona" WHERE dni = $1', 
+        dni
+    )
+    return result if result else False
+
+async def es_empleado(conn: Connection, dni: str) -> bool:
+    """Verifica si un usuario es empleado"""
+    result = await conn.fetchval(
+        'SELECT 1 FROM "Empleado" WHERE dni = $1', 
+        dni
+    )
+    return result is not None
+
+async def es_alumno_activo(conn: Connection, dni: str) -> bool:
+    """Verifica si un usuario es alumno activo"""
+    result = await conn.fetchval(
+        'SELECT 1 FROM "AlumnoActivo" WHERE dni = $1', 
+        dni
+    )
+    return result is not None
+
+async def es_alumno_inactivo(conn: Connection, dni: str) -> bool:
+    """Verifica si un usuario es alumno inactivo"""
+    result = await conn.fetchval(
+        'SELECT 1 FROM "AlumnoInactivo" WHERE dni = $1', 
+        dni
+    )
+    return result is not None
+
+async def es_alumno(conn: Connection, dni: str) -> bool:
+    """Verifica si un usuario es alumno (activo o inactivo)"""
+    result = await conn.fetchval(
+        'SELECT 1 FROM "Alumno" WHERE dni = $1', 
+        dni
+    )
+    return result is not None
+
+async def obtener_tipo_usuario(conn: Connection, dni: str) -> dict:
+    """Obtiene el tipo de usuario y sus permisos"""
+    return {
+        "esAdmin": await es_administrador(conn, dni),
+        "esEmpleado": await es_empleado(conn, dni),
+        "esAlumnoActivo": await es_alumno_activo(conn, dni),
+        "esAlumnoInactivo": await es_alumno_inactivo(conn, dni),
+        "esAlumno": await es_alumno(conn, dni)
+    }
