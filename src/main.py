@@ -22,6 +22,7 @@ from api.routes.trabajoEndpoint import router as trabajo_endpoint               
 from api.routes.horarioEndpoint import router as horario_endpoint               # horarios (grupo y dia)
 from api.routes.ubicacionEndpoint import router as ubicacion_endpoint           # ubicacion (direccion)
 from api.routes.authEndpoint import router as auth_endpoint                     # auth (login, register)
+from api.routes.alumnosEndpoint import router as alumnos_endpoint               # alumnos (act alumno)
 
 from api.routes.adminExample import router as admin_example_endpoint               # ejemplo admin
 from api.routes.alumnosExample import router as alumnos_example_endpoint           # ejemplo alumnos
@@ -91,6 +92,7 @@ app.include_router(suscripcion_endpoint)
 app.include_router(trabajo_endpoint)
 app.include_router(horario_endpoint)
 app.include_router(ubicacion_endpoint)
+app.include_router(alumnos_endpoint)
 
 if __name__ == "__main__":
     import uvicorn

@@ -42,7 +42,7 @@ async def iniciar_registro_paso1(conn: Connection, user_data: RegistroPaso1) -> 
         print("⚠️  Servicio de email no configurado, omitiendo envío")
     else:
         print(f"📧 Intentando enviar email a: {user_data.email}")
-        success = email_service.send_verification_email(user_data.email, verification_token)
+        success = await email_service.send_verification_email(user_data.email, verification_token)
 
         if not success:
             print("⚠️  No se pudo enviar el email de verificación, pero el registro continuará")

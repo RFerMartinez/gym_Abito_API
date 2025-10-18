@@ -8,7 +8,7 @@ class EmailService:
         self.smtp_server = settings.SMTP_SERVER
         self.smtp_port = settings.SMTP_PORT
         self.smtp_username = settings.SMTP_USER
-        self.smtp_password = settings.SMTP_PASSWORD
+        self.smtp_password = settings.SMTP_PASSWORD.get_secret_value()
         self.frontend_url = settings.FRONTEND_URL
         self.backend_url = settings.BACKEND_URL
     
