@@ -1,8 +1,9 @@
 
-from datetime import time
-
+from datetime import time, date, timedelta
 from asyncpg import Connection
 from typing import List, Optional
+
+import calendar
 
 from schemas.alumnoSchema import (
     AlumnoActivate,
@@ -46,9 +47,10 @@ async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActiva
             if not trabajo:
                 raise NotFoundException("Trabajo", data.nombreTrabajo)
             
-            suscripcion = await conn.fetchval('SELECT 1 FROM "Suscripcion" WHERE "nombreSuscripcion" = $1', data.nombreSuscripcion)
+            suscripcion = await conn.fetchrow('SELECT precio FROM "Suscripcion" WHERE "nombreSuscripcion" = $1', data.nombreSuscripcion)
             if not suscripcion:
                 raise NotFoundException("Suscripción", data.nombreSuscripcion)
+            monto_cuota = suscripcion['precio']
 
             # 4. Insertar en Alumno
             await conn.execute('''
@@ -77,18 +79,28 @@ async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActiva
                 if capacidad['inscritos'] >= capacidad['capacidadMax']:
                     raise BusinessRuleException(f"El grupo {horario.nroGrupo} del día {horario.dia} está completo.")
                 
-                # Insertar en Asiste
-                await conn.execute('''
-                    INSERT INTO "Asiste" (dni, "nroGrupo", dia)
-                    VALUES ($1, $2, $3)
-                ''', data.dni, horario.nroGrupo, horario.dia)
+            # Insertar en Asiste
+            await conn.execute('''
+                INSERT INTO "Asiste" (dni, "nroGrupo", dia)
+                VALUES ($1, $2, $3)
+            ''', data.dni, horario.nroGrupo, horario.dia)
+
+            # === NUEVA LÓGICA: GENERAR LA PRIMERA CUOTA ===
+            hoy = date.today()
+            fecha_fin = hoy + timedelta(days=30) # La cuota dura 30 días
+            nombre_mes = calendar.month_name[hoy.month].capitalize()
+
+            await conn.execute('''
+                INSERT INTO "Cuota" (dni, pagada, monto, "fechaComienzo", "fechaFin", mes, "nombreTrabajo", "nombreSuscripcion")
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ''', data.dni, False, monto_cuota, hoy, fecha_fin, nombre_mes, data.nombreTrabajo, data.nombreSuscripcion)
 
             return AlumnoActivateResponse(
                 dni=persona['dni'],
                 nombre=persona['nombre'],
                 apellido=persona['apellido'],
                 email=persona['email'],
-                message="Alumno activado correctamente."
+                message="Alumno activado y primera cuota generada correctamente."
             )
 
         except (NotFoundException, DuplicateEntryException, BusinessRuleException) as e:
@@ -242,3 +254,4 @@ async def obtener_horarios_alumno(conn: Connection, dni: str) -> List[HorarioAlu
         raise
     except Exception as e:
         raise DatabaseException("obtener horarios de alumno", str(e))
+
