@@ -21,6 +21,10 @@ class TrabajoCreate(TrabajoBase):
 class UpdateTrabajoDescr(TrabajoBase):
     descripcion: Optional[str] = Field(None, description="Nueva descripción del trabajo")
 
+# Usaremos este esquema para el cuerpo (body) de la petición PUT.
+class TrabajoUpdate(BaseModel):
+    descripcion: str = Field(..., description="La nueva descripción para el trabajo.")
+
 class TrabajoInDB(TrabajoBase):
     # Esquema para representar un trabajo en la Base de Datos
     class Config:
@@ -31,3 +35,8 @@ class TrabajoInDB(TrabajoBase):
                 "descripcion": "Preparación para Tenis"
             }
         }
+
+# === ESQUEMA MODIFICADO PARA ACTUALIZAR UN TRABAJO ===
+# Hereda de TrabajoBase para incluir ambos campos.
+class TrabajoUpdateCompleto(TrabajoBase):
+    pass
