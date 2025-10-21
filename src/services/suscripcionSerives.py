@@ -8,7 +8,9 @@ from schemas.suscripcionSchema import (
     SuscripcionCreate,
     SuscripcionCreateResponse,
     SuscripcionBase,
-    SuscripcionUpdatePrice)
+    SuscripcionUpdatePrice,
+    SuscripcionUpdate
+)
 
 # SERVICE para crear una suscripcion nueva
 async def create(
@@ -45,9 +47,11 @@ async def get_all(con: Connection) -> List[SuscripcionBase]:
         raise HTTPException(status_code=500, detail="Error al obtener suscripciones")
 
 # SERVICE para actualizar el precio de una suscripcion
+# === SERVICIO MODIFICADO PARA ACTUALIZAR PRECIO ===
 async def update_suscription_price(
         con: Connection,
-        subs_data: SuscripcionUpdatePrice
+        nombre_suscripcion: str, # <--- Recibimos el nombre como argumento
+        subs_data: SuscripcionUpdate # <--- Usamos el nuevo esquema
 ) -> SuscripcionBase:
     try:
         query = """
@@ -59,10 +63,12 @@ async def update_suscription_price(
         suscripcion = await con.fetchrow(
             query,
             subs_data.precio,
-            subs_data.nombreSuscripcion)
+            nombre_suscripcion) # <--- Usamos el nombre en el WHERE
         if not suscripcion:
             raise HTTPException(status_code=404, detail="Suscripción no encontrada")
         return SuscripcionBase(**suscripcion)
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(status_code=500, detail="Error al actualizar suscripcion")
 
