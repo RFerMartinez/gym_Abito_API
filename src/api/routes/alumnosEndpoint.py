@@ -1,15 +1,30 @@
 # src/api/routes/alumnosEndpoint.py
 from fastapi import APIRouter, Depends, status
 from asyncpg import Connection
+from typing import List
+
 from core.session import get_db
-from schemas.alumnoSchema import AlumnoActivate, AlumnoActivateResponse
-from services.alumnoServices import activar_alumno
-from api.dependencies.security import staff_required
+from schemas.alumnoSchema import (
+    AlumnoActivate,
+    AlumnoActivateResponse,
+    AlumnoListado,
+    AlumnoDetalle,
+    HorarioAlumno
+)
+from services.alumnoServices import (
+    activar_alumno,
+    listar_alumnos_detalle,
+    obtener_detalle_alumno,
+    obtener_horarios_alumno
+)
+from api.dependencies.security import (
+    staff_required,
+    admin_required
+)
 
 router = APIRouter(
     prefix="/alumnos", 
     tags=["Alumnos"],
-    dependencies=[Depends(staff_required)] # Proteger todas las rutas de este router
 )
 
 @router.post(
@@ -17,7 +32,8 @@ router = APIRouter(
     response_model=AlumnoActivateResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Activar un nuevo alumno",
-    response_description="El alumno ha sido activado y asignado a sus horarios."
+    response_description="El alumno ha sido activado y asignado a sus horarios.",
+    dependencies=[Depends(staff_required)] # <-- Permiso para staff
 )
 async def activar_nuevo_alumno(
     data: AlumnoActivate,
@@ -35,3 +51,86 @@ async def activar_nuevo_alumno(
     Requiere permisos de **staff (administrador o empleado)**.
     """
     return await activar_alumno(conn=db, data=data)
+
+
+# {
+#   "dni": "42276405",
+#   "sexo": "M",
+#   "nombreTrabajo": "Preparación Física",
+#   "nombreSuscripcion": "5 días a la semana",
+#   "nivel": "2",
+#   "deporte": "padel",
+#   "horarios": [
+#     {
+#       "nroGrupo": "1",
+#       "dia": "Lunes"
+#     },
+#     {
+#       "nroGrupo": "1",
+#       "dia": "Miércoles"
+#     },
+#     {
+#       "nroGrupo": "1",
+#       "dia": "Viernes"
+#     }
+#   ]
+# }
+
+# === NUEVO ENDPOINT PARA LISTAR ALUMNOS ===
+@router.get(
+    "/",
+    response_model=List[AlumnoListado],
+    summary="Listar todos los alumnos (Admin)",
+    response_description="Una lista con los detalles de cada alumno en el sistema.",
+    dependencies=[Depends(admin_required)] # <-- ¡Solo para administradores!
+)
+async def obtener_lista_alumnos(
+    db: Connection = Depends(get_db)
+):
+    """
+    Obtiene una lista completa de todos los alumnos registrados en el sistema
+    con detalles clave como su estado de actividad, cuotas pendientes y turno.
+
+    **Este endpoint solo es accesible para usuarios con rol de administrador.**
+    """
+    return await listar_alumnos_detalle(conn=db)
+
+# === NUEVO ENDPOINT PARA DETALLE DE ALUMNO ===
+@router.get(
+    "/{dni}",
+    response_model=AlumnoDetalle,
+    summary="Obtener detalles de un alumno (Staff)",
+    response_description="Información detallada del alumno seleccionado.",
+    dependencies=[Depends(staff_required)] # <-- ¡Solo para administradores o empleados!
+)
+async def obtener_alumno_por_dni(
+    dni: str,
+    db: Connection = Depends(get_db)
+):
+    """
+    Obtiene una vista detallada con toda la información de un alumno específico,
+    identificado por su DNI.
+
+    **Este endpoint es accesible para usuarios con rol de staff (admin o empleado).**
+    """
+    return await obtener_detalle_alumno(conn=db, dni=dni)
+
+# === NUEVO ENDPOINT PARA HORARIOS DE ALUMNO ===
+@router.get(
+    "/{dni}/horarios",
+    response_model=List[HorarioAlumno],
+    summary="Obtener horarios de un alumno (Staff)",
+    response_description="Lista de días y grupos a los que asiste el alumno.",
+    dependencies=[Depends(staff_required)] # <-- Protegido para staff
+)
+async def obtener_horarios_de_alumno(
+    dni: str,
+    db: Connection = Depends(get_db)
+):
+    """
+    Obtiene la lista de horarios (día y grupo) asignados a un alumno específico,
+    identificado por su DNI.
+
+    **Este endpoint es accesible para usuarios con rol de staff (admin o empleado).**
+    """
+    return await obtener_horarios_alumno(conn=db, dni=dni)

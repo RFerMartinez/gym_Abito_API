@@ -1,7 +1,23 @@
 
+from datetime import time
+
 from asyncpg import Connection
-from schemas.alumnoSchema import AlumnoActivate, AlumnoActivateResponse
-from utils.exceptions import NotFoundException, DuplicateEntryException, BusinessRuleException, DatabaseException
+from typing import List, Optional
+
+from schemas.alumnoSchema import (
+    AlumnoActivate,
+    AlumnoActivateResponse,
+    AlumnoListado,
+    AlumnoDetalle,
+    HorarioAlumno
+)
+
+from utils.exceptions import (
+    NotFoundException,
+    DuplicateEntryException,
+    BusinessRuleException,
+    DatabaseException
+)
 
 async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActivateResponse:
     """
@@ -79,3 +95,150 @@ async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActiva
             raise e # Re-lanzar excepciones de negocio para que el handler las capture
         except Exception as e:
             raise DatabaseException("activar alumno", str(e))
+
+
+async def listar_alumnos_detalle(conn: Connection) -> List[AlumnoListado]:
+    """
+    Servicio para listar todos los alumnos con detalles específicos para administradores.
+    Combina información de las tablas Persona, Alumno, AlumnoActivo, Cuota y Asiste.
+    """
+    try:
+        query = """
+        SELECT
+            p.dni,
+            p.nombre,
+            p.apellido,
+            (CASE WHEN aa.dni IS NOT NULL THEN TRUE ELSE FALSE END) as activo,
+            (
+                SELECT COUNT(*)
+                FROM "Cuota" c
+                WHERE c.dni = a.dni AND c.pagada = FALSE
+            ) as "cuotasPendientes",
+            COALESCE(
+                (
+                    SELECT
+                        CASE
+                            WHEN LEFT(MIN(asis."nroGrupo"), 1) IN ('1', '2') THEN 'Mañana'
+                            WHEN LEFT(MIN(asis."nroGrupo"), 1) IN ('3', '4', '5') THEN 'Tarde'
+                            ELSE 'No asignado'
+                        END
+                    FROM "Asiste" asis
+                    WHERE asis.dni = a.dni
+                ),
+                'No asignado'
+            ) as turno
+        FROM "Alumno" a
+        JOIN "Persona" p ON a.dni = p.dni
+        LEFT JOIN "AlumnoActivo" aa ON a.dni = aa.dni
+        ORDER BY p.apellido, p.nombre;
+        """
+        
+        resultados = await conn.fetch(query)
+        
+        # Mapea los resultados al esquema Pydantic
+        return [AlumnoListado(**dict(row)) for row in resultados]
+
+    except Exception as e:
+        raise DatabaseException("listar alumnos", str(e))
+
+
+async def obtener_detalle_alumno(conn: Connection, dni: str) -> AlumnoDetalle:
+    """
+    Servicio para obtener la vista detallada de un único alumno por su DNI.
+    """
+    try:
+        query = """
+        SELECT
+            p.dni,
+            p.nombre,
+            p.apellido,
+            p.email,
+            p.telefono,
+            (CASE WHEN aa.dni IS NOT NULL THEN TRUE ELSE FALSE END) as activo,
+            (
+                SELECT COUNT(*)
+                FROM "Cuota" c
+                WHERE c.dni = a.dni AND c.pagada = FALSE
+            ) as "cuotasPendientes",
+            COALESCE(
+                (
+                    SELECT
+                        CASE
+                            WHEN LEFT(MIN(asis."nroGrupo"), 1) IN ('1', '2') THEN 'Mañana'
+                            WHEN LEFT(MIN(asis."nroGrupo"), 1) IN ('3', '4', '5') THEN 'Tarde'
+                            ELSE 'No asignado'
+                        END
+                    FROM "Asiste" asis
+                    WHERE asis.dni = a.dni
+                ),
+                'No asignado'
+            ) as turno,
+            a."nombreSuscripcion" as suscripcion,
+            a."nombreTrabajo" as trabajoactual,
+            d."nomProvincia" as provincia,
+            d."nomLocalidad" as localidad,
+            d.calle as calle,
+            d.numero as nro
+        FROM "Alumno" a
+        JOIN "Persona" p ON a.dni = p.dni
+        LEFT JOIN "AlumnoActivo" aa ON a.dni = aa.dni
+        LEFT JOIN "Direccion" d ON a.dni = d.dni
+        WHERE a.dni = $1;
+        """
+        
+        result = await conn.fetchrow(query, dni)
+        
+        if not result:
+            raise NotFoundException("Alumno", dni)
+            
+        return AlumnoDetalle(**dict(result))
+
+    except NotFoundException:
+        raise
+    except Exception as e:
+        raise DatabaseException("obtener detalle de alumno", str(e))
+
+# === SERVICIO MODIFICADO PARA OBTENER HORARIOS DE UN ALUMNO ===
+async def obtener_horarios_alumno(conn: Connection, dni: str) -> List[HorarioAlumno]:
+    """
+    Servicio para obtener los días y rangos horarios a los que asiste un alumno.
+    """
+    try:
+        # Verificamos que el alumno exista
+        alumno_existe = await conn.fetchval('SELECT 1 FROM "Alumno" WHERE dni = $1', dni)
+        if not alumno_existe:
+            raise NotFoundException("Alumno", dni)
+
+        # Modificamos la consulta para unir con la tabla Horario
+        query = """
+        SELECT
+            a.dia,
+            h."horaInicio",
+            h."horaFin"
+        FROM "Asiste" a
+        JOIN "Horario" h ON a."nroGrupo" = h."nroGrupo"
+        WHERE a.dni = $1
+        ORDER BY a.dia;
+        """
+        
+        resultados_db = await conn.fetch(query, dni)
+        
+        # Formateamos la respuesta en Python
+        horarios_formateados = []
+        for row in resultados_db:
+            hora_inicio: time = row["horaInicio"]
+            hora_fin: time = row["horaFin"]
+            
+            # Creamos el string "HH:MM-HH:MM"
+            horario_str = f"{hora_inicio.strftime('%H:%M')}-{hora_fin.strftime('%H:%M')}"
+            
+            horarios_formateados.append(
+                HorarioAlumno(dia=row["dia"], horario=horario_str)
+            )
+            
+        return horarios_formateados
+
+    except NotFoundException:
+        raise
+    except Exception as e:
+        raise DatabaseException("obtener horarios de alumno", str(e))

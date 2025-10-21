@@ -33,3 +33,44 @@ class AlumnoActivateResponse(BaseModel):
     apellido: str
     email: str
     message: str
+
+# === ESQUEMA NUEVO PARA EL LISTADO DE ALUMNOS ===
+class AlumnoListado(BaseModel):
+    dni: str = Field(..., description="DNI del alumno")
+    nombre: str = Field(..., description="Nombre del alumno")
+    apellido: str = Field(..., description="Apellido del alumno")
+    activo: bool = Field(..., description="Indica si el alumno está activo")
+    cuotasPendientes: int = Field(..., description="Cantidad de cuotas impagas")
+    turno: str = Field(..., description="Turno asignado (Mañana, Tarde, No asignado)")
+
+    class Config:
+        from_attributes = True
+
+# === ESQUEMA NUEVO PARA EL DETALLE DE UN ALUMNO ===
+class AlumnoDetalle(BaseModel):
+    dni: str
+    nombre: str
+    apellido: str
+    email: str
+    telefono: str
+    activo: bool
+    cuotasPendientes: int
+    turno: str
+    suscripcion: str
+    trabajoactual: str
+    provincia: Optional[str] = None
+    localidad: Optional[str] = None
+    calle: Optional[str] = None
+    nro: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+# === ESQUEMA MODIFICADO PARA EL HORARIO DEL ALUMNO ===
+class HorarioAlumno(BaseModel):
+    dia: str
+    horario: str # <-- Cambiamos nroGrupo por horario
+
+    class Config:
+        from_attributes = True
+

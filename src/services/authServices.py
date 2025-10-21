@@ -8,7 +8,8 @@ from utils.email import email_service
 from utils.security import (
     verify_password,
     get_password_hash,
-    generate_verification_token
+    generate_verification_token,
+    create_registration_token
 )
 from utils.simpleQueries import (
     get_user_by_email,
@@ -21,8 +22,9 @@ from utils.simpleQueries import (
 
 import re
 
+# MODIFICAMOS ESTA FUNCIÓN
 async def iniciar_registro_paso1(conn: Connection, user_data: RegistroPaso1) -> str:
-    """Inicia el proceso de registro (Paso 1)"""
+    """Inicia el proceso de registro (Paso 1) y devuelve un JWT."""
     # Verificar si el email ya existe
     if await get_user_by_email(conn, user_data.email):
         raise DuplicateEntryException("Email", user_data.email)
@@ -31,23 +33,28 @@ async def iniciar_registro_paso1(conn: Connection, user_data: RegistroPaso1) -> 
     if await get_user_by_username(conn, user_data.usuario):
         raise DuplicateEntryException("Usuario", user_data.usuario)
 
-    # Generar token de verificación
-    verification_token = generate_verification_token()
-
-    # Guardar token en base de datos
-    await create_email_verification_token(conn, user_data.email, verification_token)
+    # Crear el token JWT con los datos del Paso 1
+    registration_data = {
+        "email": user_data.email,
+        "usuario": user_data.usuario,
+        "contrasenia": user_data.contrasenia # Guardamos la contraseña en texto plano en el token temporal
+    }
+    token = create_registration_token(data=registration_data)
 
     # Enviar email de verificación (solo si el servicio está configurado)
     if email_service is None:
         print("⚠️  Servicio de email no configurado, omitiendo envío")
     else:
         print(f"📧 Intentando enviar email a: {user_data.email}")
-        success = await email_service.send_verification_email(user_data.email, verification_token)
+        # El token que enviamos en el email ahora es el JWT
+        # NOTA: En producción, es mejor enviar un token opaco y no el JWT directamente en la URL
+        # pero para este ejemplo, es funcional.
+        success = await email_service.send_verification_email(user_data.email, token)
 
         if not success:
             print("⚠️  No se pudo enviar el email de verificación, pero el registro continuará")
 
-    return verification_token
+    return token
 
 async def completar_registro_paso2(conn: Connection, user_data: RegistroPaso2, email: str, usuario: str, contrasenia: str) -> dict:
     """Completa el proceso de registro (Paso 2)"""

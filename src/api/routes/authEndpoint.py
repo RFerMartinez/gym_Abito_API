@@ -24,7 +24,8 @@ from services.authServices import (
 )
 from utils.security import (
     create_access_token,
-    create_refresh_token
+    create_refresh_token,
+    verify_registration_token
 )
 from api.dependencies.auth import get_current_user
 from utils.exceptions import DuplicateEntryException, DatabaseException
@@ -39,7 +40,7 @@ router = APIRouter(
 )
 
 # Almacenamiento temporal para datos del paso 1
-temp_registry = {}
+# temp_registry = {}
 
 @router.post("/registro-paso1", status_code=status.HTTP_200_OK)
 async def registro_paso1(
@@ -53,11 +54,11 @@ async def registro_paso1(
         token = await iniciar_registro_paso1(db, user_data)
         
         # Almacenar temporalmente los datos del paso 1
-        temp_registry[token] = {
-            "email": user_data.email,
-            "usuario": user_data.usuario,
-            "contrasenia": user_data.contrasenia
-        }
+        # temp_registry[token] = {
+        #     "email": user_data.email,
+        #     "usuario": user_data.usuario,
+        #     "contrasenia": user_data.contrasenia
+        # }
         
         return {"message": "Correo de verificación enviado", "token": token}
     except DuplicateEntryException as e:
@@ -80,25 +81,26 @@ async def registro_paso2(
     """
     Segundo paso del registro: completa información personal después de verificar email.
     """
-    # Verificar que el token existe en almacenamiento temporal
-    if token not in temp_registry:
+    # Verificar y decodificar el token JWT
+    paso1_data = verify_registration_token(token)
+
+    if not paso1_data:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Token de verificación inválido o expirado"
         )
     
-    # Obtener datos del paso 1
-    paso1_data = temp_registry[token]
+    # Obtener datos del token decodificado
     email = paso1_data["email"]
     usuario = paso1_data["usuario"]
     contrasenia = paso1_data["contrasenia"]
-    
+
     try:
         # Completar registro
         user = await completar_registro_paso2(db, user_data, email, usuario, contrasenia)
         
         # Eliminar datos temporales
-        del temp_registry[token]
+        #del temp_registry[token]
         
         return user
     except DuplicateEntryException as e:

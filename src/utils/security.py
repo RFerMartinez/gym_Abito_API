@@ -1,7 +1,7 @@
 import secrets
 import string
 from passlib.context import CryptContext
-from jose import jwt
+from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from core.config import settings
@@ -14,6 +14,33 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
+
+
+
+# ESTA FUNCIÓN ES NUEVA
+def create_registration_token(data: dict) -> str:
+    """Crea un token JWT de corta duración para el proceso de registro."""
+    to_encode = data.copy()
+    # El token para registrarse expirará en 15 minutos
+    expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({"exp": expire, "purpose": "registration"})
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return encoded_jwt
+
+# ESTA FUNCIÓN ES NUEVA
+def verify_registration_token(token: str) -> Optional[dict]:
+    """Decodifica y valida el token de registro, devolviendo los datos."""
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        # Verificamos que el propósito del token sea el correcto
+        if payload.get("purpose") != "registration":
+            return None
+        return payload
+    except JWTError:
+        return None
+
+
+
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
