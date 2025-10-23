@@ -1,0 +1,18 @@
+CREAR UNA NUEVA RAMA
+    git branch nombre-de-la-rama
+
+CREAR UNA NUEVA RAMA Y EMPEZAR A TRABAJAR EN ELLA (manera rápida)
+    git checkout -b nombre-de-la-rama
+
+VERIFICAR
+    git branch
+
+SUBIR CAMBIOS DE LA NUEVA RAMA
+    git push origin nombre-de-la-rama
+
+------------
+
+HACER MERGE
+    1. ir a la rama "main" (git checkout main)
+    2. actualizar la nueva rama (git pull origin main)
+    3. hacer la union (git merge nombre-de-la-rama)

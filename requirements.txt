@@ -4,6 +4,7 @@ asyncpg==0.30.0
 bcrypt==4.0.1
 certifi==2025.7.14
 cffi==2.0.0
+charset-normalizer==3.4.4
 click==8.2.1
 colorama==0.4.6
 cryptography==46.0.1
@@ -23,6 +24,7 @@ jwt==1.4.0
 markdown-it-py==3.0.0
 MarkupSafe==3.0.2
 mdurl==0.1.2
+mercadopago==2.3.0
 passlib==1.7.4
 pyasn1==0.6.1
 pycparser==2.23
@@ -34,6 +36,7 @@ python-dotenv==1.1.1
 python-jose==3.5.0
 python-multipart==0.0.20
 PyYAML==6.0.2
+requests==2.32.5
 rich==14.1.0
 rich-toolkit==0.14.9
 rignore==0.6.4
