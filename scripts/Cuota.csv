@@ -1,0 +1,994 @@
+idCuota,dni,pagada,monto,fechaComienzo,fechaFin,mes,nombreTrabajo,nombreSuscripcion
+8,42276404,true,34713.07,2025-10-20,2025-11-19,October,Mantenimiento,5 días a la semana
+9,42276404,true,29716.96,2025-11-20,2025-12-19,November,Musculación,5 días a la semana
+10,42276404,true,24467.66,2025-12-20,2026-01-19,December,Musculación,3 días a la semana
+11,42276404,false,33943.80,2026-01-20,2026-02-19,January,Preparación Física,3 días a la semana
+12,42276404,true,30550.89,2026-02-20,2026-03-19,February,Musculación,3 días a la semana
+13,42276404,true,23338.29,2026-03-20,2026-04-19,March,Musculación,3 días a la semana
+14,42276404,false,33233.79,2026-04-20,2026-05-19,April,Preparación Física,3 días a la semana
+15,42276404,false,33397.38,2026-05-20,2026-06-19,May,Mantenimiento,3 días a la semana
+16,42276404,false,27681.14,2026-06-20,2026-07-19,June,Musculación,3 días a la semana
+17,42276404,false,23515.98,2026-07-20,2026-08-19,July,Musculación,3 días a la semana
+18,42276404,true,25967.24,2026-08-20,2026-09-19,August,Mantenimiento,5 días a la semana
+19,42276404,false,20274.95,2026-09-20,2026-10-19,September,Musculación,3 días a la semana
+20,42276404,true,21856.51,2026-10-20,2026-11-19,October,Preparación Física,5 días a la semana
+21,42276404,false,23306.48,2026-11-20,2026-12-19,November,Musculación,3 días a la semana
+22,42276404,false,20525.77,2026-12-20,2027-01-19,December,Preparación Física,3 días a la semana
+23,42276404,false,29432.82,2027-01-20,2027-02-19,January,Preparación Física,5 días a la semana
+24,42276404,true,26510.00,2027-02-20,2027-03-19,February,Preparación Física,5 días a la semana
+25,42276404,true,34886.31,2027-03-20,2027-04-19,March,Mantenimiento,5 días a la semana
+26,42276404,false,24441.04,2027-04-20,2027-05-19,April,Mantenimiento,5 días a la semana
+27,42276404,false,28740.11,2027-05-20,2027-06-19,May,Mantenimiento,5 días a la semana
+28,42276404,false,21460.41,2027-06-20,2027-07-19,June,Musculación,3 días a la semana
+29,42276404,true,20954.51,2027-07-20,2027-08-19,July,Mantenimiento,3 días a la semana
+30,42276404,false,32395.17,2027-08-20,2027-09-19,August,Musculación,3 días a la semana
+31,42276404,false,22196.90,2027-09-20,2027-10-19,September,Musculación,5 días a la semana
+32,42276404,false,26394.35,2027-10-20,2027-11-19,October,Preparación Física,3 días a la semana
+33,42276404,false,22109.58,2027-11-20,2027-12-19,November,Preparación Física,5 días a la semana
+34,42276404,true,20616.94,2027-12-20,2028-01-19,December,Musculación,5 días a la semana
+35,42276404,false,20818.14,2028-01-20,2028-02-19,January,Musculación,3 días a la semana
+36,42276404,false,26185.98,2028-02-20,2028-03-19,February,Preparación Física,5 días a la semana
+37,42276404,true,27527.56,2028-03-20,2028-04-19,March,Musculación,3 días a la semana
+38,42276404,true,26061.59,2028-04-20,2028-05-19,April,Mantenimiento,3 días a la semana
+39,42276404,false,23998.96,2028-05-20,2028-06-19,May,Musculación,5 días a la semana
+40,42276404,true,33357.25,2028-06-20,2028-07-19,June,Preparación Física,3 días a la semana
+41,42276404,false,27463.88,2028-07-20,2028-08-19,July,Musculación,5 días a la semana
+42,42276404,true,27658.21,2028-08-20,2028-09-19,August,Mantenimiento,5 días a la semana
+43,42276404,true,21718.28,2028-09-20,2028-10-19,September,Preparación Física,3 días a la semana
+44,42276404,true,20251.27,2028-10-20,2028-11-19,October,Mantenimiento,3 días a la semana
+45,42276404,true,32181.10,2028-11-20,2028-12-19,November,Mantenimiento,3 días a la semana
+46,42276404,true,28961.62,2028-12-20,2029-01-19,December,Mantenimiento,5 días a la semana
+47,42276404,false,24620.91,2029-01-20,2029-02-19,January,Mantenimiento,5 días a la semana
+48,42276404,false,22334.40,2029-02-20,2029-03-19,February,Musculación,5 días a la semana
+49,42276404,true,22169.89,2029-03-20,2029-04-19,March,Mantenimiento,3 días a la semana
+50,42276404,false,34482.96,2029-04-20,2029-05-19,April,Musculación,5 días a la semana
+51,42276404,true,24328.98,2029-05-20,2029-06-19,May,Mantenimiento,5 días a la semana
+52,42276404,true,33362.23,2029-06-20,2029-07-19,June,Preparación Física,5 días a la semana
+53,42276404,false,33812.28,2029-07-20,2029-08-19,July,Mantenimiento,3 días a la semana
+54,42276404,true,23850.40,2029-08-20,2029-09-19,August,Preparación Física,3 días a la semana
+55,42276404,true,28767.36,2029-09-20,2029-10-19,September,Musculación,3 días a la semana
+56,42276404,true,24199.95,2029-10-20,2029-11-19,October,Mantenimiento,5 días a la semana
+57,42276404,false,21281.67,2029-11-20,2029-12-19,November,Musculación,3 días a la semana
+58,42276404,false,33321.77,2029-12-20,2030-01-19,December,Musculación,5 días a la semana
+59,42276404,false,30360.37,2030-01-20,2030-02-19,January,Musculación,5 días a la semana
+60,42276404,true,30477.33,2030-02-20,2030-03-19,February,Preparación Física,3 días a la semana
+61,42276404,true,30021.86,2030-03-20,2030-04-19,March,Mantenimiento,3 días a la semana
+62,42276404,true,34713.45,2030-04-20,2030-05-19,April,Musculación,5 días a la semana
+63,42276404,false,30537.85,2030-05-20,2030-06-19,May,Mantenimiento,3 días a la semana
+64,42276404,true,22671.95,2030-06-20,2030-07-19,June,Mantenimiento,5 días a la semana
+65,42276404,false,25973.25,2030-07-20,2030-08-19,July,Preparación Física,3 días a la semana
+66,42276404,true,22022.35,2030-08-20,2030-09-19,August,Musculación,3 días a la semana
+67,42276404,true,34265.47,2030-09-20,2030-10-19,September,Mantenimiento,3 días a la semana
+68,42276404,true,34756.27,2030-10-20,2030-11-19,October,Preparación Física,3 días a la semana
+69,42276404,false,24914.24,2030-11-20,2030-12-19,November,Preparación Física,3 días a la semana
+70,42276404,true,30607.36,2030-12-20,2031-01-19,December,Preparación Física,3 días a la semana
+71,42276404,false,25462.37,2031-01-20,2031-02-19,January,Preparación Física,5 días a la semana
+72,42276404,true,33217.41,2031-02-20,2031-03-19,February,Preparación Física,5 días a la semana
+73,42276404,true,27564.22,2031-03-20,2031-04-19,March,Mantenimiento,5 días a la semana
+74,42276404,false,29724.12,2031-04-20,2031-05-19,April,Mantenimiento,3 días a la semana
+75,42276404,false,34307.43,2031-05-20,2031-06-19,May,Musculación,5 días a la semana
+76,42276404,false,24255.39,2031-06-20,2031-07-19,June,Musculación,3 días a la semana
+77,42276404,true,25198.60,2031-07-20,2031-08-19,July,Mantenimiento,5 días a la semana
+78,42276404,false,30696.51,2031-08-20,2031-09-19,August,Musculación,5 días a la semana
+79,42276404,true,27730.00,2031-09-20,2031-10-19,September,Mantenimiento,3 días a la semana
+80,42276404,true,21809.66,2031-10-20,2031-11-19,October,Musculación,5 días a la semana
+81,42276404,false,21607.47,2031-11-20,2031-12-19,November,Preparación Física,5 días a la semana
+82,42276404,true,32137.76,2031-12-20,2032-01-19,December,Preparación Física,3 días a la semana
+83,42276404,true,33037.58,2032-01-20,2032-02-19,January,Mantenimiento,3 días a la semana
+84,42276404,true,21285.05,2032-02-20,2032-03-19,February,Preparación Física,5 días a la semana
+85,42276404,false,32092.08,2032-03-20,2032-04-19,March,Musculación,5 días a la semana
+86,42276404,true,23801.25,2032-04-20,2032-05-19,April,Musculación,5 días a la semana
+87,42276404,true,21991.02,2032-05-20,2032-06-19,May,Musculación,5 días a la semana
+88,42276404,false,32812.08,2032-06-20,2032-07-19,June,Mantenimiento,5 días a la semana
+89,42276404,false,27278.20,2032-07-20,2032-08-19,July,Mantenimiento,5 días a la semana
+90,42276404,false,27030.15,2032-08-20,2032-09-19,August,Preparación Física,3 días a la semana
+91,42276404,true,29018.09,2032-09-20,2032-10-19,September,Preparación Física,3 días a la semana
+92,42276404,false,25828.41,2032-10-20,2032-11-19,October,Musculación,3 días a la semana
+93,42276404,false,20047.05,2032-11-20,2032-12-19,November,Preparación Física,5 días a la semana
+94,42276404,false,26909.15,2032-12-20,2033-01-19,December,Mantenimiento,5 días a la semana
+95,42276404,true,22716.94,2033-01-20,2033-02-19,January,Preparación Física,3 días a la semana
+96,42276404,false,26397.86,2033-02-20,2033-03-19,February,Musculación,3 días a la semana
+97,42276404,false,26318.93,2033-03-20,2033-04-19,March,Mantenimiento,5 días a la semana
+98,42276404,false,21279.45,2033-04-20,2033-05-19,April,Mantenimiento,5 días a la semana
+99,42276404,false,26776.80,2033-05-20,2033-06-19,May,Musculación,5 días a la semana
+100,42276404,false,31096.03,2033-06-20,2033-07-19,June,Preparación Física,3 días a la semana
+101,42276404,true,26276.52,2033-07-20,2033-08-19,July,Musculación,3 días a la semana
+102,42276404,true,31063.57,2033-08-20,2033-09-19,August,Mantenimiento,3 días a la semana
+103,42276404,true,32847.23,2033-09-20,2033-10-19,September,Preparación Física,3 días a la semana
+104,42276404,true,33647.83,2033-10-20,2033-11-19,October,Preparación Física,3 días a la semana
+105,42276404,true,25300.73,2033-11-20,2033-12-19,November,Musculación,5 días a la semana
+106,42276404,false,30107.82,2033-12-20,2034-01-19,December,Musculación,3 días a la semana
+107,42276404,true,31293.37,2034-01-20,2034-02-19,January,Mantenimiento,3 días a la semana
+108,42276404,true,24004.24,2034-02-20,2034-03-19,February,Musculación,3 días a la semana
+109,42276404,true,26486.14,2034-03-20,2034-04-19,March,Mantenimiento,5 días a la semana
+110,42276404,true,28781.46,2034-04-20,2034-05-19,April,Preparación Física,3 días a la semana
+111,42276404,true,24451.95,2034-05-20,2034-06-19,May,Mantenimiento,5 días a la semana
+112,42276404,true,22140.11,2034-06-20,2034-07-19,June,Musculación,3 días a la semana
+113,42276404,false,29602.40,2034-07-20,2034-08-19,July,Mantenimiento,5 días a la semana
+114,42276404,false,21004.29,2034-08-20,2034-09-19,August,Preparación Física,5 días a la semana
+115,42276404,true,25850.23,2034-09-20,2034-10-19,September,Mantenimiento,5 días a la semana
+116,42276404,false,21692.83,2034-10-20,2034-11-19,October,Musculación,5 días a la semana
+117,42276404,false,26419.43,2034-11-20,2034-12-19,November,Preparación Física,5 días a la semana
+118,42276404,false,31551.84,2034-12-20,2035-01-19,December,Preparación Física,3 días a la semana
+119,42276404,false,31261.20,2035-01-20,2035-02-19,January,Mantenimiento,5 días a la semana
+120,42276404,true,27860.52,2035-02-20,2035-03-19,February,Preparación Física,3 días a la semana
+121,42276404,false,21426.73,2035-03-20,2035-04-19,March,Musculación,5 días a la semana
+122,42276404,false,25682.07,2035-04-20,2035-05-19,April,Preparación Física,5 días a la semana
+123,42276404,true,33519.72,2035-05-20,2035-06-19,May,Musculación,3 días a la semana
+124,42276404,false,32846.00,2035-06-20,2035-07-19,June,Mantenimiento,5 días a la semana
+125,42276404,true,28329.40,2035-07-20,2035-08-19,July,Preparación Física,5 días a la semana
+126,42276404,false,30120.44,2035-08-20,2035-09-19,August,Preparación Física,5 días a la semana
+127,42276404,false,29922.63,2035-09-20,2035-10-19,September,Musculación,5 días a la semana
+128,42276404,true,21221.21,2035-10-20,2035-11-19,October,Musculación,5 días a la semana
+129,42276404,true,29579.44,2035-11-20,2035-12-19,November,Mantenimiento,3 días a la semana
+130,42276404,false,22258.81,2035-12-20,2036-01-19,December,Mantenimiento,5 días a la semana
+131,42276404,true,25149.64,2036-01-20,2036-02-19,January,Preparación Física,3 días a la semana
+132,42276404,true,24602.62,2036-02-20,2036-03-19,February,Preparación Física,3 días a la semana
+133,42276404,true,29294.97,2036-03-20,2036-04-19,March,Mantenimiento,3 días a la semana
+134,42276404,false,33610.82,2036-04-20,2036-05-19,April,Mantenimiento,5 días a la semana
+135,42276404,true,25158.28,2036-05-20,2036-06-19,May,Mantenimiento,5 días a la semana
+136,42276404,true,23007.53,2036-06-20,2036-07-19,June,Preparación Física,5 días a la semana
+137,42276404,true,20425.99,2036-07-20,2036-08-19,July,Mantenimiento,5 días a la semana
+138,42276404,false,31189.12,2036-08-20,2036-09-19,August,Musculación,5 días a la semana
+139,42276404,false,20616.30,2036-09-20,2036-10-19,September,Mantenimiento,3 días a la semana
+140,42276404,true,21975.09,2036-10-20,2036-11-19,October,Preparación Física,5 días a la semana
+141,42276404,false,29611.75,2036-11-20,2036-12-19,November,Musculación,3 días a la semana
+142,42276404,false,21434.92,2036-12-20,2037-01-19,December,Preparación Física,5 días a la semana
+143,42276404,true,28014.77,2037-01-20,2037-02-19,January,Preparación Física,5 días a la semana
+144,42276404,true,24691.93,2037-02-20,2037-03-19,February,Mantenimiento,5 días a la semana
+145,42276404,true,21595.42,2037-03-20,2037-04-19,March,Mantenimiento,3 días a la semana
+146,42276404,true,27628.80,2037-04-20,2037-05-19,April,Preparación Física,5 días a la semana
+147,42276404,false,20153.86,2037-05-20,2037-06-19,May,Musculación,3 días a la semana
+148,42276404,false,31926.99,2037-06-20,2037-07-19,June,Musculación,3 días a la semana
+149,42276404,true,33427.12,2037-07-20,2037-08-19,July,Musculación,5 días a la semana
+150,42276404,false,34916.82,2037-08-20,2037-09-19,August,Preparación Física,5 días a la semana
+151,42276404,true,27181.84,2037-09-20,2037-10-19,September,Mantenimiento,3 días a la semana
+152,42276404,false,22154.80,2037-10-20,2037-11-19,October,Musculación,5 días a la semana
+153,42276404,true,22947.45,2037-11-20,2037-12-19,November,Musculación,5 días a la semana
+154,42276404,true,27520.26,2037-12-20,2038-01-19,December,Musculación,3 días a la semana
+155,42276404,true,26600.55,2038-01-20,2038-02-19,January,Mantenimiento,3 días a la semana
+156,42276404,true,26207.66,2038-02-20,2038-03-19,February,Preparación Física,3 días a la semana
+157,42276404,true,29803.48,2038-03-20,2038-04-19,March,Preparación Física,5 días a la semana
+158,42276404,false,32930.85,2038-04-20,2038-05-19,April,Musculación,3 días a la semana
+159,42276404,false,23674.02,2038-05-20,2038-06-19,May,Mantenimiento,5 días a la semana
+160,42276404,false,29920.43,2038-06-20,2038-07-19,June,Preparación Física,3 días a la semana
+161,42276404,false,28728.84,2038-07-20,2038-08-19,July,Preparación Física,5 días a la semana
+162,42276404,true,26510.56,2038-08-20,2038-09-19,August,Musculación,5 días a la semana
+163,42276404,true,24009.82,2038-09-20,2038-10-19,September,Mantenimiento,3 días a la semana
+164,42276404,true,32267.12,2038-10-20,2038-11-19,October,Musculación,3 días a la semana
+165,42276404,false,28594.64,2038-11-20,2038-12-19,November,Musculación,3 días a la semana
+166,42276404,true,23125.35,2038-12-20,2039-01-19,December,Mantenimiento,5 días a la semana
+167,42276404,false,24570.90,2039-01-20,2039-02-19,January,Musculación,3 días a la semana
+168,42276404,false,26579.69,2039-02-20,2039-03-19,February,Musculación,5 días a la semana
+169,42276404,false,23439.25,2039-03-20,2039-04-19,March,Musculación,5 días a la semana
+170,42276404,false,24289.76,2039-04-20,2039-05-19,April,Mantenimiento,3 días a la semana
+171,42276404,false,26829.94,2039-05-20,2039-06-19,May,Preparación Física,3 días a la semana
+172,42276404,false,34631.73,2039-06-20,2039-07-19,June,Preparación Física,3 días a la semana
+173,42276404,false,22091.65,2039-07-20,2039-08-19,July,Mantenimiento,5 días a la semana
+174,42276404,true,31440.15,2039-08-20,2039-09-19,August,Musculación,3 días a la semana
+175,42276404,false,20354.46,2039-09-20,2039-10-19,September,Musculación,5 días a la semana
+176,42276404,false,30704.60,2039-10-20,2039-11-19,October,Preparación Física,3 días a la semana
+177,42276404,false,21358.88,2039-11-20,2039-12-19,November,Mantenimiento,5 días a la semana
+178,42276404,false,27630.73,2039-12-20,2040-01-19,December,Preparación Física,5 días a la semana
+179,42276404,true,32224.45,2040-01-20,2040-02-19,January,Musculación,5 días a la semana
+180,42276404,false,25898.01,2040-02-20,2040-03-19,February,Preparación Física,3 días a la semana
+181,42276404,true,30747.76,2040-03-20,2040-04-19,March,Musculación,5 días a la semana
+182,42276404,false,23642.12,2040-04-20,2040-05-19,April,Mantenimiento,3 días a la semana
+183,42276404,false,24509.36,2040-05-20,2040-06-19,May,Mantenimiento,5 días a la semana
+184,42276404,true,29028.59,2040-06-20,2040-07-19,June,Mantenimiento,5 días a la semana
+185,42276404,false,28815.99,2040-07-20,2040-08-19,July,Mantenimiento,5 días a la semana
+186,42276404,false,21466.48,2040-08-20,2040-09-19,August,Preparación Física,3 días a la semana
+187,42276404,true,29085.58,2040-09-20,2040-10-19,September,Preparación Física,3 días a la semana
+188,42276404,false,23820.01,2040-10-20,2040-11-19,October,Preparación Física,5 días a la semana
+189,42276404,false,25936.10,2040-11-20,2040-12-19,November,Musculación,5 días a la semana
+190,42276404,true,21525.93,2040-12-20,2041-01-19,December,Mantenimiento,3 días a la semana
+191,42276404,false,25197.27,2041-01-20,2041-02-19,January,Mantenimiento,3 días a la semana
+192,42276404,false,21175.68,2041-02-20,2041-03-19,February,Preparación Física,3 días a la semana
+193,42276404,false,24646.15,2041-03-20,2041-04-19,March,Preparación Física,5 días a la semana
+194,42276404,false,25629.18,2041-04-20,2041-05-19,April,Preparación Física,3 días a la semana
+195,42276404,true,27989.41,2041-05-20,2041-06-19,May,Musculación,3 días a la semana
+196,42276404,false,30553.47,2041-06-20,2041-07-19,June,Musculación,3 días a la semana
+197,42276404,true,22599.55,2041-07-20,2041-08-19,July,Musculación,3 días a la semana
+198,42276404,true,31941.72,2041-08-20,2041-09-19,August,Musculación,3 días a la semana
+199,42276404,false,25315.80,2041-09-20,2041-10-19,September,Mantenimiento,3 días a la semana
+200,42276404,false,25348.01,2041-10-20,2041-11-19,October,Musculación,5 días a la semana
+201,42276404,false,31775.73,2041-11-20,2041-12-19,November,Mantenimiento,5 días a la semana
+202,42276404,false,23260.32,2041-12-20,2042-01-19,December,Mantenimiento,5 días a la semana
+203,42276404,false,31851.19,2042-01-20,2042-02-19,January,Musculación,3 días a la semana
+204,42276404,true,33198.01,2042-02-20,2042-03-19,February,Preparación Física,3 días a la semana
+205,42276404,false,26493.78,2042-03-20,2042-04-19,March,Musculación,3 días a la semana
+206,42276404,true,26697.13,2042-04-20,2042-05-19,April,Mantenimiento,5 días a la semana
+207,42276404,true,20613.76,2042-05-20,2042-06-19,May,Musculación,3 días a la semana
+208,42276404,false,21718.39,2042-06-20,2042-07-19,June,Musculación,5 días a la semana
+209,42276404,false,28156.85,2042-07-20,2042-08-19,July,Musculación,5 días a la semana
+210,42276404,false,30256.91,2042-08-20,2042-09-19,August,Mantenimiento,5 días a la semana
+211,42276404,true,25956.63,2042-09-20,2042-10-19,September,Preparación Física,5 días a la semana
+212,42276404,true,34624.34,2042-10-20,2042-11-19,October,Musculación,3 días a la semana
+213,42276404,true,21463.17,2042-11-20,2042-12-19,November,Preparación Física,3 días a la semana
+214,42276404,false,21954.28,2042-12-20,2043-01-19,December,Mantenimiento,5 días a la semana
+215,42276404,false,31790.30,2043-01-20,2043-02-19,January,Preparación Física,5 días a la semana
+216,42276404,false,27226.77,2043-02-20,2043-03-19,February,Mantenimiento,3 días a la semana
+217,42276404,true,21478.25,2043-03-20,2043-04-19,March,Preparación Física,3 días a la semana
+218,42276404,false,22558.70,2043-04-20,2043-05-19,April,Musculación,3 días a la semana
+219,42276404,true,31337.29,2043-05-20,2043-06-19,May,Musculación,3 días a la semana
+220,42276404,false,21570.36,2043-06-20,2043-07-19,June,Preparación Física,5 días a la semana
+221,42276404,true,25941.47,2043-07-20,2043-08-19,July,Musculación,5 días a la semana
+222,42276404,true,26682.94,2043-08-20,2043-09-19,August,Preparación Física,3 días a la semana
+223,42276404,false,26510.49,2043-09-20,2043-10-19,September,Musculación,3 días a la semana
+224,42276404,false,23374.80,2043-10-20,2043-11-19,October,Musculación,5 días a la semana
+225,42276404,true,33727.38,2043-11-20,2043-12-19,November,Mantenimiento,3 días a la semana
+226,42276404,true,29806.15,2043-12-20,2044-01-19,December,Mantenimiento,5 días a la semana
+227,42276404,true,22241.34,2044-01-20,2044-02-19,January,Preparación Física,3 días a la semana
+228,42276404,false,22731.03,2044-02-20,2044-03-19,February,Mantenimiento,5 días a la semana
+229,42276404,true,31214.58,2044-03-20,2044-04-19,March,Preparación Física,3 días a la semana
+230,42276404,true,25720.09,2044-04-20,2044-05-19,April,Musculación,5 días a la semana
+231,42276404,true,20777.79,2044-05-20,2044-06-19,May,Mantenimiento,5 días a la semana
+232,42276404,false,32275.77,2044-06-20,2044-07-19,June,Mantenimiento,3 días a la semana
+233,42276404,true,21849.30,2044-07-20,2044-08-19,July,Preparación Física,5 días a la semana
+234,42276404,true,27946.38,2044-08-20,2044-09-19,August,Preparación Física,3 días a la semana
+235,42276404,true,26322.00,2044-09-20,2044-10-19,September,Preparación Física,3 días a la semana
+236,42276404,false,21151.18,2044-10-20,2044-11-19,October,Musculación,5 días a la semana
+237,42276404,false,24147.22,2044-11-20,2044-12-19,November,Mantenimiento,3 días a la semana
+238,42276404,false,29880.23,2044-12-20,2045-01-19,December,Musculación,5 días a la semana
+239,42276404,false,34639.67,2045-01-20,2045-02-19,January,Musculación,5 días a la semana
+240,42276404,false,29842.72,2045-02-20,2045-03-19,February,Preparación Física,5 días a la semana
+241,42276404,true,21877.40,2045-03-20,2045-04-19,March,Musculación,5 días a la semana
+242,42276404,true,30951.56,2045-04-20,2045-05-19,April,Preparación Física,5 días a la semana
+243,42276404,false,32082.39,2045-05-20,2045-06-19,May,Mantenimiento,5 días a la semana
+244,42276404,false,26976.29,2045-06-20,2045-07-19,June,Musculación,5 días a la semana
+245,42276404,false,24679.84,2045-07-20,2045-08-19,July,Mantenimiento,3 días a la semana
+246,42276404,true,28789.96,2045-08-20,2045-09-19,August,Preparación Física,3 días a la semana
+247,42276404,true,28901.15,2045-09-20,2045-10-19,September,Preparación Física,5 días a la semana
+248,42276404,false,34731.62,2045-10-20,2045-11-19,October,Mantenimiento,3 días a la semana
+249,42276404,false,31002.38,2045-11-20,2045-12-19,November,Preparación Física,5 días a la semana
+250,42276404,true,32704.49,2045-12-20,2046-01-19,December,Preparación Física,5 días a la semana
+251,42276404,false,32969.35,2046-01-20,2046-02-19,January,Musculación,3 días a la semana
+252,42276404,false,23394.25,2046-02-20,2046-03-19,February,Mantenimiento,5 días a la semana
+253,42276404,true,34289.25,2046-03-20,2046-04-19,March,Mantenimiento,3 días a la semana
+254,42276404,true,21388.63,2046-04-20,2046-05-19,April,Mantenimiento,5 días a la semana
+255,42276404,false,34355.60,2046-05-20,2046-06-19,May,Mantenimiento,5 días a la semana
+256,42276404,true,20607.07,2046-06-20,2046-07-19,June,Mantenimiento,3 días a la semana
+257,42276404,false,33372.63,2046-07-20,2046-08-19,July,Mantenimiento,5 días a la semana
+258,42276404,false,25343.00,2046-08-20,2046-09-19,August,Mantenimiento,5 días a la semana
+259,42276404,true,20535.82,2046-09-20,2046-10-19,September,Mantenimiento,3 días a la semana
+260,42276404,true,22654.45,2046-10-20,2046-11-19,October,Mantenimiento,5 días a la semana
+261,42276404,false,25254.78,2046-11-20,2046-12-19,November,Musculación,5 días a la semana
+262,42276404,true,20974.19,2046-12-20,2047-01-19,December,Mantenimiento,5 días a la semana
+263,42276404,true,22400.40,2047-01-20,2047-02-19,January,Mantenimiento,5 días a la semana
+264,42276404,true,26094.57,2047-02-20,2047-03-19,February,Mantenimiento,5 días a la semana
+265,42276404,false,25132.26,2047-03-20,2047-04-19,March,Musculación,3 días a la semana
+266,42276404,false,34504.48,2047-04-20,2047-05-19,April,Preparación Física,3 días a la semana
+267,42276404,false,26956.56,2047-05-20,2047-06-19,May,Preparación Física,3 días a la semana
+268,42276404,false,23991.41,2047-06-20,2047-07-19,June,Preparación Física,3 días a la semana
+269,42276404,false,24542.29,2047-07-20,2047-08-19,July,Mantenimiento,5 días a la semana
+270,42276404,true,23996.22,2047-08-20,2047-09-19,August,Preparación Física,5 días a la semana
+271,42276404,false,34274.84,2047-09-20,2047-10-19,September,Mantenimiento,3 días a la semana
+272,42276404,true,33458.17,2047-10-20,2047-11-19,October,Mantenimiento,3 días a la semana
+273,42276404,true,23999.04,2047-11-20,2047-12-19,November,Preparación Física,5 días a la semana
+274,42276404,false,27903.97,2047-12-20,2048-01-19,December,Mantenimiento,5 días a la semana
+275,42276404,false,31458.71,2048-01-20,2048-02-19,January,Preparación Física,3 días a la semana
+276,42276404,true,24212.67,2048-02-20,2048-03-19,February,Preparación Física,5 días a la semana
+277,42276404,true,26812.63,2048-03-20,2048-04-19,March,Preparación Física,3 días a la semana
+278,42276404,true,24968.03,2048-04-20,2048-05-19,April,Preparación Física,5 días a la semana
+279,42276404,true,30986.17,2048-05-20,2048-06-19,May,Preparación Física,3 días a la semana
+280,42276404,true,32448.40,2048-06-20,2048-07-19,June,Musculación,5 días a la semana
+281,42276404,false,23305.71,2048-07-20,2048-08-19,July,Mantenimiento,5 días a la semana
+282,42276404,true,26270.35,2048-08-20,2048-09-19,August,Preparación Física,3 días a la semana
+283,42276404,true,22639.36,2048-09-20,2048-10-19,September,Preparación Física,3 días a la semana
+284,42276404,true,29825.36,2048-10-20,2048-11-19,October,Preparación Física,3 días a la semana
+285,42276404,true,34634.08,2048-11-20,2048-12-19,November,Mantenimiento,3 días a la semana
+286,42276404,true,30507.63,2048-12-20,2049-01-19,December,Musculación,5 días a la semana
+287,42276404,false,25749.47,2049-01-20,2049-02-19,January,Preparación Física,5 días a la semana
+288,42276404,false,28966.74,2049-02-20,2049-03-19,February,Preparación Física,5 días a la semana
+289,42276404,true,23966.09,2049-03-20,2049-04-19,March,Mantenimiento,5 días a la semana
+290,42276404,true,28745.51,2049-04-20,2049-05-19,April,Mantenimiento,3 días a la semana
+291,42276404,false,22657.36,2049-05-20,2049-06-19,May,Preparación Física,5 días a la semana
+292,42276404,false,20431.18,2049-06-20,2049-07-19,June,Preparación Física,3 días a la semana
+293,42276404,true,26372.55,2049-07-20,2049-08-19,July,Preparación Física,3 días a la semana
+294,42276404,true,29012.40,2049-08-20,2049-09-19,August,Mantenimiento,3 días a la semana
+295,42276404,false,28170.40,2049-09-20,2049-10-19,September,Mantenimiento,5 días a la semana
+296,42276404,true,33132.39,2049-10-20,2049-11-19,October,Preparación Física,3 días a la semana
+297,42276404,true,20302.32,2049-11-20,2049-12-19,November,Preparación Física,3 días a la semana
+298,42276404,false,25064.16,2049-12-20,2050-01-19,December,Mantenimiento,5 días a la semana
+299,42276404,false,24625.64,2050-01-20,2050-02-19,January,Preparación Física,5 días a la semana
+300,42276404,false,31466.94,2050-02-20,2050-03-19,February,Preparación Física,5 días a la semana
+301,42276404,true,33921.03,2050-03-20,2050-04-19,March,Preparación Física,5 días a la semana
+302,42276404,false,33116.57,2050-04-20,2050-05-19,April,Preparación Física,5 días a la semana
+303,42276404,true,33793.05,2050-05-20,2050-06-19,May,Mantenimiento,3 días a la semana
+304,42276404,false,30337.49,2050-06-20,2050-07-19,June,Musculación,5 días a la semana
+305,42276404,false,27516.17,2050-07-20,2050-08-19,July,Preparación Física,5 días a la semana
+306,42276404,false,22944.68,2050-08-20,2050-09-19,August,Musculación,5 días a la semana
+307,42276404,true,28298.92,2050-09-20,2050-10-19,September,Mantenimiento,5 días a la semana
+308,42276404,false,34610.33,2050-10-20,2050-11-19,October,Preparación Física,3 días a la semana
+309,42276404,false,26580.48,2050-11-20,2050-12-19,November,Preparación Física,5 días a la semana
+310,42276404,false,32819.50,2050-12-20,2051-01-19,December,Musculación,5 días a la semana
+311,42276404,true,25974.85,2051-01-20,2051-02-19,January,Musculación,5 días a la semana
+312,42276404,true,32308.40,2051-02-20,2051-03-19,February,Musculación,3 días a la semana
+313,42276404,true,25900.69,2051-03-20,2051-04-19,March,Mantenimiento,3 días a la semana
+314,42276404,true,20154.45,2051-04-20,2051-05-19,April,Mantenimiento,3 días a la semana
+315,42276404,false,31891.14,2051-05-20,2051-06-19,May,Musculación,5 días a la semana
+316,42276404,true,27451.98,2051-06-20,2051-07-19,June,Musculación,5 días a la semana
+317,42276404,false,29893.89,2051-07-20,2051-08-19,July,Preparación Física,3 días a la semana
+318,42276404,true,34156.08,2051-08-20,2051-09-19,August,Mantenimiento,3 días a la semana
+319,42276404,false,24724.29,2051-09-20,2051-10-19,September,Mantenimiento,5 días a la semana
+320,42276404,false,27225.59,2051-10-20,2051-11-19,October,Preparación Física,5 días a la semana
+321,42276404,true,22625.05,2051-11-20,2051-12-19,November,Mantenimiento,3 días a la semana
+322,42276404,false,31375.87,2051-12-20,2052-01-19,December,Preparación Física,3 días a la semana
+323,42276404,false,34299.40,2052-01-20,2052-02-19,January,Preparación Física,3 días a la semana
+324,42276404,true,29593.98,2052-02-20,2052-03-19,February,Musculación,5 días a la semana
+325,42276404,false,23642.55,2052-03-20,2052-04-19,March,Preparación Física,5 días a la semana
+326,42276404,false,28765.91,2052-04-20,2052-05-19,April,Preparación Física,5 días a la semana
+327,42276404,false,23239.85,2052-05-20,2052-06-19,May,Musculación,5 días a la semana
+328,42276404,true,24114.52,2052-06-20,2052-07-19,June,Preparación Física,5 días a la semana
+329,42276404,false,22295.92,2052-07-20,2052-08-19,July,Preparación Física,5 días a la semana
+330,42276404,true,29528.96,2052-08-20,2052-09-19,August,Mantenimiento,3 días a la semana
+331,42276404,false,22869.14,2052-09-20,2052-10-19,September,Musculación,3 días a la semana
+332,42276404,false,24679.01,2052-10-20,2052-11-19,October,Preparación Física,5 días a la semana
+333,42276404,false,23236.29,2052-11-20,2052-12-19,November,Mantenimiento,3 días a la semana
+334,42276404,false,31788.58,2052-12-20,2053-01-19,December,Preparación Física,5 días a la semana
+335,42276404,false,32435.68,2053-01-20,2053-02-19,January,Preparación Física,5 días a la semana
+336,42276404,true,29437.84,2053-02-20,2053-03-19,February,Musculación,5 días a la semana
+337,42276404,false,29041.37,2053-03-20,2053-04-19,March,Musculación,5 días a la semana
+338,42276404,false,21274.26,2053-04-20,2053-05-19,April,Preparación Física,5 días a la semana
+339,42276404,false,21604.28,2053-05-20,2053-06-19,May,Preparación Física,3 días a la semana
+340,42276404,true,25014.76,2053-06-20,2053-07-19,June,Musculación,5 días a la semana
+341,42276404,true,22017.59,2053-07-20,2053-08-19,July,Preparación Física,5 días a la semana
+342,42276404,true,32637.81,2053-08-20,2053-09-19,August,Preparación Física,5 días a la semana
+343,42276404,true,21431.04,2053-09-20,2053-10-19,September,Preparación Física,5 días a la semana
+344,42276404,false,22860.83,2053-10-20,2053-11-19,October,Musculación,3 días a la semana
+345,42276404,false,32073.97,2053-11-20,2053-12-19,November,Musculación,3 días a la semana
+346,42276404,true,33633.81,2053-12-20,2054-01-19,December,Preparación Física,3 días a la semana
+347,42276404,false,26580.26,2054-01-20,2054-02-19,January,Preparación Física,5 días a la semana
+348,42276404,true,27718.70,2054-02-20,2054-03-19,February,Preparación Física,3 días a la semana
+349,42276404,false,30394.89,2054-03-20,2054-04-19,March,Preparación Física,3 días a la semana
+350,42276404,false,24368.38,2054-04-20,2054-05-19,April,Musculación,3 días a la semana
+351,42276404,false,29966.78,2054-05-20,2054-06-19,May,Mantenimiento,5 días a la semana
+352,42276404,false,33891.96,2054-06-20,2054-07-19,June,Preparación Física,5 días a la semana
+353,42276404,true,34626.42,2054-07-20,2054-08-19,July,Musculación,3 días a la semana
+354,42276404,true,22257.29,2054-08-20,2054-09-19,August,Musculación,3 días a la semana
+355,42276404,true,30498.31,2054-09-20,2054-10-19,September,Mantenimiento,3 días a la semana
+356,42276404,false,33906.24,2054-10-20,2054-11-19,October,Mantenimiento,5 días a la semana
+357,42276404,true,26839.21,2054-11-20,2054-12-19,November,Mantenimiento,3 días a la semana
+358,42276404,true,24590.39,2054-12-20,2055-01-19,December,Musculación,5 días a la semana
+359,42276404,true,20283.52,2055-01-20,2055-02-19,January,Mantenimiento,3 días a la semana
+360,42276404,false,20524.75,2055-02-20,2055-03-19,February,Preparación Física,3 días a la semana
+361,42276404,false,28654.11,2055-03-20,2055-04-19,March,Mantenimiento,5 días a la semana
+362,42276404,true,22041.66,2055-04-20,2055-05-19,April,Mantenimiento,3 días a la semana
+363,42276404,true,32507.64,2055-05-20,2055-06-19,May,Musculación,3 días a la semana
+364,42276404,false,22713.86,2055-06-20,2055-07-19,June,Mantenimiento,5 días a la semana
+365,42276404,true,25378.50,2055-07-20,2055-08-19,July,Mantenimiento,5 días a la semana
+366,42276404,true,29109.67,2055-08-20,2055-09-19,August,Preparación Física,5 días a la semana
+367,42276404,false,25749.69,2055-09-20,2055-10-19,September,Preparación Física,5 días a la semana
+368,42276404,false,25153.97,2055-10-20,2055-11-19,October,Musculación,3 días a la semana
+369,42276404,false,25061.82,2055-11-20,2055-12-19,November,Musculación,3 días a la semana
+370,42276404,true,25215.67,2055-12-20,2056-01-19,December,Musculación,3 días a la semana
+371,42276404,false,32901.52,2056-01-20,2056-02-19,January,Mantenimiento,3 días a la semana
+372,42276404,true,27464.20,2056-02-20,2056-03-19,February,Preparación Física,3 días a la semana
+373,42276404,true,21609.30,2056-03-20,2056-04-19,March,Preparación Física,5 días a la semana
+374,42276404,false,27580.10,2056-04-20,2056-05-19,April,Musculación,5 días a la semana
+375,42276404,true,30794.98,2056-05-20,2056-06-19,May,Musculación,5 días a la semana
+376,42276404,true,24997.42,2056-06-20,2056-07-19,June,Musculación,5 días a la semana
+377,42276404,true,31227.31,2056-07-20,2056-08-19,July,Preparación Física,3 días a la semana
+378,42276404,true,31567.19,2056-08-20,2056-09-19,August,Musculación,3 días a la semana
+379,42276404,true,25780.22,2056-09-20,2056-10-19,September,Preparación Física,3 días a la semana
+380,42276404,true,27853.22,2056-10-20,2056-11-19,October,Preparación Física,3 días a la semana
+381,42276404,false,29530.35,2056-11-20,2056-12-19,November,Musculación,5 días a la semana
+382,42276404,false,20049.63,2056-12-20,2057-01-19,December,Mantenimiento,3 días a la semana
+383,42276404,true,27433.30,2057-01-20,2057-02-19,January,Mantenimiento,3 días a la semana
+384,42276404,false,21429.89,2057-02-20,2057-03-19,February,Mantenimiento,5 días a la semana
+385,42276404,true,21239.98,2057-03-20,2057-04-19,March,Preparación Física,3 días a la semana
+386,42276404,true,28068.28,2057-04-20,2057-05-19,April,Preparación Física,3 días a la semana
+387,42276404,true,28397.26,2057-05-20,2057-06-19,May,Mantenimiento,5 días a la semana
+388,42276404,true,23565.62,2057-06-20,2057-07-19,June,Musculación,5 días a la semana
+389,42276404,false,34717.54,2057-07-20,2057-08-19,July,Mantenimiento,5 días a la semana
+390,42276404,false,22553.48,2057-08-20,2057-09-19,August,Preparación Física,5 días a la semana
+391,42276404,true,32166.37,2057-09-20,2057-10-19,September,Musculación,5 días a la semana
+392,42276404,true,28723.39,2057-10-20,2057-11-19,October,Mantenimiento,3 días a la semana
+393,42276404,true,24068.02,2057-11-20,2057-12-19,November,Mantenimiento,5 días a la semana
+394,42276404,false,23640.97,2057-12-20,2058-01-19,December,Musculación,3 días a la semana
+395,42276404,true,27473.68,2058-01-20,2058-02-19,January,Mantenimiento,5 días a la semana
+396,42276404,true,20553.35,2058-02-20,2058-03-19,February,Mantenimiento,5 días a la semana
+397,42276404,false,24645.82,2058-03-20,2058-04-19,March,Mantenimiento,5 días a la semana
+398,42276404,true,25304.47,2058-04-20,2058-05-19,April,Musculación,5 días a la semana
+399,42276404,true,20508.38,2058-05-20,2058-06-19,May,Musculación,3 días a la semana
+400,42276404,true,29992.11,2058-06-20,2058-07-19,June,Musculación,5 días a la semana
+401,42276404,false,20798.23,2058-07-20,2058-08-19,July,Preparación Física,5 días a la semana
+402,42276404,false,28314.23,2058-08-20,2058-09-19,August,Preparación Física,5 días a la semana
+403,42276404,true,30253.28,2058-09-20,2058-10-19,September,Musculación,3 días a la semana
+404,42276404,true,25230.77,2058-10-20,2058-11-19,October,Preparación Física,3 días a la semana
+405,42276404,false,20781.00,2058-11-20,2058-12-19,November,Mantenimiento,5 días a la semana
+406,42276404,true,22361.35,2058-12-20,2059-01-19,December,Musculación,5 días a la semana
+407,42276404,true,20494.65,2059-01-20,2059-02-19,January,Mantenimiento,5 días a la semana
+408,42276404,false,21826.07,2059-02-20,2059-03-19,February,Musculación,5 días a la semana
+409,42276404,true,20900.73,2059-03-20,2059-04-19,March,Mantenimiento,5 días a la semana
+410,42276404,true,28961.23,2059-04-20,2059-05-19,April,Preparación Física,3 días a la semana
+411,42276404,false,22442.24,2059-05-20,2059-06-19,May,Musculación,5 días a la semana
+412,42276404,false,32955.01,2059-06-20,2059-07-19,June,Musculación,5 días a la semana
+413,42276404,false,31572.99,2059-07-20,2059-08-19,July,Mantenimiento,5 días a la semana
+414,42276404,true,21773.41,2059-08-20,2059-09-19,August,Preparación Física,3 días a la semana
+415,42276404,true,23767.41,2059-09-20,2059-10-19,September,Preparación Física,5 días a la semana
+416,42276404,true,26532.49,2059-10-20,2059-11-19,October,Musculación,5 días a la semana
+417,42276404,false,34049.59,2059-11-20,2059-12-19,November,Musculación,5 días a la semana
+418,42276404,false,32929.68,2059-12-20,2060-01-19,December,Musculación,3 días a la semana
+419,42276404,false,28024.11,2060-01-20,2060-02-19,January,Preparación Física,3 días a la semana
+420,42276404,false,23489.62,2060-02-20,2060-03-19,February,Preparación Física,3 días a la semana
+421,42276404,false,22917.75,2060-03-20,2060-04-19,March,Preparación Física,5 días a la semana
+422,42276404,true,23917.56,2060-04-20,2060-05-19,April,Mantenimiento,3 días a la semana
+423,42276404,true,31838.42,2060-05-20,2060-06-19,May,Musculación,3 días a la semana
+424,42276404,true,28456.02,2060-06-20,2060-07-19,June,Preparación Física,5 días a la semana
+425,42276404,false,24693.36,2060-07-20,2060-08-19,July,Musculación,5 días a la semana
+426,42276404,true,32255.31,2060-08-20,2060-09-19,August,Preparación Física,5 días a la semana
+427,42276404,false,21712.36,2060-09-20,2060-10-19,September,Musculación,3 días a la semana
+428,42276404,false,29979.66,2060-10-20,2060-11-19,October,Mantenimiento,3 días a la semana
+429,42276404,true,34891.37,2060-11-20,2060-12-19,November,Mantenimiento,5 días a la semana
+430,42276404,false,29074.42,2060-12-20,2061-01-19,December,Musculación,3 días a la semana
+431,42276404,false,34284.31,2061-01-20,2061-02-19,January,Musculación,3 días a la semana
+432,42276404,true,34199.13,2061-02-20,2061-03-19,February,Preparación Física,3 días a la semana
+433,42276404,true,29243.85,2061-03-20,2061-04-19,March,Mantenimiento,5 días a la semana
+434,42276404,true,21214.51,2061-04-20,2061-05-19,April,Preparación Física,3 días a la semana
+435,42276404,true,27707.64,2061-05-20,2061-06-19,May,Preparación Física,3 días a la semana
+436,42276404,true,20109.88,2061-06-20,2061-07-19,June,Musculación,5 días a la semana
+437,42276404,false,26391.26,2061-07-20,2061-08-19,July,Preparación Física,3 días a la semana
+438,42276404,true,26718.34,2061-08-20,2061-09-19,August,Preparación Física,3 días a la semana
+439,42276404,true,28564.91,2061-09-20,2061-10-19,September,Preparación Física,3 días a la semana
+440,42276404,true,21434.24,2061-10-20,2061-11-19,October,Mantenimiento,3 días a la semana
+441,42276404,false,32100.21,2061-11-20,2061-12-19,November,Musculación,5 días a la semana
+442,42276404,true,30330.91,2061-12-20,2062-01-19,December,Preparación Física,5 días a la semana
+443,42276404,false,28076.86,2062-01-20,2062-02-19,January,Mantenimiento,3 días a la semana
+444,42276404,true,33477.63,2062-02-20,2062-03-19,February,Mantenimiento,5 días a la semana
+445,42276404,true,23056.34,2062-03-20,2062-04-19,March,Musculación,5 días a la semana
+446,42276404,true,23714.91,2062-04-20,2062-05-19,April,Preparación Física,3 días a la semana
+447,42276404,false,24745.69,2062-05-20,2062-06-19,May,Mantenimiento,3 días a la semana
+448,42276404,false,24815.32,2062-06-20,2062-07-19,June,Preparación Física,5 días a la semana
+449,42276404,true,26625.19,2062-07-20,2062-08-19,July,Mantenimiento,3 días a la semana
+450,42276404,true,22474.85,2062-08-20,2062-09-19,August,Preparación Física,3 días a la semana
+451,42276404,true,30192.99,2062-09-20,2062-10-19,September,Musculación,5 días a la semana
+452,42276404,false,28949.19,2062-10-20,2062-11-19,October,Musculación,3 días a la semana
+453,42276404,true,34405.64,2062-11-20,2062-12-19,November,Musculación,5 días a la semana
+454,42276404,true,33993.45,2062-12-20,2063-01-19,December,Mantenimiento,5 días a la semana
+455,42276404,false,20720.64,2063-01-20,2063-02-19,January,Mantenimiento,5 días a la semana
+456,42276404,true,21844.24,2063-02-20,2063-03-19,February,Musculación,3 días a la semana
+457,42276404,true,31545.07,2063-03-20,2063-04-19,March,Mantenimiento,3 días a la semana
+458,42276404,true,20859.69,2063-04-20,2063-05-19,April,Mantenimiento,3 días a la semana
+459,42276404,true,24226.90,2063-05-20,2063-06-19,May,Musculación,3 días a la semana
+460,42276404,false,21707.51,2063-06-20,2063-07-19,June,Musculación,3 días a la semana
+461,42276404,false,29198.90,2063-07-20,2063-08-19,July,Preparación Física,5 días a la semana
+462,42276404,true,24398.88,2063-08-20,2063-09-19,August,Preparación Física,3 días a la semana
+463,42276404,false,29744.71,2063-09-20,2063-10-19,September,Mantenimiento,3 días a la semana
+464,42276404,true,31313.93,2063-10-20,2063-11-19,October,Musculación,5 días a la semana
+465,42276404,true,20370.40,2063-11-20,2063-12-19,November,Mantenimiento,3 días a la semana
+466,42276404,true,29462.84,2063-12-20,2064-01-19,December,Mantenimiento,5 días a la semana
+467,42276404,false,23385.97,2064-01-20,2064-02-19,January,Mantenimiento,3 días a la semana
+468,42276404,true,25993.12,2064-02-20,2064-03-19,February,Mantenimiento,3 días a la semana
+469,42276404,true,27614.03,2064-03-20,2064-04-19,March,Mantenimiento,5 días a la semana
+470,42276404,false,28508.74,2064-04-20,2064-05-19,April,Musculación,3 días a la semana
+471,42276404,false,22345.92,2064-05-20,2064-06-19,May,Mantenimiento,3 días a la semana
+472,42276404,true,26726.85,2064-06-20,2064-07-19,June,Mantenimiento,3 días a la semana
+473,42276404,true,27400.92,2064-07-20,2064-08-19,July,Musculación,5 días a la semana
+474,42276404,false,21907.92,2064-08-20,2064-09-19,August,Preparación Física,3 días a la semana
+475,42276404,false,21960.14,2064-09-20,2064-10-19,September,Preparación Física,3 días a la semana
+476,42276404,false,24691.07,2064-10-20,2064-11-19,October,Preparación Física,3 días a la semana
+477,42276404,false,31913.60,2064-11-20,2064-12-19,November,Musculación,5 días a la semana
+478,42276404,false,34614.44,2064-12-20,2065-01-19,December,Musculación,3 días a la semana
+479,42276404,true,21198.62,2065-01-20,2065-02-19,January,Preparación Física,3 días a la semana
+480,42276404,false,23917.58,2065-02-20,2065-03-19,February,Musculación,5 días a la semana
+481,42276404,true,34942.95,2065-03-20,2065-04-19,March,Preparación Física,3 días a la semana
+482,42276404,true,29225.72,2065-04-20,2065-05-19,April,Preparación Física,5 días a la semana
+483,42276404,true,24342.81,2065-05-20,2065-06-19,May,Preparación Física,5 días a la semana
+484,42276404,true,34604.84,2065-06-20,2065-07-19,June,Musculación,5 días a la semana
+485,42276404,false,22714.38,2065-07-20,2065-08-19,July,Musculación,5 días a la semana
+486,42276404,true,22161.98,2065-08-20,2065-09-19,August,Musculación,5 días a la semana
+487,42276404,true,27127.69,2065-09-20,2065-10-19,September,Mantenimiento,5 días a la semana
+488,42276404,false,24988.67,2065-10-20,2065-11-19,October,Mantenimiento,5 días a la semana
+489,42276404,false,29895.43,2065-11-20,2065-12-19,November,Musculación,5 días a la semana
+490,42276404,true,27972.67,2065-12-20,2066-01-19,December,Musculación,3 días a la semana
+491,42276404,true,21572.41,2066-01-20,2066-02-19,January,Preparación Física,5 días a la semana
+492,42276404,true,30783.84,2066-02-20,2066-03-19,February,Musculación,5 días a la semana
+493,42276404,false,33251.62,2066-03-20,2066-04-19,March,Musculación,5 días a la semana
+494,42276404,false,27859.54,2066-04-20,2066-05-19,April,Musculación,3 días a la semana
+495,42276404,false,23423.68,2066-05-20,2066-06-19,May,Preparación Física,5 días a la semana
+496,42276404,true,32502.94,2066-06-20,2066-07-19,June,Preparación Física,5 días a la semana
+497,42276404,false,25645.29,2066-07-20,2066-08-19,July,Mantenimiento,5 días a la semana
+498,42276404,true,31988.68,2066-08-20,2066-09-19,August,Musculación,3 días a la semana
+499,42276404,true,34097.14,2066-09-20,2066-10-19,September,Preparación Física,3 días a la semana
+500,42276404,true,34713.15,2066-10-20,2066-11-19,October,Musculación,3 días a la semana
+501,42276404,true,22935.86,2066-11-20,2066-12-19,November,Mantenimiento,3 días a la semana
+502,42276404,false,30221.99,2066-12-20,2067-01-19,December,Mantenimiento,5 días a la semana
+503,42276404,false,30745.36,2067-01-20,2067-02-19,January,Preparación Física,3 días a la semana
+504,42276404,true,27810.36,2067-02-20,2067-03-19,February,Mantenimiento,3 días a la semana
+505,42276404,true,21681.27,2067-03-20,2067-04-19,March,Musculación,5 días a la semana
+506,42276404,false,26274.11,2067-04-20,2067-05-19,April,Mantenimiento,3 días a la semana
+507,42276404,true,34929.38,2067-05-20,2067-06-19,May,Preparación Física,3 días a la semana
+508,42276404,false,28081.01,2067-06-20,2067-07-19,June,Musculación,5 días a la semana
+509,42276404,false,29570.41,2067-07-20,2067-08-19,July,Musculación,5 días a la semana
+510,42276404,false,25624.79,2067-08-20,2067-09-19,August,Musculación,5 días a la semana
+511,42276404,true,30422.96,2067-09-20,2067-10-19,September,Musculación,5 días a la semana
+512,42276404,false,32073.17,2067-10-20,2067-11-19,October,Musculación,3 días a la semana
+513,42276404,false,32857.57,2067-11-20,2067-12-19,November,Musculación,5 días a la semana
+514,42276404,false,25049.05,2067-12-20,2068-01-19,December,Musculación,3 días a la semana
+515,42276404,false,23773.28,2068-01-20,2068-02-19,January,Musculación,3 días a la semana
+516,42276404,false,28465.16,2068-02-20,2068-03-19,February,Preparación Física,3 días a la semana
+517,42276404,true,27483.98,2068-03-20,2068-04-19,March,Musculación,5 días a la semana
+518,42276404,true,20580.53,2068-04-20,2068-05-19,April,Mantenimiento,3 días a la semana
+519,42276404,false,20954.08,2068-05-20,2068-06-19,May,Mantenimiento,3 días a la semana
+520,42276404,true,27767.29,2068-06-20,2068-07-19,June,Mantenimiento,5 días a la semana
+521,42276404,true,32649.77,2068-07-20,2068-08-19,July,Musculación,5 días a la semana
+522,42276404,true,26267.66,2068-08-20,2068-09-19,August,Mantenimiento,3 días a la semana
+523,42276404,false,29435.62,2068-09-20,2068-10-19,September,Mantenimiento,3 días a la semana
+524,42276404,true,23963.37,2068-10-20,2068-11-19,October,Preparación Física,3 días a la semana
+525,42276404,false,20174.55,2068-11-20,2068-12-19,November,Preparación Física,5 días a la semana
+526,42276404,true,31650.42,2068-12-20,2069-01-19,December,Musculación,3 días a la semana
+527,42276404,true,31491.92,2069-01-20,2069-02-19,January,Musculación,5 días a la semana
+528,42276404,true,32617.58,2069-02-20,2069-03-19,February,Musculación,5 días a la semana
+529,42276404,false,21614.06,2069-03-20,2069-04-19,March,Preparación Física,3 días a la semana
+530,42276404,false,30449.02,2069-04-20,2069-05-19,April,Musculación,3 días a la semana
+531,42276404,true,32967.63,2069-05-20,2069-06-19,May,Mantenimiento,5 días a la semana
+532,42276404,false,25615.20,2069-06-20,2069-07-19,June,Preparación Física,5 días a la semana
+533,42276404,true,20703.53,2069-07-20,2069-08-19,July,Mantenimiento,3 días a la semana
+534,42276404,false,21448.96,2069-08-20,2069-09-19,August,Preparación Física,3 días a la semana
+535,42276404,false,26321.27,2069-09-20,2069-10-19,September,Musculación,5 días a la semana
+536,42276404,true,26869.94,2069-10-20,2069-11-19,October,Musculación,5 días a la semana
+537,42276404,false,26627.89,2069-11-20,2069-12-19,November,Preparación Física,3 días a la semana
+538,42276404,false,26676.15,2069-12-20,2070-01-19,December,Preparación Física,3 días a la semana
+539,42276404,false,34445.31,2070-01-20,2070-02-19,January,Preparación Física,5 días a la semana
+540,42276404,false,28579.05,2070-02-20,2070-03-19,February,Musculación,5 días a la semana
+541,42276404,true,24542.86,2070-03-20,2070-04-19,March,Preparación Física,3 días a la semana
+542,42276404,true,30069.96,2070-04-20,2070-05-19,April,Preparación Física,5 días a la semana
+543,42276404,true,24255.37,2070-05-20,2070-06-19,May,Preparación Física,3 días a la semana
+544,42276404,false,26816.89,2070-06-20,2070-07-19,June,Preparación Física,3 días a la semana
+545,42276404,false,23820.40,2070-07-20,2070-08-19,July,Mantenimiento,5 días a la semana
+546,42276404,false,24348.73,2070-08-20,2070-09-19,August,Preparación Física,3 días a la semana
+547,42276404,true,33771.36,2070-09-20,2070-10-19,September,Mantenimiento,3 días a la semana
+548,42276404,true,22237.20,2070-10-20,2070-11-19,October,Musculación,5 días a la semana
+549,42276404,false,27418.26,2070-11-20,2070-12-19,November,Mantenimiento,3 días a la semana
+550,42276404,false,33544.03,2070-12-20,2071-01-19,December,Musculación,5 días a la semana
+551,42276404,true,31869.72,2071-01-20,2071-02-19,January,Preparación Física,5 días a la semana
+552,42276404,false,20182.53,2071-02-20,2071-03-19,February,Preparación Física,3 días a la semana
+553,42276404,true,29539.60,2071-03-20,2071-04-19,March,Preparación Física,5 días a la semana
+554,42276404,false,23781.87,2071-04-20,2071-05-19,April,Mantenimiento,3 días a la semana
+555,42276404,true,28732.43,2071-05-20,2071-06-19,May,Mantenimiento,3 días a la semana
+556,42276404,false,25793.51,2071-06-20,2071-07-19,June,Musculación,5 días a la semana
+557,42276404,true,25373.76,2071-07-20,2071-08-19,July,Mantenimiento,5 días a la semana
+558,42276404,true,32452.80,2071-08-20,2071-09-19,August,Preparación Física,3 días a la semana
+559,42276404,true,24718.91,2071-09-20,2071-10-19,September,Musculación,3 días a la semana
+560,42276404,true,33049.21,2071-10-20,2071-11-19,October,Mantenimiento,5 días a la semana
+561,42276404,false,33450.78,2071-11-20,2071-12-19,November,Preparación Física,5 días a la semana
+562,42276404,true,25610.38,2071-12-20,2072-01-19,December,Mantenimiento,3 días a la semana
+563,42276404,true,30095.64,2072-01-20,2072-02-19,January,Mantenimiento,5 días a la semana
+564,42276404,true,32649.86,2072-02-20,2072-03-19,February,Musculación,3 días a la semana
+565,42276404,true,30640.32,2072-03-20,2072-04-19,March,Preparación Física,3 días a la semana
+566,42276404,true,20415.85,2072-04-20,2072-05-19,April,Mantenimiento,5 días a la semana
+567,42276404,true,34380.46,2072-05-20,2072-06-19,May,Preparación Física,3 días a la semana
+568,42276404,false,26484.25,2072-06-20,2072-07-19,June,Mantenimiento,5 días a la semana
+569,42276404,true,26681.75,2072-07-20,2072-08-19,July,Mantenimiento,5 días a la semana
+570,42276404,true,30055.15,2072-08-20,2072-09-19,August,Preparación Física,3 días a la semana
+571,42276404,true,22932.21,2072-09-20,2072-10-19,September,Mantenimiento,3 días a la semana
+572,42276404,true,28316.79,2072-10-20,2072-11-19,October,Mantenimiento,5 días a la semana
+573,42276404,false,27879.03,2072-11-20,2072-12-19,November,Preparación Física,3 días a la semana
+574,42276404,true,30719.52,2072-12-20,2073-01-19,December,Preparación Física,3 días a la semana
+575,42276404,false,25221.37,2073-01-20,2073-02-19,January,Preparación Física,5 días a la semana
+576,42276404,false,20065.86,2073-02-20,2073-03-19,February,Musculación,5 días a la semana
+577,42276404,false,30601.94,2073-03-20,2073-04-19,March,Preparación Física,5 días a la semana
+578,42276404,false,28973.23,2073-04-20,2073-05-19,April,Mantenimiento,3 días a la semana
+579,42276404,true,20467.40,2073-05-20,2073-06-19,May,Mantenimiento,3 días a la semana
+580,42276404,false,29083.81,2073-06-20,2073-07-19,June,Mantenimiento,5 días a la semana
+581,42276404,true,22158.42,2073-07-20,2073-08-19,July,Musculación,3 días a la semana
+582,42276404,false,22559.65,2073-08-20,2073-09-19,August,Musculación,3 días a la semana
+583,42276404,false,34808.43,2073-09-20,2073-10-19,September,Preparación Física,3 días a la semana
+584,42276404,false,33651.30,2073-10-20,2073-11-19,October,Musculación,5 días a la semana
+585,42276404,false,26974.74,2073-11-20,2073-12-19,November,Mantenimiento,3 días a la semana
+586,42276404,true,33961.97,2073-12-20,2074-01-19,December,Mantenimiento,3 días a la semana
+587,42276404,true,31359.11,2074-01-20,2074-02-19,January,Mantenimiento,5 días a la semana
+588,42276404,false,21749.84,2074-02-20,2074-03-19,February,Mantenimiento,5 días a la semana
+589,42276404,false,30468.53,2074-03-20,2074-04-19,March,Mantenimiento,3 días a la semana
+590,42276404,true,21511.79,2074-04-20,2074-05-19,April,Preparación Física,3 días a la semana
+591,42276404,true,34739.55,2074-05-20,2074-06-19,May,Musculación,5 días a la semana
+592,42276404,true,25614.40,2074-06-20,2074-07-19,June,Preparación Física,3 días a la semana
+593,42276404,false,34341.82,2074-07-20,2074-08-19,July,Mantenimiento,5 días a la semana
+594,42276404,false,20697.08,2074-08-20,2074-09-19,August,Preparación Física,3 días a la semana
+595,42276404,true,31836.57,2074-09-20,2074-10-19,September,Mantenimiento,3 días a la semana
+596,42276404,true,34771.42,2074-10-20,2074-11-19,October,Mantenimiento,3 días a la semana
+597,42276404,false,29698.18,2074-11-20,2074-12-19,November,Musculación,5 días a la semana
+598,42276404,false,32071.96,2074-12-20,2075-01-19,December,Mantenimiento,5 días a la semana
+599,42276404,false,21884.31,2075-01-20,2075-02-19,January,Mantenimiento,5 días a la semana
+600,42276404,true,29010.04,2075-02-20,2075-03-19,February,Musculación,5 días a la semana
+601,42276404,false,31695.44,2075-03-20,2075-04-19,March,Musculación,5 días a la semana
+602,42276404,true,30900.60,2075-04-20,2075-05-19,April,Mantenimiento,3 días a la semana
+603,42276404,true,27491.68,2075-05-20,2075-06-19,May,Mantenimiento,3 días a la semana
+604,42276404,true,25857.64,2075-06-20,2075-07-19,June,Preparación Física,3 días a la semana
+605,42276404,false,32618.06,2075-07-20,2075-08-19,July,Preparación Física,3 días a la semana
+606,42276404,false,24013.98,2075-08-20,2075-09-19,August,Preparación Física,5 días a la semana
+607,42276404,true,34966.87,2075-09-20,2075-10-19,September,Preparación Física,3 días a la semana
+608,42276404,false,28613.89,2075-10-20,2075-11-19,October,Preparación Física,3 días a la semana
+609,42276404,true,22900.17,2075-11-20,2075-12-19,November,Mantenimiento,3 días a la semana
+610,42276404,false,27069.28,2075-12-20,2076-01-19,December,Musculación,5 días a la semana
+611,42276404,true,26987.38,2076-01-20,2076-02-19,January,Preparación Física,5 días a la semana
+612,42276404,false,33165.41,2076-02-20,2076-03-19,February,Musculación,3 días a la semana
+613,42276404,true,31423.82,2076-03-20,2076-04-19,March,Musculación,5 días a la semana
+614,42276404,true,33721.57,2076-04-20,2076-05-19,April,Musculación,5 días a la semana
+615,42276404,true,31721.70,2076-05-20,2076-06-19,May,Mantenimiento,5 días a la semana
+616,42276404,true,31838.87,2076-06-20,2076-07-19,June,Mantenimiento,3 días a la semana
+617,42276404,false,32612.24,2076-07-20,2076-08-19,July,Preparación Física,3 días a la semana
+618,42276404,true,32945.09,2076-08-20,2076-09-19,August,Preparación Física,5 días a la semana
+619,42276404,true,22698.92,2076-09-20,2076-10-19,September,Musculación,5 días a la semana
+620,42276404,true,22251.59,2076-10-20,2076-11-19,October,Mantenimiento,3 días a la semana
+621,42276404,false,33436.30,2076-11-20,2076-12-19,November,Musculación,5 días a la semana
+622,42276404,false,23383.78,2076-12-20,2077-01-19,December,Mantenimiento,3 días a la semana
+623,42276404,false,22206.91,2077-01-20,2077-02-19,January,Mantenimiento,5 días a la semana
+624,42276404,true,26668.89,2077-02-20,2077-03-19,February,Mantenimiento,3 días a la semana
+625,42276404,true,33601.72,2077-03-20,2077-04-19,March,Preparación Física,5 días a la semana
+626,42276404,true,34458.77,2077-04-20,2077-05-19,April,Mantenimiento,3 días a la semana
+627,42276404,false,24312.95,2077-05-20,2077-06-19,May,Preparación Física,3 días a la semana
+628,42276404,false,31326.52,2077-06-20,2077-07-19,June,Musculación,3 días a la semana
+629,42276404,false,21382.67,2077-07-20,2077-08-19,July,Preparación Física,3 días a la semana
+630,42276404,false,26598.82,2077-08-20,2077-09-19,August,Preparación Física,5 días a la semana
+631,42276404,false,25569.82,2077-09-20,2077-10-19,September,Musculación,5 días a la semana
+632,42276404,false,20883.95,2077-10-20,2077-11-19,October,Mantenimiento,3 días a la semana
+633,42276404,false,27660.18,2077-11-20,2077-12-19,November,Mantenimiento,5 días a la semana
+634,42276404,true,32939.17,2077-12-20,2078-01-19,December,Musculación,3 días a la semana
+635,42276404,true,31881.35,2078-01-20,2078-02-19,January,Preparación Física,5 días a la semana
+636,42276404,true,33422.33,2078-02-20,2078-03-19,February,Preparación Física,5 días a la semana
+637,42276404,false,25539.19,2078-03-20,2078-04-19,March,Preparación Física,3 días a la semana
+638,42276404,false,22160.33,2078-04-20,2078-05-19,April,Musculación,5 días a la semana
+639,42276404,true,24084.78,2078-05-20,2078-06-19,May,Musculación,5 días a la semana
+640,42276404,false,27344.21,2078-06-20,2078-07-19,June,Mantenimiento,5 días a la semana
+641,42276404,false,30398.04,2078-07-20,2078-08-19,July,Musculación,3 días a la semana
+642,42276404,true,27338.96,2078-08-20,2078-09-19,August,Mantenimiento,3 días a la semana
+643,42276404,false,33856.91,2078-09-20,2078-10-19,September,Preparación Física,3 días a la semana
+644,42276404,true,33049.79,2078-10-20,2078-11-19,October,Preparación Física,3 días a la semana
+645,42276404,false,22984.41,2078-11-20,2078-12-19,November,Preparación Física,5 días a la semana
+646,42276404,true,30953.44,2078-12-20,2079-01-19,December,Preparación Física,3 días a la semana
+647,42276404,false,23235.65,2079-01-20,2079-02-19,January,Mantenimiento,3 días a la semana
+648,42276404,false,24344.12,2079-02-20,2079-03-19,February,Preparación Física,3 días a la semana
+649,42276404,false,23471.19,2079-03-20,2079-04-19,March,Mantenimiento,3 días a la semana
+650,42276404,false,28384.46,2079-04-20,2079-05-19,April,Mantenimiento,5 días a la semana
+651,42276404,true,25504.42,2079-05-20,2079-06-19,May,Mantenimiento,5 días a la semana
+652,42276404,true,25906.67,2079-06-20,2079-07-19,June,Preparación Física,3 días a la semana
+653,42276404,false,20843.35,2079-07-20,2079-08-19,July,Mantenimiento,3 días a la semana
+654,42276404,true,34003.06,2079-08-20,2079-09-19,August,Preparación Física,3 días a la semana
+655,42276404,true,33360.68,2079-09-20,2079-10-19,September,Mantenimiento,5 días a la semana
+656,42276404,true,31800.40,2079-10-20,2079-11-19,October,Mantenimiento,3 días a la semana
+657,42276404,false,29964.42,2079-11-20,2079-12-19,November,Preparación Física,3 días a la semana
+658,42276404,true,26529.61,2079-12-20,2080-01-19,December,Mantenimiento,3 días a la semana
+659,42276404,false,30636.33,2080-01-20,2080-02-19,January,Preparación Física,5 días a la semana
+660,42276404,true,31569.51,2080-02-20,2080-03-19,February,Mantenimiento,5 días a la semana
+661,42276404,false,21133.88,2080-03-20,2080-04-19,March,Preparación Física,5 días a la semana
+662,42276404,true,32782.98,2080-04-20,2080-05-19,April,Mantenimiento,5 días a la semana
+663,42276404,true,28202.86,2080-05-20,2080-06-19,May,Musculación,5 días a la semana
+664,42276404,true,32832.96,2080-06-20,2080-07-19,June,Mantenimiento,5 días a la semana
+665,42276404,false,34706.47,2080-07-20,2080-08-19,July,Mantenimiento,3 días a la semana
+666,42276404,false,20166.99,2080-08-20,2080-09-19,August,Preparación Física,3 días a la semana
+667,42276404,false,23033.50,2080-09-20,2080-10-19,September,Preparación Física,5 días a la semana
+668,42276404,true,23896.15,2080-10-20,2080-11-19,October,Preparación Física,3 días a la semana
+669,42276404,false,24015.69,2080-11-20,2080-12-19,November,Musculación,5 días a la semana
+670,42276404,false,20469.39,2080-12-20,2081-01-19,December,Preparación Física,3 días a la semana
+671,42276404,true,33926.09,2081-01-20,2081-02-19,January,Mantenimiento,5 días a la semana
+672,42276404,true,30444.53,2081-02-20,2081-03-19,February,Musculación,5 días a la semana
+673,42276404,false,33461.34,2081-03-20,2081-04-19,March,Preparación Física,3 días a la semana
+674,42276404,true,25125.94,2081-04-20,2081-05-19,April,Mantenimiento,5 días a la semana
+675,42276404,true,31151.99,2081-05-20,2081-06-19,May,Musculación,5 días a la semana
+676,42276404,false,27641.58,2081-06-20,2081-07-19,June,Preparación Física,5 días a la semana
+677,42276404,false,34968.89,2081-07-20,2081-08-19,July,Preparación Física,5 días a la semana
+678,42276404,false,29304.35,2081-08-20,2081-09-19,August,Mantenimiento,3 días a la semana
+679,42276404,false,33587.64,2081-09-20,2081-10-19,September,Musculación,3 días a la semana
+680,42276404,true,20692.23,2081-10-20,2081-11-19,October,Mantenimiento,5 días a la semana
+681,42276404,true,34943.92,2081-11-20,2081-12-19,November,Mantenimiento,5 días a la semana
+682,42276404,true,22247.19,2081-12-20,2082-01-19,December,Musculación,5 días a la semana
+683,42276404,true,29022.94,2082-01-20,2082-02-19,January,Preparación Física,5 días a la semana
+684,42276404,true,22794.99,2082-02-20,2082-03-19,February,Preparación Física,5 días a la semana
+685,42276404,true,31741.23,2082-03-20,2082-04-19,March,Mantenimiento,3 días a la semana
+686,42276404,true,32185.77,2082-04-20,2082-05-19,April,Preparación Física,5 días a la semana
+687,42276404,true,32311.25,2082-05-20,2082-06-19,May,Mantenimiento,3 días a la semana
+688,42276404,true,22250.04,2082-06-20,2082-07-19,June,Mantenimiento,5 días a la semana
+689,42276404,true,20367.87,2082-07-20,2082-08-19,July,Musculación,5 días a la semana
+690,42276404,false,21283.78,2082-08-20,2082-09-19,August,Preparación Física,5 días a la semana
+691,42276404,true,31460.72,2082-09-20,2082-10-19,September,Preparación Física,5 días a la semana
+692,42276404,true,33813.77,2082-10-20,2082-11-19,October,Musculación,3 días a la semana
+693,42276404,true,23434.81,2082-11-20,2082-12-19,November,Preparación Física,5 días a la semana
+694,42276404,true,26210.79,2082-12-20,2083-01-19,December,Preparación Física,5 días a la semana
+695,42276404,false,25053.23,2083-01-20,2083-02-19,January,Musculación,5 días a la semana
+696,42276404,false,22574.17,2083-02-20,2083-03-19,February,Preparación Física,3 días a la semana
+697,42276404,false,25053.87,2083-03-20,2083-04-19,March,Musculación,3 días a la semana
+698,42276404,false,25851.26,2083-04-20,2083-05-19,April,Mantenimiento,5 días a la semana
+699,42276404,true,23755.37,2083-05-20,2083-06-19,May,Preparación Física,3 días a la semana
+700,42276404,false,24666.69,2083-06-20,2083-07-19,June,Mantenimiento,3 días a la semana
+701,42276404,true,24905.53,2083-07-20,2083-08-19,July,Preparación Física,3 días a la semana
+702,42276404,false,22571.29,2083-08-20,2083-09-19,August,Preparación Física,5 días a la semana
+703,42276404,true,26333.45,2083-09-20,2083-10-19,September,Musculación,3 días a la semana
+704,42276404,true,31641.02,2083-10-20,2083-11-19,October,Mantenimiento,5 días a la semana
+705,42276404,false,22926.09,2083-11-20,2083-12-19,November,Mantenimiento,3 días a la semana
+706,42276404,true,23968.25,2083-12-20,2084-01-19,December,Mantenimiento,3 días a la semana
+707,42276404,false,25817.46,2084-01-20,2084-02-19,January,Musculación,3 días a la semana
+708,42276404,false,26218.78,2084-02-20,2084-03-19,February,Preparación Física,5 días a la semana
+709,42276404,true,28754.55,2084-03-20,2084-04-19,March,Preparación Física,5 días a la semana
+710,42276404,true,21118.00,2084-04-20,2084-05-19,April,Mantenimiento,5 días a la semana
+711,42276404,true,24320.47,2084-05-20,2084-06-19,May,Mantenimiento,5 días a la semana
+712,42276404,true,25406.12,2084-06-20,2084-07-19,June,Musculación,3 días a la semana
+713,42276404,true,26870.40,2084-07-20,2084-08-19,July,Musculación,5 días a la semana
+714,42276404,false,31763.29,2084-08-20,2084-09-19,August,Preparación Física,3 días a la semana
+715,42276404,false,30731.12,2084-09-20,2084-10-19,September,Preparación Física,3 días a la semana
+716,42276404,false,31702.84,2084-10-20,2084-11-19,October,Mantenimiento,5 días a la semana
+717,42276404,true,31703.19,2084-11-20,2084-12-19,November,Mantenimiento,3 días a la semana
+718,42276404,false,25005.97,2084-12-20,2085-01-19,December,Musculación,3 días a la semana
+719,42276404,true,32398.00,2085-01-20,2085-02-19,January,Musculación,5 días a la semana
+720,42276404,false,22347.52,2085-02-20,2085-03-19,February,Mantenimiento,3 días a la semana
+721,42276404,true,26886.67,2085-03-20,2085-04-19,March,Mantenimiento,5 días a la semana
+722,42276404,false,30962.86,2085-04-20,2085-05-19,April,Musculación,5 días a la semana
+723,42276404,true,24973.66,2085-05-20,2085-06-19,May,Musculación,5 días a la semana
+724,42276404,true,34266.19,2085-06-20,2085-07-19,June,Preparación Física,5 días a la semana
+725,42276404,true,28747.73,2085-07-20,2085-08-19,July,Preparación Física,5 días a la semana
+726,42276404,true,26416.95,2085-08-20,2085-09-19,August,Musculación,3 días a la semana
+727,42276404,true,30758.56,2085-09-20,2085-10-19,September,Preparación Física,3 días a la semana
+728,42276404,true,32975.22,2085-10-20,2085-11-19,October,Preparación Física,3 días a la semana
+729,42276404,true,26619.61,2085-11-20,2085-12-19,November,Mantenimiento,3 días a la semana
+730,42276404,true,21295.68,2085-12-20,2086-01-19,December,Musculación,3 días a la semana
+731,42276404,true,31637.98,2086-01-20,2086-02-19,January,Preparación Física,5 días a la semana
+732,42276404,true,26240.62,2086-02-20,2086-03-19,February,Musculación,3 días a la semana
+733,42276404,true,26145.97,2086-03-20,2086-04-19,March,Mantenimiento,3 días a la semana
+734,42276404,true,27525.65,2086-04-20,2086-05-19,April,Preparación Física,5 días a la semana
+735,42276404,true,30727.68,2086-05-20,2086-06-19,May,Preparación Física,3 días a la semana
+736,42276404,true,23094.16,2086-06-20,2086-07-19,June,Preparación Física,3 días a la semana
+737,42276404,false,22021.32,2086-07-20,2086-08-19,July,Musculación,3 días a la semana
+738,42276404,false,24420.96,2086-08-20,2086-09-19,August,Musculación,3 días a la semana
+739,42276404,false,30237.35,2086-09-20,2086-10-19,September,Mantenimiento,5 días a la semana
+740,42276404,true,26158.35,2086-10-20,2086-11-19,October,Preparación Física,5 días a la semana
+741,42276404,true,26403.27,2086-11-20,2086-12-19,November,Preparación Física,5 días a la semana
+742,42276404,true,29442.60,2086-12-20,2087-01-19,December,Preparación Física,3 días a la semana
+743,42276404,false,23068.73,2087-01-20,2087-02-19,January,Musculación,3 días a la semana
+744,42276404,false,23056.49,2087-02-20,2087-03-19,February,Preparación Física,3 días a la semana
+745,42276404,false,29680.78,2087-03-20,2087-04-19,March,Musculación,5 días a la semana
+746,42276404,false,27433.00,2087-04-20,2087-05-19,April,Preparación Física,5 días a la semana
+747,42276404,false,27049.76,2087-05-20,2087-06-19,May,Musculación,3 días a la semana
+748,42276404,false,33035.00,2087-06-20,2087-07-19,June,Mantenimiento,5 días a la semana
+749,42276404,true,34305.97,2087-07-20,2087-08-19,July,Preparación Física,5 días a la semana
+750,42276404,false,31203.92,2087-08-20,2087-09-19,August,Mantenimiento,5 días a la semana
+751,42276404,true,29014.91,2087-09-20,2087-10-19,September,Preparación Física,3 días a la semana
+752,42276404,false,21797.33,2087-10-20,2087-11-19,October,Mantenimiento,3 días a la semana
+753,42276404,true,21869.06,2087-11-20,2087-12-19,November,Preparación Física,5 días a la semana
+754,42276404,true,29425.63,2087-12-20,2088-01-19,December,Musculación,3 días a la semana
+755,42276404,true,23601.40,2088-01-20,2088-02-19,January,Preparación Física,5 días a la semana
+756,42276404,false,32863.08,2088-02-20,2088-03-19,February,Musculación,5 días a la semana
+757,42276404,true,25964.70,2088-03-20,2088-04-19,March,Musculación,5 días a la semana
+758,42276404,false,22717.81,2088-04-20,2088-05-19,April,Preparación Física,3 días a la semana
+759,42276404,false,26325.54,2088-05-20,2088-06-19,May,Preparación Física,5 días a la semana
+760,42276404,false,33268.21,2088-06-20,2088-07-19,June,Mantenimiento,5 días a la semana
+761,42276404,false,30624.56,2088-07-20,2088-08-19,July,Preparación Física,5 días a la semana
+762,42276404,false,22460.13,2088-08-20,2088-09-19,August,Musculación,5 días a la semana
+763,42276404,true,20644.19,2088-09-20,2088-10-19,September,Musculación,3 días a la semana
+764,42276404,false,27301.89,2088-10-20,2088-11-19,October,Preparación Física,3 días a la semana
+765,42276404,true,31257.45,2088-11-20,2088-12-19,November,Musculación,5 días a la semana
+766,42276404,false,22171.35,2088-12-20,2089-01-19,December,Mantenimiento,3 días a la semana
+767,42276404,false,34315.75,2089-01-20,2089-02-19,January,Musculación,3 días a la semana
+768,42276404,true,21346.58,2089-02-20,2089-03-19,February,Musculación,5 días a la semana
+769,42276404,false,34698.68,2089-03-20,2089-04-19,March,Preparación Física,3 días a la semana
+770,42276404,false,27227.99,2089-04-20,2089-05-19,April,Musculación,3 días a la semana
+771,42276404,false,27067.81,2089-05-20,2089-06-19,May,Musculación,5 días a la semana
+772,42276404,false,29636.68,2089-06-20,2089-07-19,June,Mantenimiento,3 días a la semana
+773,42276404,true,23248.41,2089-07-20,2089-08-19,July,Preparación Física,3 días a la semana
+774,42276404,true,27239.40,2089-08-20,2089-09-19,August,Preparación Física,3 días a la semana
+775,42276404,false,22612.97,2089-09-20,2089-10-19,September,Mantenimiento,3 días a la semana
+776,42276404,false,26943.10,2089-10-20,2089-11-19,October,Preparación Física,3 días a la semana
+777,42276404,false,20234.91,2089-11-20,2089-12-19,November,Preparación Física,3 días a la semana
+778,42276404,false,21470.43,2089-12-20,2090-01-19,December,Mantenimiento,5 días a la semana
+779,42276404,false,26006.23,2090-01-20,2090-02-19,January,Musculación,5 días a la semana
+780,42276404,true,25402.09,2090-02-20,2090-03-19,February,Mantenimiento,5 días a la semana
+781,42276404,false,27083.79,2090-03-20,2090-04-19,March,Preparación Física,3 días a la semana
+782,42276404,false,22051.12,2090-04-20,2090-05-19,April,Musculación,5 días a la semana
+783,42276404,true,29784.55,2090-05-20,2090-06-19,May,Musculación,3 días a la semana
+784,42276404,false,27801.46,2090-06-20,2090-07-19,June,Musculación,5 días a la semana
+785,42276404,false,30360.27,2090-07-20,2090-08-19,July,Mantenimiento,5 días a la semana
+786,42276404,true,21463.48,2090-08-20,2090-09-19,August,Preparación Física,3 días a la semana
+787,42276404,false,25325.93,2090-09-20,2090-10-19,September,Musculación,3 días a la semana
+788,42276404,true,34700.36,2090-10-20,2090-11-19,October,Musculación,5 días a la semana
+789,42276404,true,34911.52,2090-11-20,2090-12-19,November,Musculación,5 días a la semana
+790,42276404,false,24245.13,2090-12-20,2091-01-19,December,Mantenimiento,3 días a la semana
+791,42276404,false,29235.52,2091-01-20,2091-02-19,January,Musculación,5 días a la semana
+792,42276404,true,24202.84,2091-02-20,2091-03-19,February,Musculación,5 días a la semana
+793,42276404,true,20470.57,2091-03-20,2091-04-19,March,Preparación Física,3 días a la semana
+794,42276404,true,24366.65,2091-04-20,2091-05-19,April,Mantenimiento,3 días a la semana
+795,42276404,false,27736.20,2091-05-20,2091-06-19,May,Musculación,3 días a la semana
+796,42276404,true,29015.77,2091-06-20,2091-07-19,June,Musculación,3 días a la semana
+797,42276404,false,32621.74,2091-07-20,2091-08-19,July,Musculación,3 días a la semana
+798,42276404,true,22474.89,2091-08-20,2091-09-19,August,Mantenimiento,5 días a la semana
+799,42276404,false,31359.19,2091-09-20,2091-10-19,September,Musculación,5 días a la semana
+800,42276404,true,24560.82,2091-10-20,2091-11-19,October,Preparación Física,3 días a la semana
+801,42276404,false,21678.13,2091-11-20,2091-12-19,November,Mantenimiento,5 días a la semana
+802,42276404,false,34432.37,2091-12-20,2092-01-19,December,Mantenimiento,3 días a la semana
+803,42276404,true,33035.50,2092-01-20,2092-02-19,January,Musculación,5 días a la semana
+804,42276404,false,30202.61,2092-02-20,2092-03-19,February,Mantenimiento,5 días a la semana
+805,42276404,true,21202.90,2092-03-20,2092-04-19,March,Mantenimiento,3 días a la semana
+806,42276404,false,28548.95,2092-04-20,2092-05-19,April,Preparación Física,5 días a la semana
+807,42276404,false,29755.64,2092-05-20,2092-06-19,May,Preparación Física,3 días a la semana
+808,42276404,true,29377.62,2092-06-20,2092-07-19,June,Preparación Física,3 días a la semana
+809,42276404,true,29510.31,2092-07-20,2092-08-19,July,Preparación Física,5 días a la semana
+810,42276404,false,23841.58,2092-08-20,2092-09-19,August,Preparación Física,5 días a la semana
+811,42276404,true,33423.34,2092-09-20,2092-10-19,September,Mantenimiento,5 días a la semana
+812,42276404,false,23010.23,2092-10-20,2092-11-19,October,Musculación,3 días a la semana
+813,42276404,false,26365.09,2092-11-20,2092-12-19,November,Preparación Física,5 días a la semana
+814,42276404,false,24900.45,2092-12-20,2093-01-19,December,Musculación,3 días a la semana
+815,42276404,true,30744.93,2093-01-20,2093-02-19,January,Mantenimiento,5 días a la semana
+816,42276404,true,32040.41,2093-02-20,2093-03-19,February,Mantenimiento,5 días a la semana
+817,42276404,false,20012.76,2093-03-20,2093-04-19,March,Musculación,5 días a la semana
+818,42276404,false,23849.60,2093-04-20,2093-05-19,April,Mantenimiento,3 días a la semana
+819,42276404,false,34492.26,2093-05-20,2093-06-19,May,Mantenimiento,3 días a la semana
+820,42276404,false,31022.45,2093-06-20,2093-07-19,June,Musculación,5 días a la semana
+821,42276404,false,33329.07,2093-07-20,2093-08-19,July,Preparación Física,3 días a la semana
+822,42276404,true,29114.76,2093-08-20,2093-09-19,August,Musculación,5 días a la semana
+823,42276404,true,34418.29,2093-09-20,2093-10-19,September,Preparación Física,3 días a la semana
+824,42276404,false,22635.81,2093-10-20,2093-11-19,October,Mantenimiento,3 días a la semana
+825,42276404,false,28951.28,2093-11-20,2093-12-19,November,Musculación,5 días a la semana
+826,42276404,true,23850.19,2093-12-20,2094-01-19,December,Mantenimiento,5 días a la semana
+827,42276404,false,20321.19,2094-01-20,2094-02-19,January,Mantenimiento,5 días a la semana
+828,42276404,false,20696.57,2094-02-20,2094-03-19,February,Preparación Física,3 días a la semana
+829,42276404,true,34934.34,2094-03-20,2094-04-19,March,Mantenimiento,5 días a la semana
+830,42276404,false,23266.13,2094-04-20,2094-05-19,April,Preparación Física,3 días a la semana
+831,42276404,false,22181.51,2094-05-20,2094-06-19,May,Preparación Física,3 días a la semana
+832,42276404,false,29968.90,2094-06-20,2094-07-19,June,Musculación,3 días a la semana
+833,42276404,true,33275.78,2094-07-20,2094-08-19,July,Musculación,3 días a la semana
+834,42276404,false,22679.67,2094-08-20,2094-09-19,August,Musculación,5 días a la semana
+835,42276404,false,24237.01,2094-09-20,2094-10-19,September,Preparación Física,3 días a la semana
+836,42276404,false,25586.96,2094-10-20,2094-11-19,October,Musculación,5 días a la semana
+837,42276404,true,27934.85,2094-11-20,2094-12-19,November,Mantenimiento,3 días a la semana
+838,42276404,true,31258.05,2094-12-20,2095-01-19,December,Mantenimiento,3 días a la semana
+839,42276404,true,25154.87,2095-01-20,2095-02-19,January,Mantenimiento,5 días a la semana
+840,42276404,false,34060.77,2095-02-20,2095-03-19,February,Preparación Física,5 días a la semana
+841,42276404,false,25540.14,2095-03-20,2095-04-19,March,Musculación,3 días a la semana
+842,42276404,true,21857.45,2095-04-20,2095-05-19,April,Preparación Física,3 días a la semana
+843,42276404,false,20212.71,2095-05-20,2095-06-19,May,Mantenimiento,3 días a la semana
+844,42276404,false,31698.50,2095-06-20,2095-07-19,June,Mantenimiento,5 días a la semana
+845,42276404,false,31633.08,2095-07-20,2095-08-19,July,Musculación,5 días a la semana
+846,42276404,false,25999.76,2095-08-20,2095-09-19,August,Preparación Física,5 días a la semana
+847,42276404,false,21964.76,2095-09-20,2095-10-19,September,Musculación,5 días a la semana
+848,42276404,false,30159.54,2095-10-20,2095-11-19,October,Preparación Física,3 días a la semana
+849,42276404,false,20698.98,2095-11-20,2095-12-19,November,Mantenimiento,5 días a la semana
+850,42276404,false,21938.56,2095-12-20,2096-01-19,December,Musculación,5 días a la semana
+851,42276404,true,24127.37,2096-01-20,2096-02-19,January,Mantenimiento,3 días a la semana
+852,42276404,false,29933.35,2096-02-20,2096-03-19,February,Musculación,3 días a la semana
+853,42276404,false,29281.57,2096-03-20,2096-04-19,March,Preparación Física,5 días a la semana
+854,42276404,true,29975.03,2096-04-20,2096-05-19,April,Mantenimiento,3 días a la semana
+855,42276404,true,33947.03,2096-05-20,2096-06-19,May,Preparación Física,5 días a la semana
+856,42276404,true,21561.54,2096-06-20,2096-07-19,June,Musculación,3 días a la semana
+857,42276404,true,22732.57,2096-07-20,2096-08-19,July,Mantenimiento,3 días a la semana
+858,42276404,false,32347.43,2096-08-20,2096-09-19,August,Musculación,3 días a la semana
+859,42276404,true,22515.62,2096-09-20,2096-10-19,September,Mantenimiento,5 días a la semana
+860,42276404,true,27015.47,2096-10-20,2096-11-19,October,Preparación Física,3 días a la semana
+861,42276404,false,20807.32,2096-11-20,2096-12-19,November,Preparación Física,5 días a la semana
+862,42276404,true,24017.93,2096-12-20,2097-01-19,December,Mantenimiento,3 días a la semana
+863,42276404,true,32624.69,2097-01-20,2097-02-19,January,Preparación Física,3 días a la semana
+864,42276404,true,28497.10,2097-02-20,2097-03-19,February,Musculación,5 días a la semana
+865,42276404,false,34171.18,2097-03-20,2097-04-19,March,Mantenimiento,5 días a la semana
+866,42276404,true,23378.29,2097-04-20,2097-05-19,April,Mantenimiento,3 días a la semana
+867,42276404,true,29553.23,2097-05-20,2097-06-19,May,Preparación Física,5 días a la semana
+868,42276404,false,29583.39,2097-06-20,2097-07-19,June,Mantenimiento,3 días a la semana
+869,42276404,true,34732.77,2097-07-20,2097-08-19,July,Musculación,3 días a la semana
+870,42276404,true,29973.47,2097-08-20,2097-09-19,August,Preparación Física,3 días a la semana
+871,42276404,true,22123.15,2097-09-20,2097-10-19,September,Musculación,3 días a la semana
+872,42276404,true,21714.99,2097-10-20,2097-11-19,October,Preparación Física,3 días a la semana
+873,42276404,false,32299.88,2097-11-20,2097-12-19,November,Musculación,3 días a la semana
+874,42276404,false,27648.80,2097-12-20,2098-01-19,December,Preparación Física,3 días a la semana
+875,42276404,true,30733.10,2098-01-20,2098-02-19,January,Preparación Física,5 días a la semana
+876,42276404,true,34448.09,2098-02-20,2098-03-19,February,Preparación Física,3 días a la semana
+877,42276404,true,21401.17,2098-03-20,2098-04-19,March,Musculación,5 días a la semana
+878,42276404,true,34599.99,2098-04-20,2098-05-19,April,Musculación,5 días a la semana
+879,42276404,true,29511.79,2098-05-20,2098-06-19,May,Musculación,5 días a la semana
+880,42276404,true,22276.69,2098-06-20,2098-07-19,June,Musculación,5 días a la semana
+881,42276404,false,23771.59,2098-07-20,2098-08-19,July,Preparación Física,3 días a la semana
+882,42276404,false,21914.89,2098-08-20,2098-09-19,August,Preparación Física,5 días a la semana
+883,42276404,true,20817.89,2098-09-20,2098-10-19,September,Preparación Física,3 días a la semana
+884,42276404,true,24794.61,2098-10-20,2098-11-19,October,Preparación Física,3 días a la semana
+885,42276404,true,25134.66,2098-11-20,2098-12-19,November,Mantenimiento,3 días a la semana
+886,42276404,false,29465.75,2098-12-20,2099-01-19,December,Mantenimiento,5 días a la semana
+887,42276404,false,33064.09,2099-01-20,2099-02-19,January,Mantenimiento,3 días a la semana
+888,42276404,true,20661.65,2099-02-20,2099-03-19,February,Preparación Física,3 días a la semana
+889,42276404,true,34067.20,2099-03-20,2099-04-19,March,Preparación Física,3 días a la semana
+890,42276404,false,23198.45,2099-04-20,2099-05-19,April,Mantenimiento,5 días a la semana
+891,42276404,false,28250.29,2099-05-20,2099-06-19,May,Musculación,3 días a la semana
+892,42276404,true,31386.72,2099-06-20,2099-07-19,June,Mantenimiento,3 días a la semana
+893,42276404,false,20760.90,2099-07-20,2099-08-19,July,Preparación Física,5 días a la semana
+894,42276404,false,27389.04,2099-08-20,2099-09-19,August,Mantenimiento,3 días a la semana
+895,42276404,true,22082.35,2099-09-20,2099-10-19,September,Preparación Física,5 días a la semana
+896,42276404,true,27572.14,2099-10-20,2099-11-19,October,Mantenimiento,3 días a la semana
+897,42276404,false,28975.22,2099-11-20,2099-12-19,November,Mantenimiento,5 días a la semana
+898,42276404,false,30780.83,2099-12-20,2100-01-19,December,Musculación,5 días a la semana
+899,42276404,false,28477.88,2100-01-20,2100-02-19,January,Preparación Física,3 días a la semana
+900,42276404,true,23105.21,2100-02-20,2100-03-19,February,Musculación,5 días a la semana
+901,42276404,true,20239.45,2100-03-20,2100-04-19,March,Musculación,5 días a la semana
+902,42276404,false,29258.24,2100-04-20,2100-05-19,April,Mantenimiento,5 días a la semana
+903,42276404,false,31879.87,2100-05-20,2100-06-19,May,Mantenimiento,3 días a la semana
+904,42276404,true,27723.26,2100-06-20,2100-07-19,June,Preparación Física,5 días a la semana
+905,42276404,true,31954.73,2100-07-20,2100-08-19,July,Musculación,3 días a la semana
+906,42276404,false,21748.51,2100-08-20,2100-09-19,August,Mantenimiento,5 días a la semana
+907,42276404,false,32357.76,2100-09-20,2100-10-19,September,Musculación,3 días a la semana
+908,42276404,false,20311.97,2100-10-20,2100-11-19,October,Preparación Física,5 días a la semana
+909,42276404,false,30108.56,2100-11-20,2100-12-19,November,Preparación Física,5 días a la semana
+910,42276404,false,30860.23,2100-12-20,2101-01-19,December,Musculación,3 días a la semana
+911,42276404,false,34534.97,2101-01-20,2101-02-19,January,Preparación Física,5 días a la semana
+912,42276404,true,32630.63,2101-02-20,2101-03-19,February,Musculación,3 días a la semana
+913,42276404,true,31868.82,2101-03-20,2101-04-19,March,Mantenimiento,5 días a la semana
+914,42276404,true,21676.09,2101-04-20,2101-05-19,April,Musculación,5 días a la semana
+915,42276404,true,31771.84,2101-05-20,2101-06-19,May,Preparación Física,5 días a la semana
+916,42276404,true,23564.01,2101-06-20,2101-07-19,June,Musculación,3 días a la semana
+917,42276404,true,20792.50,2101-07-20,2101-08-19,July,Mantenimiento,5 días a la semana
+918,42276404,true,24774.55,2101-08-20,2101-09-19,August,Mantenimiento,5 días a la semana
+919,42276404,false,24028.07,2101-09-20,2101-10-19,September,Preparación Física,3 días a la semana
+920,42276404,true,32734.07,2101-10-20,2101-11-19,October,Preparación Física,3 días a la semana
+921,42276404,false,28984.98,2101-11-20,2101-12-19,November,Mantenimiento,3 días a la semana
+922,42276404,false,22897.81,2101-12-20,2102-01-19,December,Musculación,3 días a la semana
+923,42276404,true,23154.34,2102-01-20,2102-02-19,January,Preparación Física,5 días a la semana
+924,42276404,false,26329.43,2102-02-20,2102-03-19,February,Mantenimiento,3 días a la semana
+925,42276404,false,22868.13,2102-03-20,2102-04-19,March,Musculación,5 días a la semana
+926,42276404,false,32006.77,2102-04-20,2102-05-19,April,Mantenimiento,5 días a la semana
+927,42276404,true,20167.36,2102-05-20,2102-06-19,May,Musculación,3 días a la semana
+928,42276404,false,34854.40,2102-06-20,2102-07-19,June,Musculación,3 días a la semana
+929,42276404,false,27286.40,2102-07-20,2102-08-19,July,Musculación,3 días a la semana
+930,42276404,true,27594.59,2102-08-20,2102-09-19,August,Preparación Física,5 días a la semana
+931,42276404,true,27830.40,2102-09-20,2102-10-19,September,Musculación,3 días a la semana
+932,42276404,false,28340.80,2102-10-20,2102-11-19,October,Mantenimiento,5 días a la semana
+933,42276404,false,33152.55,2102-11-20,2102-12-19,November,Preparación Física,3 días a la semana
+934,42276404,false,27108.54,2102-12-20,2103-01-19,December,Preparación Física,3 días a la semana
+935,42276404,true,32836.22,2103-01-20,2103-02-19,January,Preparación Física,3 días a la semana
+936,42276404,true,26583.63,2103-02-20,2103-03-19,February,Mantenimiento,3 días a la semana
+937,42276404,true,34775.92,2103-03-20,2103-04-19,March,Musculación,5 días a la semana
+938,42276404,false,32104.63,2103-04-20,2103-05-19,April,Musculación,5 días a la semana
+939,42276404,false,28941.89,2103-05-20,2103-06-19,May,Preparación Física,5 días a la semana
+940,42276404,false,27296.84,2103-06-20,2103-07-19,June,Mantenimiento,3 días a la semana
+941,42276404,true,25334.81,2103-07-20,2103-08-19,July,Musculación,3 días a la semana
+942,42276404,false,20306.84,2103-08-20,2103-09-19,August,Musculación,3 días a la semana
+943,42276404,false,22829.46,2103-09-20,2103-10-19,September,Preparación Física,3 días a la semana
+944,42276404,false,34627.19,2103-10-20,2103-11-19,October,Mantenimiento,3 días a la semana
+945,42276404,false,25231.23,2103-11-20,2103-12-19,November,Mantenimiento,5 días a la semana
+946,42276404,false,31747.99,2103-12-20,2104-01-19,December,Musculación,3 días a la semana
+947,42276404,false,34208.02,2104-01-20,2104-02-19,January,Musculación,3 días a la semana
+948,42276404,true,23820.70,2104-02-20,2104-03-19,February,Mantenimiento,3 días a la semana
+949,42276404,false,25466.91,2104-03-20,2104-04-19,March,Mantenimiento,5 días a la semana
+950,42276404,false,29117.35,2104-04-20,2104-05-19,April,Musculación,3 días a la semana
+951,42276404,true,34422.45,2104-05-20,2104-06-19,May,Mantenimiento,5 días a la semana
+952,42276404,true,34298.29,2104-06-20,2104-07-19,June,Musculación,3 días a la semana
+953,42276404,true,30373.17,2104-07-20,2104-08-19,July,Mantenimiento,5 días a la semana
+954,42276404,false,25165.06,2104-08-20,2104-09-19,August,Musculación,3 días a la semana
+955,42276404,true,27952.03,2104-09-20,2104-10-19,September,Preparación Física,5 días a la semana
+956,42276404,true,26918.28,2104-10-20,2104-11-19,October,Preparación Física,3 días a la semana
+957,42276404,false,25424.98,2104-11-20,2104-12-19,November,Mantenimiento,5 días a la semana
+958,42276404,true,30789.05,2104-12-20,2105-01-19,December,Mantenimiento,5 días a la semana
+959,42276404,false,34387.76,2105-01-20,2105-02-19,January,Mantenimiento,5 días a la semana
+960,42276404,true,34898.33,2105-02-20,2105-03-19,February,Preparación Física,3 días a la semana
+961,42276404,false,30816.72,2105-03-20,2105-04-19,March,Preparación Física,3 días a la semana
+962,42276404,true,30838.82,2105-04-20,2105-05-19,April,Mantenimiento,5 días a la semana
+963,42276404,true,29710.86,2105-05-20,2105-06-19,May,Mantenimiento,5 días a la semana
+964,42276404,true,31989.18,2105-06-20,2105-07-19,June,Preparación Física,5 días a la semana
+965,42276404,false,22359.92,2105-07-20,2105-08-19,July,Musculación,3 días a la semana
+966,42276404,true,24299.80,2105-08-20,2105-09-19,August,Preparación Física,3 días a la semana
+967,42276404,true,33751.13,2105-09-20,2105-10-19,September,Preparación Física,5 días a la semana
+968,42276404,true,34058.70,2105-10-20,2105-11-19,October,Mantenimiento,5 días a la semana
+969,42276404,true,34724.92,2105-11-20,2105-12-19,November,Mantenimiento,3 días a la semana
+970,42276404,false,28976.66,2105-12-20,2106-01-19,December,Musculación,5 días a la semana
+971,42276404,true,23274.92,2106-01-20,2106-02-19,January,Mantenimiento,5 días a la semana
+972,42276404,true,22520.92,2106-02-20,2106-03-19,February,Preparación Física,5 días a la semana
+973,42276404,true,26651.11,2106-03-20,2106-04-19,March,Preparación Física,3 días a la semana
+974,42276404,false,29667.99,2106-04-20,2106-05-19,April,Mantenimiento,5 días a la semana
+975,42276404,true,22497.08,2106-05-20,2106-06-19,May,Musculación,5 días a la semana
+976,42276404,true,29375.19,2106-06-20,2106-07-19,June,Mantenimiento,5 días a la semana
+977,42276404,false,24475.33,2106-07-20,2106-08-19,July,Preparación Física,5 días a la semana
+978,42276404,true,30768.07,2106-08-20,2106-09-19,August,Musculación,5 días a la semana
+979,42276404,false,27554.13,2106-09-20,2106-10-19,September,Musculación,3 días a la semana
+980,42276404,false,26750.64,2106-10-20,2106-11-19,October,Musculación,5 días a la semana
+981,42276404,true,29975.79,2106-11-20,2106-12-19,November,Mantenimiento,5 días a la semana
+982,42276404,true,25423.52,2106-12-20,2107-01-19,December,Mantenimiento,3 días a la semana
+983,42276404,false,23046.13,2107-01-20,2107-02-19,January,Mantenimiento,5 días a la semana
+984,42276404,true,32793.84,2107-02-20,2107-03-19,February,Mantenimiento,5 días a la semana
+985,42276404,false,27457.56,2107-03-20,2107-04-19,March,Musculación,3 días a la semana
+986,42276404,true,34803.12,2107-04-20,2107-05-19,April,Preparación Física,5 días a la semana
+987,42276404,true,28820.97,2107-05-20,2107-06-19,May,Musculación,5 días a la semana
+988,42276404,false,34225.90,2107-06-20,2107-07-19,June,Musculación,5 días a la semana
+989,42276404,true,29080.25,2107-07-20,2107-08-19,July,Mantenimiento,5 días a la semana
+990,42276404,false,29466.79,2107-08-20,2107-09-19,August,Preparación Física,5 días a la semana
+991,42276404,false,32766.12,2107-09-20,2107-10-19,September,Mantenimiento,3 días a la semana
+992,42276404,true,32813.29,2107-10-20,2107-11-19,October,Mantenimiento,5 días a la semana
+993,42276404,true,28291.16,2107-11-20,2107-12-19,November,Preparación Física,3 días a la semana
+994,42276404,false,34062.46,2107-12-20,2108-01-19,December,Mantenimiento,3 días a la semana
+995,42276404,false,33952.87,2108-01-20,2108-02-19,January,Preparación Física,3 días a la semana
+996,42276404,true,28247.26,2108-02-20,2108-03-19,February,Mantenimiento,3 días a la semana
+997,42276404,true,28563.22,2108-03-20,2108-04-19,March,Musculación,3 días a la semana
+998,42276404,false,20735.83,2108-04-20,2108-05-19,April,Preparación Física,5 días a la semana
+999,42276404,true,29901.58,2108-05-20,2108-06-19,May,Preparación Física,3 días a la semana
+1000,42276404,true,32973.88,2108-06-20,2108-07-19,June,Preparación Física,3 días a la semana
