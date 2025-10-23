@@ -24,6 +24,7 @@ from api.routes.ubicacionEndpoint import router as ubicacion_endpoint           
 from api.routes.authEndpoint import router as auth_endpoint                     # auth (login, register)
 from api.routes.alumnosEndpoint import router as alumnos_endpoint               # alumnos (acttivar alumno)
 from api.routes.reclamoEndpoint import router as reclamo_endpoint               # reclamos
+from api.routes.cuotaEndpoint import router as cuota_endpoint                   # cuotas
 
 from api.routes.adminExample import router as admin_example_endpoint            # ejemplo admin
 from api.routes.alumnosExample import router as alumnos_example_endpoint        # ejemplo alumnos
@@ -50,6 +51,7 @@ app = FastAPI(
 # Orífgenes permitidos
 origins = [
     "http://localhost:8081",
+    "http://localhost:8080",
 ]
 # Agregar el middleware CORS a la aplicación
 app.add_middleware(
@@ -95,6 +97,7 @@ app.include_router(horario_endpoint)
 app.include_router(ubicacion_endpoint)
 app.include_router(alumnos_endpoint)
 app.include_router(reclamo_endpoint)
+app.include_router(cuota_endpoint)
 
 if __name__ == "__main__":
     import uvicorn
