@@ -6,7 +6,8 @@ from schemas.cuotaSchema import (
     CuotaResponse
 )
 from utils.exceptions import (
-    DatabaseException
+    DatabaseException,
+    NotFoundException
 )
 
 # === DICCIONARIO PARA TRADUCCIÓN DE MESES ===
@@ -58,3 +59,41 @@ async def obtener_cuotas_por_alumno(conn: Connection, dni_alumno: str) -> List[C
     except Exception as e:
         raise DatabaseException("obtener cuotas del alumno", str(e))
 
+async def obtener_cuotas_por_dni(conn: Connection, dni: str) -> List[CuotaResponse]:
+    """
+    Obtiene todas las cuotas de un alumno específico por su DNI.
+    """
+    try:
+        # Primero, verificamos que la persona (alumno) exista
+        persona_existe = await conn.fetchval(
+            'SELECT 1 FROM "Persona" WHERE dni = $1', dni
+        )
+        if not persona_existe:
+            raise NotFoundException("Alumno", dni)
+
+        # Si existe, buscamos sus cuotas
+        query = """
+            SELECT
+                "idCuota",
+                dni,
+                pagada,
+                monto,
+                "fechaComienzo",
+                "fechaFin",
+                mes,
+                "nombreTrabajo",
+                "nombreSuscripcion"
+            FROM "Cuota"
+            WHERE dni = $1
+            ORDER BY "fechaComienzo" DESC;
+        """
+        
+        resultados = await conn.fetch(query, dni)
+        
+        # Mapeamos los resultados al schema Pydantic
+        return [CuotaResponse(**dict(row)) for row in resultados]
+
+    except NotFoundException:
+        raise # Re-lanzamos la excepción para que el endpoint la maneje
+    except Exception as e:
+        raise DatabaseException("obtener cuotas por DNI", str(e))

@@ -51,6 +51,7 @@ class AlumnoDetalle(BaseModel):
     dni: str
     nombre: str
     apellido: str
+    sexo: str
     email: str
     telefono: str
     activo: bool
@@ -58,6 +59,7 @@ class AlumnoDetalle(BaseModel):
     turno: str
     suscripcion: str
     trabajoactual: str
+    nivel: str
     provincia: Optional[str] = None
     localidad: Optional[str] = None
     calle: Optional[str] = None

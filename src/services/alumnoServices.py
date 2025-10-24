@@ -164,6 +164,7 @@ async def obtener_detalle_alumno(conn: Connection, dni: str) -> AlumnoDetalle:
             p.dni,
             p.nombre,
             p.apellido,
+            p.sexo,
             p.email,
             p.telefono,
             (CASE WHEN aa.dni IS NOT NULL THEN TRUE ELSE FALSE END) as activo,
@@ -190,7 +191,8 @@ async def obtener_detalle_alumno(conn: Connection, dni: str) -> AlumnoDetalle:
             d."nomProvincia" as provincia,
             d."nomLocalidad" as localidad,
             d.calle as calle,
-            d.numero as nro
+            d.numero as nro,
+            a.nivel as nivel
         FROM "Alumno" a
         JOIN "Persona" p ON a.dni = p.dni
         LEFT JOIN "AlumnoActivo" aa ON a.dni = aa.dni
