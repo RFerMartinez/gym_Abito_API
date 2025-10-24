@@ -22,3 +22,4 @@ GYM_ABITO_API/
 │--requirements.txt
 
 sdfsdfdsf
+sdsdf
