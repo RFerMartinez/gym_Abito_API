@@ -30,19 +30,19 @@ async def obtener_cuotas_por_alumno(conn: Connection, dni_alumno: str) -> List[C
     """Obtiene todas las cuotas de un alumno específico, ordenadas por fecha."""
     try:
         query = """
-            SELECT
-                "idCuota",
-                dni,
-                pagada,
-                monto,
-                "fechaComienzo",
-                "fechaFin",
-                mes,
-                "nombreTrabajo",
-                "nombreSuscripcion"
-            FROM "Cuota"
-            WHERE dni = $1
-            ORDER BY "fechaComienzo" DESC;
+        SELECT
+            "idCuota",
+            mes,
+            EXTRACT(YEAR FROM "fechaFin")::INTEGER as anio,
+            "nombreTrabajo" as trabajo,
+            "nombreSuscripcion" as suscripcion,
+            monto,
+            pagada,
+            "fechaFin" as vencimiento,
+            "fechaComienzo" as comienzo
+        FROM "Cuota"
+        WHERE dni = $1
+        ORDER BY "fechaFin" DESC;
         """
         cuotas_db = await conn.fetch(query, dni_alumno)
 
