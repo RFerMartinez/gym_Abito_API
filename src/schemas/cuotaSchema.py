@@ -4,18 +4,25 @@ from datetime import date
 
 # Agrega esta clase si no la tienes
 class CuotaBase(BaseModel):
+    idCuota: int
     pagada: bool
     monto: float
-    fechaComienzo: date
-    fechaFin: date
     mes: str
-    nombreTrabajo: str
-    nombreSuscripcion: str
+    anio: int
+
+class CuotaResponseAlumnoAuth(CuotaBase):
+    trabajo: str
+    suscripcion: str
+    vencimiento: date
+    comienzo: date
 
 # Este será el modelo para la respuesta de la API
-class CuotaResponse(CuotaBase):
-    idCuota: int
+class CuotaResponsePorDNI(CuotaBase):
     dni: str
+    fechaComienzo: date
+    fechaFin: date
+    trabajo: str
+    suscripcion: str
 
-    class Config:
-        from_attributes = True # Permite que Pydantic lea datos desde objetos (ORM mode)
+
+

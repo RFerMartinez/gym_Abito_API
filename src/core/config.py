@@ -36,6 +36,9 @@ class Settings(BaseSettings):
     FRONTEND_URL: str
     BACKEND_URL: str
 
+    # -- Mercado Pago
+    MP_ACCESS_TOKEN: SecretStr
+
     @property
     def DATABASE_URL(self) -> PostgresDsn:
         return PostgresDsn.build(

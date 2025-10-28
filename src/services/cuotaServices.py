@@ -3,7 +3,8 @@ from asyncpg import Connection
 from typing import List
 
 from schemas.cuotaSchema import (
-    CuotaResponse
+    CuotaResponseAlumnoAuth,
+    CuotaResponsePorDNI
 )
 from utils.exceptions import (
     DatabaseException,
@@ -26,7 +27,8 @@ meses_es = {
     "December": "Diciembre"
 }
 
-async def obtener_cuotas_por_alumno(conn: Connection, dni_alumno: str) -> List[CuotaResponse]:
+# Obtiene las cuotas de UN SOLO alumno (Auth)
+async def obtener_cuotas_por_alumno(conn: Connection, dni_alumno: str) -> List[CuotaResponseAlumnoAuth]:
     """Obtiene todas las cuotas de un alumno específico, ordenadas por fecha."""
     try:
         query = """
@@ -54,13 +56,14 @@ async def obtener_cuotas_por_alumno(conn: Connection, dni_alumno: str) -> List[C
             mes_en_ingles = datos_cuota.get("mes")
             if mes_en_ingles in meses_es:
                 datos_cuota["mes"] = meses_es[mes_en_ingles]
-            cuotas_procesadas.append(CuotaResponse(**datos_cuota))
+            cuotas_procesadas.append(CuotaResponseAlumnoAuth(**datos_cuota))
             
         return cuotas_procesadas
     except Exception as e:
         raise DatabaseException("obtener cuotas del alumno", str(e))
 
-async def obtener_cuotas_por_dni(conn: Connection, dni: str) -> List[CuotaResponse]:
+# Obtiene las cuotas de UN SOLO alumno (Staff, buscando por DNI)
+async def obtener_cuotas_por_dni(conn: Connection, dni: str) -> List[CuotaResponsePorDNI]:
     """
     Obtiene todas las cuotas de un alumno específico por su DNI.
     """
@@ -82,8 +85,9 @@ async def obtener_cuotas_por_dni(conn: Connection, dni: str) -> List[CuotaRespon
                 "fechaComienzo",
                 "fechaFin",
                 mes,
-                "nombreTrabajo",
-                "nombreSuscripcion"
+                EXTRACT(YEAR FROM "fechaFin")::INTEGER as anio,
+                "nombreTrabajo" as trabajo,
+                "nombreSuscripcion" as suscripcion
             FROM "Cuota"
             WHERE dni = $1
             ORDER BY "fechaComienzo" DESC;
@@ -92,7 +96,7 @@ async def obtener_cuotas_por_dni(conn: Connection, dni: str) -> List[CuotaRespon
         resultados = await conn.fetch(query, dni)
         
         # Mapeamos los resultados al schema Pydantic
-        return [CuotaResponse(**dict(row)) for row in resultados]
+        return [CuotaResponsePorDNI(**dict(row)) for row in resultados]
 
     except NotFoundException:
         raise # Re-lanzamos la excepción para que el endpoint la maneje

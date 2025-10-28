@@ -8,7 +8,10 @@ from core.session import get_db
 from api.dependencies.security import alumno_required, staff_required
 
 # --- Schemas y Services ---
-from schemas.cuotaSchema import CuotaResponse
+from schemas.cuotaSchema import (
+    CuotaResponseAlumnoAuth,
+    CuotaResponsePorDNI
+)
 from services.cuotaServices import (
     obtener_cuotas_por_dni,
     obtener_cuotas_por_alumno
@@ -21,7 +24,7 @@ router = APIRouter(
 
 @router.get(
     "/mis-cuotas",
-    response_model=List[CuotaResponse],
+    response_model=List[CuotaResponseAlumnoAuth],
     summary="Listar mis cuotas (alumno autenticado)",
     dependencies=[Depends(alumno_required)] # <-- Protegido para alumnos
 )
@@ -38,7 +41,7 @@ async def listar_mis_cuotas(
 
 @router.get(
     "/alumno/{dni}",
-    response_model=List[CuotaResponse],
+    response_model=List[CuotaResponsePorDNI],
     summary="Obtener cuotas de un alumno específico (Staff)",
     dependencies=[Depends(staff_required)] # ¡AQUÍ PROTEGEMOS LA RUTA!
 )
