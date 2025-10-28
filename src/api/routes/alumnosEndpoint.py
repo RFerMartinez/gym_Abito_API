@@ -9,7 +9,8 @@ from schemas.alumnoSchema import (
     AlumnoActivateResponse,
     AlumnoListado,
     AlumnoDetalle,
-    HorarioAlumno
+    HorarioAlumno,
+    HorariosAlumnoResponse
 )
 from services.alumnoServices import (
     activar_alumno,
@@ -118,7 +119,7 @@ async def obtener_alumno_por_dni(
 # === NUEVO ENDPOINT PARA HORARIOS DE ALUMNO ===
 @router.get(
     "/{dni}/horarios",
-    response_model=List[HorarioAlumno],
+    response_model=HorariosAlumnoResponse,
     summary="Obtener horarios de un alumno (Staff)",
     response_description="Lista de días y grupos a los que asiste el alumno.",
     dependencies=[Depends(staff_required)] # <-- Protegido para staff
@@ -129,8 +130,10 @@ async def obtener_horarios_de_alumno(
 ):
     """
     Obtiene la lista de horarios (día y grupo) asignados a un alumno específico,
-    identificado por su DNI.
+    identificado por su DNI, envuelta en un objeto JSON.
 
     **Este endpoint es accesible para usuarios con rol de staff (admin o empleado).**
     """
-    return await obtener_horarios_alumno(conn=db, dni=dni)
+    lista_horarios = await obtener_horarios_alumno(conn=db, dni=dni)
+    # Devolvemos un diccionario que coincide con el esquema HorariosAlumnoResponse
+    return {"horarios": lista_horarios}

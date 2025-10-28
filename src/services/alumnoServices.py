@@ -226,31 +226,31 @@ async def obtener_horarios_alumno(conn: Connection, dni: str) -> List[HorarioAlu
         # Modificamos la consulta para unir con la tabla Horario
         query = """
         SELECT
-            a.dia,
-            h."horaInicio",
-            h."horaFin"
-        FROM "Asiste" a
-        JOIN "Horario" h ON a."nroGrupo" = h."nroGrupo"
-        WHERE a.dni = $1
-        ORDER BY a.dia;
+            dia,
+            "nroGrupo"
+        FROM "Asiste"
+        WHERE dni = $1
+        ORDER BY dia;
         """
         
         resultados_db = await conn.fetch(query, dni)
         
         # Formateamos la respuesta en Python
-        horarios_formateados = []
-        for row in resultados_db:
-            hora_inicio: time = row["horaInicio"]
-            hora_fin: time = row["horaFin"]
+        # horarios_formateados = []
+        # for row in resultados_db:
+        #     hora_inicio: time = row["horaInicio"]
+        #     hora_fin: time = row["horaFin"]
             
-            # Creamos el string "HH:MM-HH:MM"
-            horario_str = f"{hora_inicio.strftime('%H:%M')}-{hora_fin.strftime('%H:%M')}"
+        #     # Creamos el string "HH:MM-HH:MM"
+        #     horario_str = f"{hora_inicio.strftime('%H:%M')}-{hora_fin.strftime('%H:%M')}"
             
-            horarios_formateados.append(
-                HorarioAlumno(dia=row["dia"], horario=horario_str)
-            )
+        #     horarios_formateados.append(
+        #         HorarioAlumno(dia=row["dia"], horario=horario_str)
+        #     )
             
-        return horarios_formateados
+        # return horarios_formateados
+    
+        return [HorarioAlumno(**dict(row)) for row in resultados_db]
 
     except NotFoundException:
         raise

@@ -71,8 +71,12 @@ class AlumnoDetalle(BaseModel):
 # === ESQUEMA MODIFICADO PARA EL HORARIO DEL ALUMNO ===
 class HorarioAlumno(BaseModel):
     dia: str
-    horario: str # <-- Cambiamos nroGrupo por horario
+    nroGrupo: str # <--- Volvemos a nroGrupo
 
     class Config:
         from_attributes = True
+
+# === NUEVO ESQUEMA CONTENEDOR PARA LA RESPUESTA COMPLETA ===
+class HorariosAlumnoResponse(BaseModel):
+    horarios: List[HorarioAlumno]
 
