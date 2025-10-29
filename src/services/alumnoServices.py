@@ -54,9 +54,9 @@ async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActiva
 
             # 4. Insertar en Alumno
             await conn.execute('''
-                INSERT INTO "Alumno" (dni, sexo, "nombreTrabajo", "nombreSuscripcion", nivel, deporte)
-                VALUES ($1, $2, $3, $4, $5, $6)
-            ''', data.dni, data.sexo, data.nombreTrabajo, data.nombreSuscripcion, data.nivel, data.deporte)
+                INSERT INTO "Alumno" (dni, "nombreTrabajo", "nombreSuscripcion", nivel, deporte)
+                VALUES ($1, $2, $3, $4, $5)
+            ''', data.dni, data.nombreTrabajo, data.nombreSuscripcion, data.nivel, data.deporte)
 
             # 5. Insertar en AlumnoActivo
             await conn.execute('INSERT INTO "AlumnoActivo" (dni) VALUES ($1)', data.dni)
