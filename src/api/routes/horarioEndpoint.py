@@ -27,6 +27,9 @@ from schemas.horarioSchema import (
     UpdateEmpleadoGrupo
 )
 
+# Dependencias
+from api.dependencies.security import staff_required, admin_required
+
 # BLUEPRINT de /horarios
 router = APIRouter(
     prefix="/horarios",
@@ -51,8 +54,9 @@ router = APIRouter(
     "/",
     response_model=HorarioResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Crear un nuevo horario/grupo",
-    response_description="Horario creado exitosamente"
+    summary="Crear un nuevo horario/grupo (Admin)",
+    response_description="Horario creado exitosamente",
+    dependencies=[Depends(admin_required)]
 )
 async def crear_nuevo_horario(
     horario_data: HorarioCreate,
@@ -72,8 +76,9 @@ async def crear_nuevo_horario(
     "/asignar-dia",
     response_model=PerteneceResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Asignar un día a un grupo",
-    response_description="Día asignado al grupo exitosamente"
+    summary="Asignar un día a un grupo (admin)",
+    response_description="Día asignado al grupo exitosamente",
+    dependencies=[Depends(admin_required)]
 )
 async def asignar_dia_a_grupo(
     pertenece_data: PerteneceCreate,
@@ -93,8 +98,9 @@ async def asignar_dia_a_grupo(
 @router.get(
     "/",
     response_model=List[HorarioCompletoResponse],
-    summary="Obtener todos los horarios con detalles",
-    response_description="Lista de horarios con días asignados"
+    summary="Obtener todos los horarios con detalles (Staff)",
+    response_description="Lista de horarios con días asignados",
+    dependencies=[Depends(staff_required)]
 )
 async def listar_horarios_completos(
     db: Connection = Depends(get_db)
