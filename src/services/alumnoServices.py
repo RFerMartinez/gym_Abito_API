@@ -62,8 +62,10 @@ async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActiva
             await conn.execute('INSERT INTO "AlumnoActivo" (dni) VALUES ($1)', data.dni)
 
             # 6. Asignar horarios
-            for horario in data.horarios:
-                # Verificar capacidad del grupo en ese día
+            for horario in data.horarios: # Ahora 'horario' tiene 'nroGrupo' y 'dia'
+                nroGrupo = horario.nroGrupo # Usamos directamente el nroGrupo del input
+
+                # Verificar capacidad del grupo en ese día (usando nroGrupo)
                 query_capacidad = '''
                     SELECT p."capacidadMax", COUNT(a.dni) as inscritos
                     FROM "Pertenece" p
@@ -71,13 +73,13 @@ async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActiva
                     WHERE p."nroGrupo" = $1 AND p.dia = $2
                     GROUP BY p."capacidadMax"
                 '''
-                capacidad = await conn.fetchrow(query_capacidad, horario.nroGrupo, horario.dia)
+                capacidad = await conn.fetchrow(query_capacidad, nroGrupo, horario.dia)
 
                 if not capacidad:
-                    raise NotFoundException("Horario", f"Grupo {horario.nroGrupo} en día {horario.dia}")
+                    raise NotFoundException("Asignación Horario-Día", f"Grupo {nroGrupo} no está asignado al día {horario.dia}")
 
                 if capacidad['inscritos'] >= capacidad['capacidadMax']:
-                    raise BusinessRuleException(f"El grupo {horario.nroGrupo} del día {horario.dia} está completo.")
+                    raise BusinessRuleException(f"El grupo {nroGrupo} del día {horario.dia} está completo.")
                 
             # Insertar en Asiste
             await conn.execute('''
