@@ -20,7 +20,7 @@ class CuotaResponseAlumnoAuth(CuotaBase):
 class CuotaResponsePorDNI(CuotaBase):
     dni: str
     fechaComienzo: date
-    fechaFin: date
+    vencimiento: date
     trabajo: str
     suscripcion: str
 

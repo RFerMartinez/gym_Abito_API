@@ -83,7 +83,7 @@ async def obtener_cuotas_por_dni(conn: Connection, dni: str) -> List[CuotaRespon
                 pagada,
                 monto,
                 "fechaComienzo",
-                "fechaFin",
+                "fechaFin" as vencimiento,
                 mes,
                 EXTRACT(YEAR FROM "fechaFin")::INTEGER as anio,
                 "nombreTrabajo" as trabajo,
