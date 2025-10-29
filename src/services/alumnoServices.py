@@ -10,7 +10,8 @@ from schemas.alumnoSchema import (
     AlumnoActivateResponse,
     AlumnoListado,
     AlumnoDetalle,
-    HorarioAlumno
+    HorarioAlumno,
+    HorarioAsignado
 )
 
 from utils.exceptions import (
@@ -61,11 +62,11 @@ async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActiva
             # 5. Insertar en AlumnoActivo
             await conn.execute('INSERT INTO "AlumnoActivo" (dni) VALUES ($1)', data.dni)
 
-            # 6. Asignar horarios
-            for horario in data.horarios: # Ahora 'horario' tiene 'nroGrupo' y 'dia'
-                nroGrupo = horario.nroGrupo # Usamos directamente el nroGrupo del input
+            # 6. Asignar horarios (LÓGICA CORREGIDA)
+            for horario in data.horarios:
+                nroGrupo = horario.nroGrupo
 
-                # Verificar capacidad del grupo en ese día (usando nroGrupo)
+                # Verificar capacidad del grupo en ese día
                 query_capacidad = '''
                     SELECT p."capacidadMax", COUNT(a.dni) as inscritos
                     FROM "Pertenece" p
@@ -80,12 +81,13 @@ async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActiva
 
                 if capacidad['inscritos'] >= capacidad['capacidadMax']:
                     raise BusinessRuleException(f"El grupo {nroGrupo} del día {horario.dia} está completo.")
-                
-            # Insertar en Asiste
-            await conn.execute('''
-                INSERT INTO "Asiste" (dni, "nroGrupo", dia)
-                VALUES ($1, $2, $3)
-            ''', data.dni, horario.nroGrupo, horario.dia)
+
+                # === ¡LA CORRECCIÓN ESTÁ AQUÍ! ===
+                # Mover la inserción DENTRO del bucle 'for'
+                await conn.execute('''
+                    INSERT INTO "Asiste" (dni, "nroGrupo", dia)
+                    VALUES ($1, $2, $3)
+                ''', data.dni, nroGrupo, horario.dia)
 
             # === NUEVA LÓGICA: GENERAR LA PRIMERA CUOTA ===
             hoy = date.today()
