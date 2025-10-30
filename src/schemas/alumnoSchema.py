@@ -71,3 +71,7 @@ class HorarioAlumno(BaseModel):
 class HorariosAlumnoResponse(BaseModel):
     horarios: List[HorarioAlumno]
 
+class HorariosUpdate(BaseModel):
+    horarios: List[HorarioAlumno] = Field(..., description="La lista completa y nueva de horarios para el alumno.")
+
+

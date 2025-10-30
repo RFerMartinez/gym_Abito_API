@@ -1,22 +1,25 @@
 # src/api/routes/alumnosEndpoint.py
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Body
 from asyncpg import Connection
 from typing import List
 
 from core.session import get_db
+
 from schemas.alumnoSchema import (
     AlumnoActivate,
     AlumnoActivateResponse,
     AlumnoListado,
     AlumnoDetalle,
     HorarioAlumno,
-    HorariosAlumnoResponse
+    HorariosAlumnoResponse,
+    HorariosUpdate
 )
 from services.alumnoServices import (
     activar_alumno,
     listar_alumnos_detalle,
     obtener_detalle_alumno,
-    obtener_horarios_alumno
+    obtener_horarios_alumno,
+    actualizar_horarios_alumno
 )
 from api.dependencies.security import (
     staff_required,
@@ -137,3 +140,28 @@ async def obtener_horarios_de_alumno(
     lista_horarios = await obtener_horarios_alumno(conn=db, dni=dni)
     # Devolvemos un diccionario que coincide con el esquema HorariosAlumnoResponse
     return {"horarios": lista_horarios}
+
+
+@router.put(
+    "/{dni}/horarios",
+    response_model=HorariosAlumnoResponse,
+    summary="Actualizar/Reemplazar horarios de un alumno (Staff)",
+    response_description="Devuelve la nueva lista de horarios asignada al alumno.",
+    dependencies=[Depends(staff_required)] # <--- Protegido para Staff
+)
+async def actualizar_horarios_de_alumno(
+    dni: str,
+    data: HorariosUpdate = Body(...), # <--- Usamos el nuevo esquema para el body
+    db: Connection = Depends(get_db)
+):
+    """
+    Reemplaza por completo la lista de horarios de un alumno activo.
+
+    - Se eliminarán todos los horarios anteriores.
+    - Se asignarán los nuevos horarios de la lista.
+    - Si la lista enviada está vacía, el alumno quedará sin horarios.
+    - Falla si el alumno está inactivo o si algún grupo no tiene capacidad.
+
+    **Este endpoint es accesible para usuarios con rol de staff (admin o empleado).**
+    """
+    return await actualizar_horarios_alumno(conn=db, dni=dni, data=data)

@@ -11,7 +11,9 @@ from schemas.alumnoSchema import (
     AlumnoListado,
     AlumnoDetalle,
     HorarioAlumno,
-    HorarioAsignado
+    HorarioAsignado,
+    HorariosUpdate,
+    HorariosAlumnoResponse
 )
 
 from utils.exceptions import (
@@ -260,4 +262,61 @@ async def obtener_horarios_alumno(conn: Connection, dni: str) -> List[HorarioAlu
         raise
     except Exception as e:
         raise DatabaseException("obtener horarios de alumno", str(e))
+
+# === NUEVO SERVICIO PARA ACTUALIZAR HORARIOS ===
+async def actualizar_horarios_alumno(conn: Connection, dni: str, data: HorariosUpdate) -> HorariosAlumnoResponse:
+    """
+    Reemplaza la lista de horarios de un alumno activo.
+    1. Verifica que el alumno esté activo.
+    2. Borra todos sus horarios anteriores.
+    3. Inserta los nuevos horarios, verificando capacidad.
+    Todo en una transacción.
+    """
+    async with conn.transaction():
+        try:
+            # 1. Verificar que el alumno existe y está activo
+            es_activo = await conn.fetchval('SELECT 1 FROM "AlumnoActivo" WHERE dni = $1', dni)
+            if not es_activo:
+                raise BusinessRuleException("No se pueden modificar horarios de un alumno inactivo.")
+
+            # 2. Borrar todos los horarios existentes para ese alumno
+            await conn.execute('DELETE FROM "Asiste" WHERE dni = $1', dni)
+
+            # 3. Insertar los nuevos horarios
+            if not data.horarios:
+                # Si la lista está vacía, simplemente devolvemos la lista vacía
+                return HorariosAlumnoResponse(horarios=[])
+
+            for horario in data.horarios:
+                nroGrupo = horario.nroGrupo
+                
+                # Reutilizamos la lógica de verificación de capacidad de 'activar_alumno'
+                query_capacidad = '''
+                    SELECT p."capacidadMax", COUNT(a.dni) as inscritos
+                    FROM "Pertenece" p
+                    LEFT JOIN "Asiste" a ON p."nroGrupo" = a."nroGrupo" AND p.dia = a.dia
+                    WHERE p."nroGrupo" = $1 AND p.dia = $2
+                    GROUP BY p."capacidadMax"
+                '''
+                capacidad = await conn.fetchrow(query_capacidad, nroGrupo, horario.dia)
+
+                if not capacidad:
+                    raise NotFoundException("Asignación Horario-Día", f"Grupo {nroGrupo} no está asignado al día {horario.dia}")
+
+                if capacidad['inscritos'] >= capacidad['capacidadMax']:
+                    raise BusinessRuleException(f"El grupo {nroGrupo} del día {horario.dia} está completo. No se pudo actualizar el horario.")
+                
+                # Insertar el nuevo registro de asistencia
+                await conn.execute('''
+                    INSERT INTO "Asiste" (dni, "nroGrupo", dia)
+                    VALUES ($1, $2, $3)
+                ''', dni, nroGrupo, horario.dia)
+            
+            # Devolvemos la lista de horarios que se acaba de establecer
+            return HorariosAlumnoResponse(horarios=data.horarios)
+
+        except (NotFoundException, BusinessRuleException) as e:
+            raise e
+        except Exception as e:
+            raise DatabaseException("actualizar horarios del alumno", str(e))
 
