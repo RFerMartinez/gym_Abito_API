@@ -213,3 +213,28 @@ class HorarioCompletoCreate(HorarioBase):
     con sus días ya asignados.
     """
     dias_asignados: List[DiaAsignadoCreate] = Field(..., description="Lista de días a asignar al grupo")
+
+class DiaAsignadoUpdate(BaseModel):
+    """
+    Schema para los días en el payload de actualización.
+    Ignorará 'alumnos_inscritos' que venga del frontend.
+    """
+    dia: str
+    capacidadMax: int = Field(..., ge=1)
+    dniEmpleado: Optional[str] = Field(None, min_length=8, max_length=8, pattern="^[0-9]+$")
+
+    @field_validator('dia')
+    @classmethod
+    def validar_dia_existente(cls, value: str) -> str:
+        dias_validos = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+        if value.capitalize() not in dias_validos:
+            raise ValueError(f"Día no válido. Debe ser uno de: {', '.join(dias_validos)}")
+        return value.capitalize()
+
+class HorarioCompletoUpdate(HorarioBase): # Reutiliza nroGrupo, horaInicio, horaFin
+    """
+    Schema principal para el payload de actualización (PUT) de un grupo.
+    """
+    dias_asignados: List[DiaAsignadoUpdate] = Field(..., description="La *nueva* lista completa de días para este grupo.")
+    originalNroGrupo: str = Field(..., description="El nroGrupo original (la PK) antes de la modificación.")
+

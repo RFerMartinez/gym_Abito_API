@@ -10,10 +10,9 @@ from services.suscripcionSerives import (
 
 from schemas.suscripcionSchema import (
     SuscripcionCreate,
-    SuscripcionCreateResponse, 
+    SuscripcionResponse, 
     SuscripcionBase,
-    SuscripcionUpdate,
-    SuscripcionUpdatePrice
+    SuscripcionUpdate
 )
 
 from typing import List
@@ -27,7 +26,7 @@ router = APIRouter(prefix="/suscripciones", tags=["suscripciones"])
 # CREAR SUSCRIPCIÓN
 @router.post(
     "/", 
-    response_model=SuscripcionCreateResponse, 
+    response_model=SuscripcionResponse, 
     status_code=status.HTTP_201_CREATED,
     summary="Crear una nueva suscripción (Admin)",
     dependencies=[Depends(admin_required)] # <--- Ruta protegida

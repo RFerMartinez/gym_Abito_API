@@ -73,7 +73,7 @@ async def listar_trabajos(
     return await get_all(con=db)
 
 @router.delete(
-    path="/{jobName}",
+    path="/{nombreTrabajo}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Eliminar un trabajo",
     response_description="Trabajo eliminado",

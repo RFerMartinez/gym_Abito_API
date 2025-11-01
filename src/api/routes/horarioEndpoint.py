@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Body, Depends, status, HTTPException
 from asyncpg import Connection
 from typing import List, Optional
 
@@ -14,7 +14,9 @@ from services.horarioServices import (
     actualizar_capacidad_grupo,
     eliminar_relacion_grupo_dia,
     crear_horario_completo,
-    eliminar_horario_completo
+    eliminar_horario_completo,
+    actualizar_horario_completo,
+    obtener_horario_detallado
 )
 
 # SCHEMAS
@@ -27,7 +29,8 @@ from schemas.horarioSchema import (
     GrupoConDetalles,
     UpdateCapacidadGrupo,
     UpdateEmpleadoGrupo,
-    HorarioCompletoCreate
+    HorarioCompletoCreate,
+    HorarioCompletoUpdate
 )
 
 # Dependencias
@@ -276,3 +279,33 @@ async def eliminar_horario_grupo(
     await eliminar_horario_completo(conn=db, nroGrupo=nroGrupo)
     return # Devuelve 204 No Content
 
+@router.put(
+    "/",
+    response_model=HorarioCompletoResponse,
+    summary="Actualizar un grupo/horario completo (Admin)",
+    response_description="Grupo actualizado exitosamente",
+    dependencies=[Depends(admin_required)] # <-- Protegido para Admin
+)
+async def actualizar_horario_grupo(
+    data: HorarioCompletoUpdate = Body(...), # <-- Recibe el body completo
+    db: Connection = Depends(get_db)
+):
+    """
+    Actualiza un horario/grupo completo, incluyendo su nroGrupo,
+    horario y la lista de días/capacidades.
+
+    El body debe contener `originalNroGrupo` (el identificador actual)
+    y el resto de los campos (`nroGrupo`, `horaInicio`, `horaFin`, `dias_asignados`)
+    representan el **nuevo estado** deseado.
+
+    **Validaciones (Reglas de Negocio):**
+    - Fallará si el nuevo `nroGrupo` (si se cambia) ya existe.
+    - Fallará si el nuevo rango horario se superpone con otro grupo.
+    - Fallará si se intenta eliminar un día que tiene alumnos inscritos.
+    - Fallará si se reduce la capacidad de un día por debajo del
+    número de alumnos ya inscritos en ese día/grupo.
+
+    Toda la operación es transaccional.
+    Requiere permisos de **administrador**.
+    """
+    return await actualizar_horario_completo(conn=db, data=data)

@@ -11,7 +11,8 @@ from schemas.horarioSchema import (
     GrupoConDetalles,
     DiaConCapacidad,
     HorarioCompletoCreate,
-    PerteneceResponse
+    PerteneceResponse,
+    HorarioCompletoUpdate
 )
 
 from utils.exceptions import (
@@ -395,4 +396,162 @@ async def eliminar_horario_completo(conn: Connection, nroGrupo: str) -> None:
             raise BusinessRuleException(f"El grupo {nroGrupo} tiene dependencias (posiblemente alumnos) y no se puede eliminar.")
         except Exception as e:
             raise DatabaseException("eliminar horario", str(e))
+
+
+
+
+async def obtener_horario_detallado(conn: Connection, nroGrupo: str) -> HorarioCompletoResponse:
+    """
+    Obtiene los detalles completos de un único grupo/horario.
+    """
+    try:
+        query = """
+        SELECT 
+            h."nroGrupo",
+            h."horaInicio",
+            h."horaFin",
+            COALESCE(
+                JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                        'dia', p.dia,
+                        'capacidadMax', p."capacidadMax",
+                        'empleado', p."dniEmpleado",
+                        'alumnos_inscritos', (
+                            SELECT COUNT(*) 
+                            FROM "Asiste" a 
+                            WHERE a."nroGrupo" = h."nroGrupo" 
+                            AND a.dia = p.dia
+                        )
+                    )
+                ) FILTER (WHERE p.dia IS NOT NULL),
+                '[]'::json
+            ) as dias_info
+        FROM "Horario" h
+        LEFT JOIN "Pertenece" p ON h."nroGrupo" = p."nroGrupo"
+        WHERE h."nroGrupo" = $1
+        GROUP BY h."nroGrupo", h."horaInicio", h."horaFin"
+        """
+        row = await conn.fetchrow(query, nroGrupo)
+        
+        if not row:
+            raise NotFoundException("Grupo", nroGrupo)
+
+        dias_info = json.loads(row["dias_info"]) if isinstance(row["dias_info"], str) else row["dias_info"]
+
+        horario_data = {
+            "nroGrupo": row["nroGrupo"],
+            "horaInicio": row["horaInicio"],
+            "horaFin": row["horaFin"],
+            "dias_asignados": dias_info
+        }
+        return HorarioCompletoResponse(**horario_data)
+
+    except NotFoundException:
+        raise
+    except Exception as e:
+        raise DatabaseException("obtener horario detallado", str(e))
+
+# --- NUEVO SERVICIO PARA ACTUALIZAR GRUPO ---
+async def actualizar_horario_completo(
+    conn: Connection, 
+    data: HorarioCompletoUpdate
+) -> HorarioCompletoResponse:
+    """
+    Actualiza un grupo/horario de forma transaccional.
+    Maneja cambio de PK (nroGrupo), validación de capacidad y superposición.
+    """
+    
+    originalNroGrupo = data.originalNroGrupo
+    nuevo_nroGrupo = data.nroGrupo
+    
+    async with conn.transaction():
+        try:
+            # === VALIDACIÓN 1: PRE-VERIFICACIÓN DE DUPLICADO ===
+            # (Esta es la corrección principal)
+            if originalNroGrupo != nuevo_nroGrupo:
+                existe_nuevo = await conn.fetchval('SELECT 1 FROM "Horario" WHERE "nroGrupo" = $1', nuevo_nroGrupo)
+                if existe_nuevo:
+                    # Si el nuevo nroGrupo YA existe, fallamos aquí con el error correcto.
+                    raise DuplicateEntryException("nroGrupo", nuevo_nroGrupo)
+
+            # === VALIDACIÓN 2: OBTENER ALUMNOS INSCRITOS ===
+            inscritos_rows = await conn.fetch(
+                'SELECT dia, COUNT(*) as "count" FROM "Asiste" WHERE "nroGrupo" = $1 GROUP BY dia',
+                originalNroGrupo
+            )
+            current_student_count_map = {row['dia']: row['count'] for row in inscritos_rows}
+            dias_nuevos = set(d.dia for d in data.dias_asignados)
+
+            # === VALIDACIÓN 3: REGLA DE NEGOCIO DE CAPACIDAD ===
+            for dia_data in data.dias_asignados:
+                inscritos_actuales = current_student_count_map.get(dia_data.dia, 0)
+                if dia_data.capacidadMax < inscritos_actuales:
+                    raise BusinessRuleException(f"Día {dia_data.dia}: La nueva capacidad ({dia_data.capacidadMax}) es menor que los {inscritos_actuales} alumnos ya inscritos.")
+
+            # === VALIDACIÓN 4: REGLA DE NEGOCIO DE ELIMINACIÓN DE DÍA ===
+            for dia_actual, inscritos in current_student_count_map.items():
+                if dia_actual not in dias_nuevos and inscritos > 0:
+                    raise BusinessRuleException(f"No se puede eliminar el día {dia_actual} porque tiene {inscritos} alumnos inscritos. Reasígnelos primero.")
+            
+            # === VALIDACIÓN 5: SUPERPOSICIÓN HORARIA ===
+            if await check_horario_overlap(conn, data.horaInicio, data.horaFin, nro_grupo_excluir=originalNroGrupo):
+                raise BusinessRuleException(f"El rango horario {data.horaInicio.strftime('%H:%M')}-{data.horaFin.strftime('%H:%M')} se superpone con un grupo existente.")
+
+            # === EJECUCIÓN (Lógica de Actualización) ===
+            
+            if originalNroGrupo == nuevo_nroGrupo:
+                # ----- CASO 1: nroGrupo NO cambia (fácil) -----
+                await conn.execute(
+                    'UPDATE "Horario" SET "horaInicio" = $1, "horaFin" = $2 WHERE "nroGrupo" = $3',
+                    data.horaInicio, data.horaFin, originalNroGrupo
+                )
+                await conn.execute('DELETE FROM "Pertenece" WHERE "nroGrupo" = $1', originalNroGrupo)
+                for dia_data in data.dias_asignados:
+                    await conn.execute(
+                        'INSERT INTO "Pertenece" ("nroGrupo", dia, "capacidadMax", "dniEmpleado") VALUES ($1, $2, $3, $4)',
+                        originalNroGrupo, dia_data.dia, dia_data.capacidadMax, dia_data.dniEmpleado
+                    )
+                
+            else:
+                # ----- CASO 2: nroGrupo CAMBIA (difícil, migración de PK) -----
+                
+                # a. Crear el nuevo registro de Horario (Ahora sabemos que no es duplicado)
+                await conn.execute(
+                    'INSERT INTO "Horario" ("nroGrupo", "horaInicio", "horaFin") VALUES ($1, $2, $3)',
+                    nuevo_nroGrupo, data.horaInicio, data.horaFin
+                )
+                
+                # b. Migrar alumnos de "Asiste" al nuevo nroGrupo
+                await conn.execute(
+                    'UPDATE "Asiste" SET "nroGrupo" = $1 WHERE "nroGrupo" = $2',
+                    nuevo_nroGrupo, originalNroGrupo
+                )
+                
+                # c. Eliminar los días del viejo grupo en "Pertenece"
+                await conn.execute('DELETE FROM "Pertenece" WHERE "nroGrupo" = $1', originalNroGrupo)
+                
+                # d. Insertar los nuevos días para el nuevo grupo en "Pertenece"
+                for dia_data in data.dias_asignados:
+                    await conn.execute(
+                        'INSERT INTO "Pertenece" ("nroGrupo", dia, "capacidadMax", "dniEmpleado") VALUES ($1, $2, $3, $4)',
+                        nuevo_nroGrupo, dia_data.dia, dia_data.capacidadMax, dia_data.dniEmpleado
+                    )
+                
+                # e. Eliminar el viejo registro de Horario
+                await conn.execute('DELETE FROM "Horario" WHERE "nroGrupo" = $1', originalNroGrupo)
+        
+        except UniqueViolationError as e:
+            # Si llegamos aquí DESPUÉS de nuestra validación previa,
+            # el error es por OTRA cosa (ej. en "Asiste" o "Pertenece").
+            # Este es un error más genérico pero menos engañoso.
+            raise BusinessRuleException(f"Error de duplicado en la base de datos al actualizar. Verifique que no haya conflictos de alumnos inscritos. (Detalle: {str(e)})")
+        
+        except (DuplicateEntryException, BusinessRuleException, NotFoundException, DatabaseException) as e:
+            raise e # Re-lanzar
+        except Exception as e:
+            raise DatabaseException("actualizar horario", str(e))
+        
+    # 6. Devolver el estado final del grupo actualizado
+    return await obtener_horario_detallado(conn, nuevo_nroGrupo)
+
 
