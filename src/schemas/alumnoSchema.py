@@ -1,5 +1,5 @@
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import List, Optional
 
 # Esquema para la asignación de horario
@@ -74,4 +74,29 @@ class HorariosAlumnoResponse(BaseModel):
 class HorariosUpdate(BaseModel):
     horarios: List[HorarioAlumno] = Field(..., description="La lista completa y nueva de horarios para el alumno.")
 
+class AlumnoPerfilUpdate(BaseModel):
+    nombre: str = Field(..., max_length=40, description="Nombre de la persona")
+    apellido: str = Field(..., max_length=40, description="Apellido de la persona")
+    sexo: str = Field(..., max_length=1, description="Sexo ('M' o 'F')")
+    email: EmailStr = Field(..., description="Email de la persona")
+    telefono: str = Field(..., max_length=15, description="Teléfono de la persona")
+    nomProvincia: str = Field(..., max_length=40, description="Nombre de la provincia")
+    nomLocalidad: str = Field(..., max_length=40, description="Nombre de la localidad")
+    calle: str = Field(..., max_length=60, description="Calle")
+    numero: str = Field(default="S/N", max_length=5, description="Número de calle")
 
+    @field_validator('sexo')
+    @classmethod
+    def validar_sexo(cls, v: str) -> str:
+        sexo_upper = v.upper()
+        if sexo_upper not in ['M', 'F']:
+            raise ValueError("El sexo debe ser 'M' o 'F'")
+        return sexo_upper
+
+    @field_validator('numero')
+    @classmethod
+    def validar_numero(cls, v: str) -> str:
+        # Re-utilizamos la validación de tu schema de Direccion
+        if v != "S/N" and not v.isdigit():
+            raise ValueError("El número debe ser 'S/N' o un valor numérico")
+        return v

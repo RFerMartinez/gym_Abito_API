@@ -12,14 +12,16 @@ from schemas.alumnoSchema import (
     AlumnoDetalle,
     HorarioAlumno,
     HorariosAlumnoResponse,
-    HorariosUpdate
+    HorariosUpdate,
+    AlumnoPerfilUpdate
 )
 from services.alumnoServices import (
     activar_alumno,
     listar_alumnos_detalle,
     obtener_detalle_alumno,
     obtener_horarios_alumno,
-    actualizar_horarios_alumno
+    actualizar_horarios_alumno,
+    actualizar_perfil_alumno
 )
 from api.dependencies.security import (
     staff_required,
@@ -165,3 +167,24 @@ async def actualizar_horarios_de_alumno(
     **Este endpoint es accesible para usuarios con rol de staff (admin o empleado).**
     """
     return await actualizar_horarios_alumno(conn=db, dni=dni, data=data)
+
+@router.put(
+    "/{dni}",
+    response_model=AlumnoDetalle,
+    summary="Actualizar perfil de un alumno (Staff)",
+    response_description="Devuelve el perfil actualizado del alumno.",
+    dependencies=[Depends(staff_required)] # <--- Protegido para Staff
+)
+async def actualizar_perfil_de_alumno(
+    dni: str,
+    data: AlumnoPerfilUpdate = Body(...),
+    db: Connection = Depends(get_db)
+):
+    """
+    Actualiza la información personal (nombre, apellido, email, etc.)
+    y de dirección (calle, provincia, etc.) de un alumno específico.
+    
+    Requiere permisos de **staff (administrador o empleado)**.
+    """
+    return await actualizar_perfil_alumno(conn=db, dni=dni, data=data)
+

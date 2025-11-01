@@ -13,7 +13,8 @@ from schemas.alumnoSchema import (
     HorarioAlumno,
     HorarioAsignado,
     HorariosUpdate,
-    HorariosAlumnoResponse
+    HorariosAlumnoResponse,
+    AlumnoPerfilUpdate
 )
 
 from utils.exceptions import (
@@ -319,4 +320,62 @@ async def actualizar_horarios_alumno(conn: Connection, dni: str, data: HorariosU
             raise e
         except Exception as e:
             raise DatabaseException("actualizar horarios del alumno", str(e))
+
+async def actualizar_perfil_alumno(conn: Connection, dni: str, data: AlumnoPerfilUpdate) -> AlumnoDetalle:
+    """
+    Actualiza la información personal (Persona) y de dirección (Direccion) de un alumno.
+    Si la provincia o localidad no existen, las crea automáticamente.
+    """
+    async with conn.transaction():
+        try:
+            # 1. Verificar que el alumno existe
+            alumno_existe = await conn.fetchval('SELECT 1 FROM "Alumno" WHERE dni = $1', dni)
+            if not alumno_existe:
+                raise NotFoundException("Alumno", dni)
+
+            # 2. CREAR Provincia y Localidad si no existen (en lugar de verificar)
+            
+            # 2.1. Asegurar que la Provincia exista
+            # Si ya existe, ON CONFLICT no hace nada. Si no existe, la crea.
+            await conn.execute('''
+                INSERT INTO "Provincia" ("nomProvincia")
+                VALUES ($1)
+                ON CONFLICT ("nomProvincia") DO NOTHING
+            ''', data.nomProvincia)
+            
+            # 2.2. Asegurar que la Localidad exista
+            # (La provincia ya está garantizada por el paso anterior)
+            await conn.execute('''
+                INSERT INTO "Localidad" ("nomLocalidad", "nomProvincia")
+                VALUES ($1, $2)
+                ON CONFLICT ("nomLocalidad", "nomProvincia") DO NOTHING
+            ''', data.nomLocalidad, data.nomProvincia)
+
+            # 3. Actualizar la tabla "Persona"
+            await conn.execute('''
+                UPDATE "Persona"
+                SET nombre = $1, apellido = $2, sexo = $3, email = $4, telefono = $5
+                WHERE dni = $6
+            ''', data.nombre, data.apellido, data.sexo, data.email, data.telefono, dni)
+
+            # 4. Actualizar la tabla "Direccion"
+            await conn.execute('''
+                UPDATE "Direccion"
+                SET "nomLocalidad" = $1, "nomProvincia" = $2, calle = $3, numero = $4
+                WHERE dni = $5
+            ''', data.nomLocalidad, data.nomProvincia, data.calle, data.numero, dni)
+
+            # 5. Devolver los datos actualizados llamando al servicio que ya teníamos
+            return await obtener_detalle_alumno(conn, dni)
+
+        except NotFoundException:
+            raise
+        except Exception as e:
+            # Manejar posibles errores de unicidad (ej. email o telefono duplicado)
+            if "unique constraint" in str(e).lower():
+                if "persona_email_key" in str(e).lower():
+                    raise DuplicateEntryException("email", data.email)
+                if "persona_telefono_key" in str(e).lower():
+                    raise DuplicateEntryException("telefono", data.telefono)
+            raise DatabaseException("actualizar perfil de alumno", str(e))
 
