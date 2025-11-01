@@ -1,11 +1,25 @@
 import json
 from asyncpg import Connection, UniqueViolationError, ForeignKeyViolationError
 from typing import List, Optional
+from datetime import time
+
 from schemas.horarioSchema import (
-    HorarioCreate, HorarioResponse, PerteneceCreate,
-    HorarioCompletoResponse, GrupoConDetalles, DiaConCapacidad
+    HorarioCreate,
+    HorarioResponse,
+    PerteneceCreate,
+    HorarioCompletoResponse,
+    GrupoConDetalles,
+    DiaConCapacidad,
+    HorarioCompletoCreate,
+    PerteneceResponse
 )
-from utils.exceptions import NotFoundException, DatabaseException, DuplicateEntryException
+
+from utils.exceptions import (
+    BusinessRuleException,
+    NotFoundException,
+    DatabaseException,
+    DuplicateEntryException
+)
 
 async def crear_horario(conn: Connection, horario: HorarioCreate) -> HorarioResponse:
     """
@@ -236,3 +250,149 @@ async def eliminar_relacion_grupo_dia(conn: Connection, nroGrupo: str, dia: str)
         raise
     except Exception as e:
         raise DatabaseException("eliminar relación grupo-día", str(e))
+
+async def check_horario_overlap(
+    conn: Connection, 
+    hora_inicio: time, 
+    hora_fin: time, 
+    nro_grupo_excluir: Optional[str] = None
+) -> bool:
+    """
+    Verifica si un nuevo rango horario (NewStart, NewEnd) se superpone 
+    con alguno existente (OldStart, OldEnd).
+
+    La lógica de superposición es: NewStart < OldEnd AND NewEnd > OldStart
+    """
+    try:
+        # $1 = NewStart (hora_inicio)
+        # $2 = NewEnd (hora_fin)
+        # "horaFin" = OldEnd
+        # "horaInicio" = OldStart
+        query = """
+        SELECT 1 FROM "Horario"
+        WHERE $1 < "horaFin" AND $2 > "horaInicio"
+        """
+        params = [hora_inicio, hora_fin]
+
+        # Si estamos editando, excluimos el grupo actual de la comprobación
+        if nro_grupo_excluir:
+            query += ' AND "nroGrupo" != $3'
+            params.append(nro_grupo_excluir)
+        
+        # fetchval retornará 1 si encuentra un overlap, o None si no
+        overlap = await conn.fetchval(query, *params)
+        
+        # Si overlap no es None, significa que encontró un registro (overlap=True)
+        return overlap is not None
+    
+    except Exception as e:
+        # Si falla la consulta, por precaución no dejamos crear
+        print(f"Error crítico chequeando superposición horaria: {e}")
+        # Devolvemos True para "fallar en modo seguro" (prevenir la creación)
+        return True
+
+# --- NUEVO SERVICIO TRANSACCIONAL ---
+async def crear_horario_completo(
+    conn: Connection, 
+    horario_data: HorarioCompletoCreate
+) -> HorarioCompletoResponse:
+    """
+    De forma transaccional, crea el Horario (grupo) y asigna sus días (Pertenece).
+    Valida la superposición de horarios.
+    """
+    
+    # 1. Validación de "consideración": Chequear superposición horaria
+    if await check_horario_overlap(conn, horario_data.horaInicio, horario_data.horaFin):
+        raise BusinessRuleException(f"El rango horario {horario_data.horaInicio.strftime('%H:%M')}-{horario_data.horaFin.strftime('%H:%M')} se superpone con un grupo existente.")
+
+    async with conn.transaction():
+        try:
+            # 2. Crear el Horario (Grupo) principal
+            # Reutilizamos el servicio que ya tenías
+            horario_creado = await crear_horario(conn, HorarioCreate(
+                nroGrupo=horario_data.nroGrupo,
+                horaInicio=horario_data.horaInicio,
+                horaFin=horario_data.horaFin
+            ))
+            
+            dias_asignados_response = []
+            
+            # 3. Asignar cada día de la lista
+            for dia_data in horario_data.dias_asignados:
+                # Preparamos el payload para el servicio existente
+                pertenece_data = PerteneceCreate(
+                    nroGrupo=horario_creado.nroGrupo,
+                    dia=dia_data.dia,
+                    capacidadMax=dia_data.capacidadMax,
+                    dniEmpleado=dia_data.dniEmpleado
+                )
+                
+                # Reutilizamos el servicio de asignación que ya valida FKs (Día, Empleado)
+                dia_asignado_dict = await crear_relacion_grupo_dia(conn, pertenece_data)
+                
+                # Preparamos la sub-respuesta
+                dias_asignados_response.append(DiaConCapacidad(
+                    dia=dia_asignado_dict['dia'],
+                    capacidadMax=dia_asignado_dict['capacidadMax'],
+                    empleado=dia_asignado_dict['dniEmpleado'],
+                    alumnos_inscritos=0 # Siempre es 0 al crear
+                ))
+        
+            # 4. Si todo salió bien, devolver la respuesta completa
+            return HorarioCompletoResponse(
+                nroGrupo=horario_creado.nroGrupo,
+                horaInicio=horario_creado.horaInicio,
+                horaFin=horario_creado.horaFin,
+                dias_asignados=dias_asignados_response
+            )
+
+        except (DuplicateEntryException, NotFoundException, BusinessRuleException) as e:
+            raise e # Re-lanzar excepciones de negocio para el handler
+        except ForeignKeyViolationError as e:
+            # Error si un día o DNI de empleado no existe
+            raise NotFoundException("Día o Empleado", f"Verifique que los días y DNI de empleados sean correctos: {e}")
+        except Exception as e:
+            raise DatabaseException("crear horario completo", str(e))
+
+async def eliminar_horario_completo(conn: Connection, nroGrupo: str) -> None:
+    """
+    Elimina un grupo (Horario) y todas sus asignaciones (Pertenece)
+    de forma transaccional, solo si no tiene alumnos inscritos.
+    """
+    async with conn.transaction():
+        try:
+            # 1. Verificar que no haya alumnos inscritos (Tu verificación)
+            alumnos_inscritos = await conn.fetchval(
+                'SELECT 1 FROM "Asiste" WHERE "nroGrupo" = $1 LIMIT 1',
+                nroGrupo
+            )
+            
+            if alumnos_inscritos:
+                raise BusinessRuleException(f"El grupo {nroGrupo} tiene alumnos inscritos. Primero debe reasignarlos para poder eliminar el grupo.")
+
+            # 2. Eliminar las relaciones en "Pertenece" (Tu lógica)
+            # (Esto se ejecuta primero por la FK)
+            await conn.execute(
+                'DELETE FROM "Pertenece" WHERE "nroGrupo" = $1',
+                nroGrupo
+            )
+            
+            # 3. Eliminar el grupo en "Horario" (Tu lógica)
+            result = await conn.execute(
+                'DELETE FROM "Horario" WHERE "nroGrupo" = $1',
+                nroGrupo
+            )
+            
+            # 4. Verificar si el grupo realmente existía
+            if result == "DELETE 0":
+                # Si "Horario" no borró nada, es que el grupo no existía.
+                raise NotFoundException("Grupo", nroGrupo)
+        
+        except (BusinessRuleException, NotFoundException) as e:
+            raise e # Re-lanzar para el handler de FastAPI
+        except ForeignKeyViolationError:
+            # Esto es un seguro, pero la comprobación de "Asiste" debería atajarlo.
+            raise BusinessRuleException(f"El grupo {nroGrupo} tiene dependencias (posiblemente alumnos) y no se puede eliminar.")
+        except Exception as e:
+            raise DatabaseException("eliminar horario", str(e))
+

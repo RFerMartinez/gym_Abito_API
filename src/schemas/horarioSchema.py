@@ -187,3 +187,29 @@ class GrupoEstadisticasResponse(BaseModel):
                                     description="Porcentaje de ocupación")
 
     model_config = ConfigDict(from_attributes=True)
+
+# schema para creacion de un uevo grupo desde FrontEnd
+class DiaAsignadoCreate(BaseModel):
+    """
+    Schema interno para definir un día asignado durante la creación
+    del grupo completo.
+    """
+    dia: str = Field(..., description="Nombre del día de la semana (Lunes, Martes, etc.)")
+    capacidadMax: int = Field(..., ge=1, le=50, description="Capacidad máxima")
+    dniEmpleado: Optional[str] = Field(None, min_length=8, max_length=8, pattern="^[0-9]+$", description="DNI del empleado (opcional)")
+
+    @field_validator('dia')
+    @classmethod
+    def validar_dia_existente(cls, value: str) -> str:
+        # Validamos el formato del día
+        dias_validos = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+        if value.capitalize() not in dias_validos:
+            raise ValueError(f"Día no válido. Debe ser uno de: {', '.join(dias_validos)}")
+        return value.capitalize()
+
+class HorarioCompletoCreate(HorarioBase):
+    """
+    Schema principal para el payload de creación de un grupo
+    con sus días ya asignados.
+    """
+    dias_asignados: List[DiaAsignadoCreate] = Field(..., description="Lista de días a asignar al grupo")

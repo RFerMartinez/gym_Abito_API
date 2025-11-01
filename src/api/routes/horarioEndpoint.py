@@ -12,7 +12,9 @@ from services.horarioServices import (
     obtener_horarios_completos,
     obtener_horarios_por_dia_service,
     actualizar_capacidad_grupo,
-    eliminar_relacion_grupo_dia
+    eliminar_relacion_grupo_dia,
+    crear_horario_completo,
+    eliminar_horario_completo
 )
 
 # SCHEMAS
@@ -24,7 +26,8 @@ from schemas.horarioSchema import (
     HorarioCompletoResponse,
     GrupoConDetalles,
     UpdateCapacidadGrupo,
-    UpdateEmpleadoGrupo
+    UpdateEmpleadoGrupo,
+    HorarioCompletoCreate
 )
 
 # Dependencias
@@ -33,7 +36,7 @@ from api.dependencies.security import staff_required, admin_required
 # BLUEPRINT de /horarios
 router = APIRouter(
     prefix="/horarios",
-    tags=["horarios"],
+    tags=["Horarios/Grupos"],
     responses={
         status.HTTP_404_NOT_FOUND: {
             "description": "Recurso no encontrado"
@@ -48,6 +51,37 @@ router = APIRouter(
 )
 
 # ===============================================================
+@router.post(
+    "/completo",
+    response_model=HorarioCompletoResponse, # <-- MODIFICADO: Devuelve el objeto completo
+    status_code=status.HTTP_201_CREATED,
+    summary="Crear un nuevo horario/grupo completo (Admin)",
+    response_description="Horario y sus días asignados creados exitosamente",
+    dependencies=[Depends(admin_required)]
+)
+async def crear_nuevo_horario_completo( # <-- Renombrado para claridad
+    horario_data: HorarioCompletoCreate, # <-- MODIFICADO: Usa el nuevo schema
+    db: Connection = Depends(get_db)
+):
+    """
+    Crea un nuevo horario/grupo y le asigna sus días en una sola operación.
+    
+    Recibe un objeto con:
+    - **nroGrupo**: Identificador único del grupo (ej: "1", "A")
+    - **horaInicio**: Hora de inicio (formato HH:MM:SS)
+    - **horaFin**: Hora de fin (debe ser posterior a horaInicio)
+    - **dias_asignados**: Lista de días con su capacidad y empleado opcional.
+    
+    **Consideraciones:**
+    - Valida que el **nroGrupo** no exista.
+    - Valida que el **rango horario** no se superponga con otros grupos existentes.
+    - Valida que los **Días** y **DNI de Empleados** (si se proveen) existan.
+    - Toda la operación es transaccional.
+    
+    Requiere permisos de **administrador**.
+    """
+    # Llama al nuevo servicio transaccional
+    return await crear_horario_completo(conn=db, horario_data=horario_data)
 
 # CREAR horario/grupo
 @router.post(
@@ -219,3 +253,26 @@ async def obtener_dias_disponibles(
     """
     dias = await db.fetch('SELECT dia FROM "Dia" ORDER BY dia')
     return [dia["dia"] for dia in dias]
+
+@router.delete(
+    "/{nroGrupo}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Eliminar un grupo/horario completo (Admin)",
+    response_description="Grupo eliminado exitosamente",
+    dependencies=[Depends(admin_required)] # <-- Protegido para Admin
+)
+async def eliminar_horario_grupo(
+    nroGrupo: str,
+    db: Connection = Depends(get_db)
+):
+    """
+    Elimina un horario/grupo y todas sus asignaciones de días (Pertenece).
+    
+    **Importante:** Esta operación fallará (error 400) si el grupo
+    tiene alumnos actualmente inscritos en él (registros en 'Asiste').
+    
+    Requiere permisos de **administrador**.
+    """
+    await eliminar_horario_completo(conn=db, nroGrupo=nroGrupo)
+    return # Devuelve 204 No Content
+
