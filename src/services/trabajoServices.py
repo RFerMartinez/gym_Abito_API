@@ -42,7 +42,8 @@ async def create(con: Connection, job_data: TrabajoCreate) -> TrabajoInDB:
 async def get_all(con: Connection) -> List[TrabajoInDB]:
     try:
         query = """
-            SELECT * FROM "Trabajo";
+            SELECT *
+            FROM "Trabajo";
         """
         res = await con.fetch(query)
         return [TrabajoInDB(**elem) for elem in res]

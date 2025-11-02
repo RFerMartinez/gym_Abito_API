@@ -58,7 +58,8 @@ async def get_all(con: Connection) -> List[SuscripcionResponse]:
     try:
         query = """
             SELECT "nombreSuscripcion", precio
-            FROM "Suscripcion";
+            FROM "Suscripcion"
+            ORDER BY "nombreSuscripcion";
         """
         suscripciones = await con.fetch(query)
         return [SuscripcionResponse(**elem) for elem in suscripciones]
