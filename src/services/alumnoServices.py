@@ -115,7 +115,6 @@ async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActiva
         except Exception as e:
             raise DatabaseException("activar alumno", str(e))
 
-
 async def listar_alumnos_detalle(conn: Connection) -> List[AlumnoListado]:
     """
     Servicio para listar todos los alumnos con detalles específicos para administradores.
@@ -159,7 +158,6 @@ async def listar_alumnos_detalle(conn: Connection) -> List[AlumnoListado]:
 
     except Exception as e:
         raise DatabaseException("listar alumnos", str(e))
-
 
 async def obtener_detalle_alumno(conn: Connection, dni: str) -> AlumnoDetalle:
     """
@@ -378,4 +376,62 @@ async def actualizar_perfil_alumno(conn: Connection, dni: str, data: AlumnoPerfi
                 if "persona_telefono_key" in str(e).lower():
                     raise DuplicateEntryException("telefono", data.telefono)
             raise DatabaseException("actualizar perfil de alumno", str(e))
+
+async def obtener_detalle_alumno_auth(conn: Connection, dni: str) -> AlumnoDetalle:
+    """
+    Servicio para obtener la vista detallada de un único alumno por su DNI.
+    """
+    try:
+        query = """
+        SELECT
+            p.dni,
+            p.nombre,
+            p.apellido,
+            p.sexo,
+            p.email,
+            p.telefono,
+            (CASE WHEN aa.dni IS NOT NULL THEN TRUE ELSE FALSE END) as activo,
+            (
+                SELECT COUNT(*)
+                FROM "Cuota" c
+                WHERE c.dni = a.dni AND c.pagada = FALSE
+            ) as "cuotasPendientes",
+            COALESCE(
+                (
+                    SELECT
+                        CASE
+                            WHEN LEFT(MIN(asis."nroGrupo"), 1) IN ('1', '2') THEN 'Mañana'
+                            WHEN LEFT(MIN(asis."nroGrupo"), 1) IN ('3', '4', '5') THEN 'Tarde'
+                            ELSE 'No asignado'
+                        END
+                    FROM "Asiste" asis
+                    WHERE asis.dni = a.dni
+                ),
+                'No asignado'
+            ) as turno,
+            a."nombreSuscripcion" as suscripcion,
+            a."nombreTrabajo" as trabajoactual,
+            d."nomProvincia" as provincia,
+            d."nomLocalidad" as localidad,
+            d.calle,
+            d.numero as nro,
+            a.nivel as nivel
+        FROM "Alumno" a
+        JOIN "Persona" p ON a.dni = p.dni
+        LEFT JOIN "AlumnoActivo" aa ON a.dni = aa.dni
+        LEFT JOIN "Direccion" d ON a.dni = d.dni
+        WHERE a.dni = $1;
+        """
+        
+        result = await conn.fetchrow(query, dni)
+        
+        if not result:
+            raise NotFoundException("Alumno", dni)
+            
+        return AlumnoDetalle(**dict(result))
+
+    except NotFoundException:
+        raise
+    except Exception as e:
+        raise DatabaseException("obtener detalle de alumno", str(e))
 

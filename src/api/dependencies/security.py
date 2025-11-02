@@ -73,3 +73,21 @@ async def staff_required(
             detail="Se requieren permisos de staff (admin o empleado)"
         )
     return current_user
+
+async def staff_or_alumno_required(
+    current_user: dict = Depends(get_current_user),
+    db: Connection = Depends(get_db)
+):
+    """
+    Verifica si el usuario es staff (admin o empleado) O si es alumno.
+    """
+    es_admin = await es_administrador(db, current_user["dni"])
+    es_emp = await es_empleado(db, current_user["dni"])
+    es_alu = await es_alumno(db, current_user["dni"]) #
+    
+    if not (es_admin or es_emp or es_alu):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Se requieren permisos de staff o de alumno para acceder a este recurso."
+        )
+    return current_user

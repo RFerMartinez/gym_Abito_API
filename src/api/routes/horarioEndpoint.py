@@ -34,7 +34,7 @@ from schemas.horarioSchema import (
 )
 
 # Dependencias
-from api.dependencies.security import staff_required, admin_required
+from api.dependencies.security import staff_required, admin_required, staff_or_alumno_required
 
 # BLUEPRINT de /horarios
 router = APIRouter(
@@ -135,9 +135,9 @@ async def asignar_dia_a_grupo(
 @router.get(
     "/",
     response_model=List[HorarioCompletoResponse],
-    summary="Obtener todos los horarios con detalles (Staff)",
+    summary="Obtener todos los horarios con detalles (Staff o Alumnos)",
     response_description="Lista de horarios con días asignados",
-    dependencies=[Depends(staff_required)]
+    dependencies=[Depends(staff_or_alumno_required)]
 )
 async def listar_horarios_completos(
     db: Connection = Depends(get_db)

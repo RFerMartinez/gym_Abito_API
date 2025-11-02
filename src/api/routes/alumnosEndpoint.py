@@ -59,29 +59,6 @@ async def activar_nuevo_alumno(
     return await activar_alumno(conn=db, data=data)
 
 
-# {
-#   "dni": "42276405",
-#   "sexo": "M",
-#   "nombreTrabajo": "Preparación Física",
-#   "nombreSuscripcion": "5 días a la semana",
-#   "nivel": "2",
-#   "deporte": "padel",
-#   "horarios": [
-#     {
-#       "nroGrupo": "1",
-#       "dia": "Lunes"
-#     },
-#     {
-#       "nroGrupo": "1",
-#       "dia": "Miércoles"
-#     },
-#     {
-#       "nroGrupo": "1",
-#       "dia": "Viernes"
-#     }
-#   ]
-# }
-
 # === NUEVO ENDPOINT PARA LISTAR ALUMNOS ===
 @router.get(
     "/",

@@ -100,3 +100,25 @@ class AlumnoPerfilUpdate(BaseModel):
         if v != "S/N" and not v.isdigit():
             raise ValueError("El número debe ser 'S/N' o un valor numérico")
         return v
+
+class AlumnoDetalleParaAlumno(BaseModel):
+    dni: str
+    nombre: str
+    apellido: str
+    sexo: str
+    email: str
+    telefono: str
+    activo: bool
+    cuotasPendientes: int
+    turno: str
+    suscripcion: str
+    trabajoactual: str
+    nivel: str
+    provincia: Optional[str] = None
+    localidad: Optional[str] = None
+    calle: Optional[str] = None
+    nro: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
