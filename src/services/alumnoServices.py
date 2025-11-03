@@ -14,7 +14,8 @@ from schemas.alumnoSchema import (
     HorarioAsignado,
     HorariosUpdate,
     HorariosAlumnoResponse,
-    AlumnoPerfilUpdate
+    AlumnoPerfilUpdate,
+    AlumnoPlanUpdate
 )
 
 from utils.exceptions import (
@@ -434,4 +435,42 @@ async def obtener_detalle_alumno_auth(conn: Connection, dni: str) -> AlumnoDetal
         raise
     except Exception as e:
         raise DatabaseException("obtener detalle de alumno", str(e))
+
+async def actualizar_plan_alumno(conn: Connection, dni: str, data: AlumnoPlanUpdate) -> None:
+    """
+    Actualiza el plan de entrenamiento (suscripción, trabajo, nivel) de un alumno.
+    Valida que la nueva suscripción y trabajo existan.
+    """
+    async with conn.transaction():
+        try:
+            # 1. Verificar que el Alumno exista
+            alumno_existe = await conn.fetchval('SELECT 1 FROM "Alumno" WHERE dni = $1', dni)
+            if not alumno_existe:
+                raise NotFoundException("Alumno", dni)
+            
+            # 2. Validar FK de Suscripcion
+            suscripcion_existe = await conn.fetchval('SELECT 1 FROM "Suscripcion" WHERE "nombreSuscripcion" = $1', data.nombreSuscripcion)
+            if not suscripcion_existe:
+                raise NotFoundException("Suscripción", data.nombreSuscripcion)
+
+            # 3. Validar FK de Trabajo
+            trabajo_existe = await conn.fetchval('SELECT 1 FROM "Trabajo" WHERE "nombreTrabajo" = $1', data.nombreTrabajo)
+            if not trabajo_existe:
+                raise NotFoundException("Trabajo", data.nombreTrabajo)
+            
+            # 4. Actualizar la tabla "Alumno"
+            await conn.execute('''
+                UPDATE "Alumno"
+                SET "nombreSuscripcion" = $1, "nombreTrabajo" = $2, nivel = $3
+                WHERE dni = $4
+            ''', data.nombreSuscripcion, data.nombreTrabajo, data.nivel, dni)
+            
+            # 5. Devolver los datos actualizados llamando al servicio existente
+            return await obtener_detalle_alumno(conn, dni)
+
+        except NotFoundException:
+            raise # Re-lanzar para el handler
+        except Exception as e:
+            raise DatabaseException("actualizar plan de alumno", str(e))
+
 

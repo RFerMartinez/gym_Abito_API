@@ -122,3 +122,18 @@ class AlumnoDetalleParaAlumno(BaseModel):
     class Config:
         from_attributes = True
 
+class AlumnoPlanUpdate(BaseModel):
+    nombreSuscripcion: str = Field(..., description="Nuevo nombre de la suscripción")
+    nombreTrabajo: str = Field(..., description="Nuevo nombre del trabajo asignado")
+    nivel: Optional[str] = Field(None, max_length=3, description="Nuevo nivel del alumno (ej: 'A1')")
+
+    class Config:
+        from_attributes = True
+        json_schema_extra = {
+            "example": {
+                "nombreSuscripcion": "3 días a la semana",
+                "nombreTrabajo": "Funcional",
+                "nivel": "B2"
+            }
+        }
+

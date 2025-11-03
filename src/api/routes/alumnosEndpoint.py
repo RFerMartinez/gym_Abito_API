@@ -13,7 +13,8 @@ from schemas.alumnoSchema import (
     HorarioAlumno,
     HorariosAlumnoResponse,
     HorariosUpdate,
-    AlumnoPerfilUpdate
+    AlumnoPerfilUpdate,
+    AlumnoPlanUpdate
 )
 from services.alumnoServices import (
     activar_alumno,
@@ -21,7 +22,8 @@ from services.alumnoServices import (
     obtener_detalle_alumno,
     obtener_horarios_alumno,
     actualizar_horarios_alumno,
-    actualizar_perfil_alumno
+    actualizar_perfil_alumno,
+    actualizar_plan_alumno
 )
 from api.dependencies.security import (
     staff_required,
@@ -165,3 +167,24 @@ async def actualizar_perfil_de_alumno(
     """
     return await actualizar_perfil_alumno(conn=db, dni=dni, data=data)
 
+@router.patch(
+    "/{dni}/plan",
+    response_model=AlumnoDetalle,
+    summary="Actualizar plan (suscripción, trabajo, nivel) de un alumno (Staff)",
+    response_description="Devuelve el perfil actualizado del alumno con su nuevo plan.",
+    dependencies=[Depends(staff_required)] # <--- Protegido para Staff
+)
+async def actualizar_plan_de_alumno(
+    dni: str,
+    data: AlumnoPlanUpdate = Body(...), # <--- Usamos el nuevo schema
+    db: Connection = Depends(get_db)
+):
+    """
+    Actualiza la información del plan de entrenamiento de un alumno:
+    - **nombreSuscripcion**: La nueva suscripción (Debe existir).
+    - **nombreTrabajo**: El nuevo tipo de trabajo (Debe existir).
+    - **nivel**: El nuevo nivel (ej: "A1", "B2").
+
+    Requiere permisos de **staff (administrador o empleado)**.
+    """
+    return await actualizar_plan_alumno(conn=db, dni=dni, data=data)
