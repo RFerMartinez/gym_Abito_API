@@ -26,7 +26,7 @@ class PersonaDetalle(BaseModel):
     # Información de la tabla Direccion
     provincia: Optional[str] = None
     localidad: Optional[str] = None
-    Calle: Optional[str] = None
+    calle: Optional[str] = None
     nro: Optional[str] = None
 
     # Información de roles

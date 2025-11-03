@@ -52,7 +52,7 @@ async def obtener_persona_por_dni(conn: Connection, dni: str) -> PersonaDetalle:
             p.sexo,
             d."nomLocalidad" as localidad,
             d."nomProvincia" as provincia,
-            d.calle as "Calle",
+            d.calle,
             d.numero as nro,
             FALSE as es_alumno, -- Garantizado por el WHERE
             FALSE as es_empleado -- Garantizado por el WHERE
