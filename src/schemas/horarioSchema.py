@@ -65,7 +65,7 @@ class HorarioResponse(HorarioBase):
 class PerteneceBase(BaseModel):
     nroGrupo: str = Field(..., description="Número del grupo (FK a Horario)", examples=["1"])
     dia: str = Field(..., description="Día de la semana (FK a Dia)", examples=["Lunes"])
-    capacidadMax: int = Field(..., ge=1, le=50, 
+    capacidadMax: int = Field(..., ge=1, 
                             description="Capacidad máxima de alumnos para este grupo-día",
                             examples=[20])
     dniEmpleado: Optional[str] = Field(
@@ -106,9 +106,7 @@ class PerteneceBase(BaseModel):
     @classmethod
     def validar_capacidad(cls, value: int) -> int:
         if value < 1:
-            raise ValueError("La capacidad máxima debe ser al menos 1")
-        if value > 100:
-            raise ValueError("La capacidad máxima no puede exceder 100")
+            raise ValueError("La capacidad mínima debe ser al menos 1")
         return value
 
 class PerteneceCreate(PerteneceBase):
@@ -165,7 +163,7 @@ class GrupoConDetalles(BaseModel):
 
 # ====-- SCHEMAS PARA ACTUALIZACIÓN --====
 class UpdateCapacidadGrupo(BaseModel):
-    capacidadMax: int = Field(..., ge=1, le=50, 
+    capacidadMax: int = Field(..., ge=1, 
                             description="Nueva capacidad máxima",
                             examples=[25])
 
@@ -195,7 +193,7 @@ class DiaAsignadoCreate(BaseModel):
     del grupo completo.
     """
     dia: str = Field(..., description="Nombre del día de la semana (Lunes, Martes, etc.)")
-    capacidadMax: int = Field(..., ge=1, le=50, description="Capacidad máxima")
+    capacidadMax: int = Field(..., ge=1, description="Capacidad máxima")
     dniEmpleado: Optional[str] = Field(None, min_length=8, max_length=8, pattern="^[0-9]+$", description="DNI del empleado (opcional)")
 
     @field_validator('dia')

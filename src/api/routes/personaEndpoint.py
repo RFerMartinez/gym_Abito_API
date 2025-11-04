@@ -4,7 +4,7 @@ from asyncpg import Connection
 from typing import List
 
 from core.session import get_db
-from api.dependencies.security import staff_required
+from api.dependencies.security import staff_required, admin_required
 from schemas.personaSchema import PersonaListado, PersonaDetalle
 from services import personaServices
 
@@ -47,3 +47,27 @@ async def get_persona_detalle(
     Requiere permisos de **staff (administrador o empleado)**.
     """
     return await personaServices.obtener_persona_por_dni(conn=db, dni=dni)
+
+@router.delete(
+    "/{dni}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Eliminar una persona (Solo Admin)",
+    response_description="Persona eliminada exitosamente",
+    dependencies=[Depends(admin_required)] # <-- Sobrescribe a 'staff' y exige ADMIN
+)
+async def delete_persona(
+    dni: str,
+    db: Connection = Depends(get_db)
+):
+    """
+    Elimina una persona del sistema, SOLO SI NO ES Alumno,
+    NO ES Empleado y NO ES Administrador.
+    
+    Esta operación es destructiva y eliminará también la dirección
+    asociada a esta persona.
+    
+    Requiere permisos de **administrador**.
+    """
+    await personaServices.eliminar_persona(conn=db, dni=dni)
+    return # Devuelve 204 No Content
+
