@@ -1,8 +1,8 @@
 # src/api/routes/personaEndpoint.py
 from fastapi import APIRouter, Depends, status
 from asyncpg import Connection
-from typing import List
-
+from typing import List, Annotated
+from api.dependencies.auth import get_current_user
 from core.session import get_db
 from api.dependencies.security import staff_required, admin_required
 from schemas.personaSchema import PersonaListado, PersonaDetalle
@@ -10,9 +10,25 @@ from services import personaServices
 
 router = APIRouter(
     prefix="/personas",
-    tags=["Personas"],
-    dependencies=[Depends(staff_required)] # <-- ¡Protegemos todas las rutas de este archivo!
+    tags=["Personas"]
 )
+
+@router.get(
+    "/mi-perfil",
+    response_model=PersonaDetalle,
+    summary="Obtener perfil de la persona autenticada (Persona)",
+    description="Devuelve los detalles de la persona logueada si NO es alumno ni empleado."
+)
+async def get_mi_perfil_persona(
+    current_user: Annotated[dict, Depends(get_current_user)],
+    db: Connection = Depends(get_db)
+):
+    """
+    Obtiene el detalle del usuario logueado usando su propio DNI.
+    """
+    dni = current_user["dni"]
+    # Reutilizamos el servicio que ya valida que NO sea alumno ni empleado
+    return await personaServices.obtener_persona_por_dni(conn=db, dni=dni)
 
 @router.get(
     "/",
@@ -70,4 +86,6 @@ async def delete_persona(
     """
     await personaServices.eliminar_persona(conn=db, dni=dni)
     return # Devuelve 204 No Content
+
+
 

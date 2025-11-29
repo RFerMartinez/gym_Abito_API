@@ -20,7 +20,9 @@ from services.authServices import (
     iniciar_registro_paso1,
     completar_registro_paso2,
     authenticate_user,
-    verify_email_token
+    verify_email_token,
+    es_alumno,
+    es_empleado
 )
 from utils.security import (
     create_access_token,
@@ -163,9 +165,28 @@ async def login(
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_info(
-    current_user: Annotated[dict, Depends(get_current_user)]
+    current_user: Annotated[dict, Depends(get_current_user)],
+    db: Connection = Depends(get_db) # <--- 2. INYECTAR LA CONEXIÓN A LA BD
 ):
     """
-    Obtiene información del usuario actualmente autenticado.
+    Obtiene información del usuario actualmente autenticado y sus roles.
     """
+    dni = current_user["dni"]
+    
+    # 3. VERIFICAR ROLES EN LA BASE DE DATOS
+    is_alumno = await es_alumno(db, dni)
+    is_empleado = await es_empleado(db, dni)
+    is_admin = current_user["esAdmin"] # Este dato ya viene en la tabla Persona
+    
+    # 4. DETERMINAR SI ES "SOLO PERSONA" (Ningún rol asignado)
+    is_persona = not (is_alumno or is_empleado or is_admin)
+    
+    # 5. AGREGAR DATOS A LA RESPUESTA
+    # Actualizamos el diccionario del usuario con los nuevos campos calculados
+    current_user.update({
+        "esAlumno": is_alumno,
+        "esEmpleado": is_empleado,
+        "esPersona": is_persona
+    })
+    
     return current_user

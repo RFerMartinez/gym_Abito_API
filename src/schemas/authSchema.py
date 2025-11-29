@@ -81,6 +81,11 @@ class UserResponse(BaseModel):
     requiereCambioClave: bool
     esAdmin: bool = Field(False, description="Indica si es administrador")
     
+    # --- NUEVOS CAMPOS ---
+    esAlumno: bool = Field(False, description="Indica si la persona es un alumno")
+    esEmpleado: bool = Field(False, description="Indica si la persona es un empleado")
+    esPersona: bool = Field(False, description="TRUE si no es ni admin, ni alumno, ni empleado")
+    
     model_config = ConfigDict(from_attributes=True)
 
 class LoginResponse(BaseModel):
