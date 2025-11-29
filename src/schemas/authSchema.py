@@ -31,6 +31,10 @@ class RegistroPaso2(BaseModel):
     nombre: str = Field(..., max_length=40, description="Nombre")
     apellido: str = Field(..., max_length=40, description="Apellido")
     telefono: str = Field(..., max_length=15, description="Teléfono")
+    
+    # --- CAMBIO: Agregamos el campo sexo ---
+    sexo: str = Field(..., max_length=1, description="Sexo ('M' o 'F')")
+    
     nomProvincia: str = Field(..., max_length=40, description="Nombre de la provincia")
     nomLocalidad: str = Field(..., max_length=40, description="Nombre de la localidad")
     calle: str = Field(..., max_length=60, description="Calle")
@@ -42,6 +46,15 @@ class RegistroPaso2(BaseModel):
         if v != "S/N" and not v.isdigit():
             raise ValueError("El número debe ser 'S/N' o un valor numérico")
         return v
+
+    # --- CAMBIO: Agregamos validador para sexo ---
+    @field_validator('sexo')
+    @classmethod
+    def validar_sexo(cls, v: str) -> str:
+        sexo_upper = v.upper()
+        if sexo_upper not in ['M', 'F']:
+            raise ValueError("El sexo debe ser 'M' o 'F'")
+        return sexo_upper
 
 # Esquema para login
 class LoginRequest(BaseModel):

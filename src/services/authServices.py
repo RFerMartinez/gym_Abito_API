@@ -65,17 +65,26 @@ async def completar_registro_paso2(conn: Connection, user_data: RegistroPaso2, e
     # Hashear la contraseña
     hashed_password = get_password_hash(contrasenia)
 
-    # Crear la persona
+    # --- CAMBIO: Añadimos 'sexo' al INSERT y pasamos user_data.sexo ($9) ---
     result = await conn.fetchrow('''
-        INSERT INTO "Persona" (dni, nombre, apellido, telefono, email, usuario, contrasenia, "requiereCambioClave")
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO "Persona" (dni, nombre, apellido, telefono, email, usuario, contrasenia, "requiereCambioClave", sexo)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *
-    ''', user_data.dni, user_data.nombre, user_data.apellido, user_data.telefono,
-        email, usuario, hashed_password, False)
+    ''', 
+    user_data.dni, 
+    user_data.nombre, 
+    user_data.apellido, 
+    user_data.telefono,
+    email, 
+    usuario, 
+    hashed_password, 
+    False, 
+    user_data.sexo # <--- Nuevo valor
+    )
 
     user = dict(result)
 
-    # Crear la dirección
+    # Crear la dirección (El resto sigue igual)
     try:
         await conn.execute('''
             INSERT INTO "Direccion" ("nomLocalidad", "nomProvincia", numero, calle, dni)
@@ -83,11 +92,9 @@ async def completar_registro_paso2(conn: Connection, user_data: RegistroPaso2, e
         ''', user_data.nomLocalidad, user_data.nomProvincia, user_data.numero,
             user_data.calle, user_data.dni)
     except Exception as e:
-        # Si hay error con la dirección, hacemos rollback del usuario
         await conn.execute('DELETE FROM "Persona" WHERE dni = $1', user_data.dni)
         raise DatabaseException("crear dirección", str(e))
 
-    # Enviar email de bienvenida
     if email_service is not None:
         email_service.send_welcome_email(email, user_data.nombre)
 

@@ -34,19 +34,19 @@ class EmailService:
     async def send_verification_email(self, email: str, token: str) -> bool:
         """Envía email de verificación"""
         subject = "Verifica tu cuenta - Gimnasio Abito"
-        verification_url = f"{self.frontend_url}/verify-email?token={token}"
+        
+        # CAMBIO AQUÍ: Apuntar a la ruta del FrontEnd que deseas (/completar-registro)
+        verification_url = f"{self.frontend_url}/completar-registro?token={token}"
         
         body_html = f"""
         <html>
         <body>
             <h2>¡Bienvenido a Gimnasio Abito!</h2>
-            <p>Para completar tu registro, por favor verifica tu dirección de email haciendo clic en el siguiente enlace:</p>
-            <p><a href="{verification_url}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verificar Email</a></p>
-            <p>Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
+            <p>Para completar tu registro, haz clic en el siguiente enlace:</p>
+            <p><a href="{verification_url}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Continuar Registro</a></p>
+            <p>Si el botón no funciona, copia y pega este enlace:</p>
             <p>{verification_url}</p>
-            <p>Este enlace expirará en 24 horas.</p>
-            <br>
-            <p>Si no solicitaste este registro, ignora este mensaje.</p>
+            <p>Este enlace expirará en 15 minutos.</p>
         </body>
         </html>
         """
