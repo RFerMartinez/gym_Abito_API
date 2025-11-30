@@ -81,3 +81,6 @@ class EmpleadoDetalle(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+class EmpleadoHorariosUpdate(BaseModel):
+    horarios: List[HorarioEmpleadoCreate]
+

@@ -10,7 +10,8 @@ from schemas.empleadoSchema import (
     EmpleadoCreate,
     EmpleadoResponse,
     EmpleadoListado,
-    EmpleadoDetalle
+    EmpleadoDetalle,
+    EmpleadoHorariosUpdate
 )
 
 from services import (
@@ -60,4 +61,35 @@ async def get_empleado_detalle(
     db: Connection = Depends(get_db)
 ):
     return await empleadoServices.obtener_detalle_empleado(conn=db, dni=dni)
+
+@router.put(
+    "/{dni}/horarios",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Actualizar horarios de un empleado (Admin)",
+    dependencies=[Depends(admin_required)]
+)
+async def actualizar_horarios_empleado_endpoint(
+    dni: str,
+    data: EmpleadoHorariosUpdate,
+    db: Connection = Depends(get_db)
+):
+    """
+    Reemplaza los horarios asignados a un empleado.
+    """
+    await empleadoServices.actualizar_horarios_empleado(conn=db, dni=dni, data=data)
+    return
+
+@router.delete(
+    "/{dni}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Dar de baja a un empleado (Admin)",
+    description="Elimina al empleado y libera sus horarios asignados.",
+    dependencies=[Depends(admin_required)]
+)
+async def dar_baja_empleado(
+    dni: str,
+    db: Connection = Depends(get_db)
+):
+    await empleadoServices.eliminar_empleado(conn=db, dni=dni)
+    return
 

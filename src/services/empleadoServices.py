@@ -6,8 +6,8 @@ from schemas.empleadoSchema import (
     EmpleadoResponse,
     EmpleadoListado,
     EmpleadoDetalle,
-    HorarioEmpleadoCreate,
-    HorarioEmpleadoResponse
+    HorarioEmpleadoResponse,
+    EmpleadoHorariosUpdate
 )
 
 from utils.security import get_password_hash
@@ -175,4 +175,70 @@ async def obtener_detalle_empleado(conn: Connection, dni: str) -> EmpleadoDetall
         raise
     except Exception as e:
         raise DatabaseException("obtener detalle del empleado", str(e))
+
+async def actualizar_horarios_empleado(conn: Connection, dni: str, data: EmpleadoHorariosUpdate) -> None:
+    """
+    Actualiza los horarios asignados a un empleado.
+    Estrategia:
+    1. Desvincular al empleado de todos los grupos actuales.
+    2. Vincularlo a los nuevos grupos indicados.
+    """
+    async with conn.transaction():
+        try:
+            # 1. Verificar que el empleado existe
+            exists = await conn.fetchval('SELECT 1 FROM "Empleado" WHERE dni = $1', dni)
+            if not exists:
+                raise NotFoundException("Empleado", dni)
+
+            # 2. Limpiar asignaciones anteriores (Setear NULL donde estaba este empleado)
+            await conn.execute(
+                'UPDATE "Pertenece" SET "dniEmpleado" = NULL WHERE "dniEmpleado" = $1', 
+                dni
+            )
+
+            # 3. Asignar nuevos horarios
+            for horario in data.horarios:
+                # nroGrupo puede venir con espacios del frontend, lo limpiamos
+                grupo_limpio = horario.nroGrupo.strip()
+                
+                result = await conn.execute(
+                    '''
+                    UPDATE "Pertenece" 
+                    SET "dniEmpleado" = $1 
+                    WHERE "nroGrupo" = $2 AND dia = $3
+                    ''',
+                    dni, grupo_limpio, horario.dia
+                )
+                
+                # Si no actualizó ninguna fila, es porque el grupo/día no existe
+                if result == "UPDATE 0":
+                    raise NotFoundException("Grupo/Día", f"{grupo_limpio} - {horario.dia}")
+
+        except NotFoundException:
+            raise
+        except Exception as e:
+            raise DatabaseException("actualizar horarios empleado", str(e))
+
+async def eliminar_empleado(conn: Connection, dni: str) -> None:
+    """
+    Elimina un empleado del sistema.
+    Al borrar de 'Persona', el CASCADE elimina 'Empleado' y 'Direccion'.
+    La tabla 'Pertenece' (Horarios) pone el dniEmpleado en NULL automáticamente.
+    """
+    async with conn.transaction():
+        try:
+            # 1. Verificar que sea realmente un empleado
+            es_empleado = await conn.fetchval('SELECT 1 FROM "Empleado" WHERE dni = $1', dni)
+            
+            if not es_empleado:
+                raise NotFoundException("Empleado", dni)
+
+            # 2. Eliminar la Persona raíz
+            # Esto dispara los triggers de la BD (Cascade y Set Null)
+            await conn.execute('DELETE FROM "Persona" WHERE dni = $1', dni)
+            
+        except NotFoundException:
+            raise
+        except Exception as e:
+            raise DatabaseException("eliminar empleado", str(e))
 

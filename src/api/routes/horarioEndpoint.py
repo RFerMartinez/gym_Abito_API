@@ -60,7 +60,7 @@ router = APIRouter(
     status_code=status.HTTP_201_CREATED,
     summary="Crear un nuevo horario/grupo completo (Admin)",
     response_description="Horario y sus días asignados creados exitosamente",
-    dependencies=[Depends(admin_required)]
+    dependencies=[Depends(staff_required)] # <-- Protegido para Staff o Admin
 )
 async def crear_nuevo_horario_completo( # <-- Renombrado para claridad
     horario_data: HorarioCompletoCreate, # <-- MODIFICADO: Usa el nuevo schema
@@ -93,7 +93,7 @@ async def crear_nuevo_horario_completo( # <-- Renombrado para claridad
     status_code=status.HTTP_201_CREATED,
     summary="Crear un nuevo horario/grupo (Admin)",
     response_description="Horario creado exitosamente",
-    dependencies=[Depends(admin_required)]
+    dependencies=[Depends(staff_required)] # <-- Protegido para Staff o Admin
 )
 async def crear_nuevo_horario(
     horario_data: HorarioCreate,
