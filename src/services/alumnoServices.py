@@ -473,4 +473,28 @@ async def actualizar_plan_alumno(conn: Connection, dni: str, data: AlumnoPlanUpd
         except Exception as e:
             raise DatabaseException("actualizar plan de alumno", str(e))
 
+async def eliminar_alumno(conn: Connection, dni: str) -> None:
+    """
+    Elimina un alumno del sistema.
+    Al borrar el registro de la tabla 'Persona', la base de datos elimina automáticamente
+    (ON DELETE CASCADE) los registros en 'Alumno', 'Direccion', 'Cuota', 'Asiste', etc.
+    """
+    async with conn.transaction():
+        try:
+            # 1. Verificar primero si el alumno existe
+            # (Si intentamos borrar directo de Persona, podríamos borrar a alguien que no es alumno)
+            es_alumno = await conn.fetchval('SELECT 1 FROM "Alumno" WHERE dni = $1', dni)
+            
+            if not es_alumno:
+                raise NotFoundException("Alumno", dni)
+
+            # 2. Eliminar la Persona raíz
+            # Esto dispara los CASCADE definidos en tu script SQL
+            await conn.execute('DELETE FROM "Persona" WHERE dni = $1', dni)
+            
+        except NotFoundException:
+            raise
+        except Exception as e:
+            raise DatabaseException("eliminar alumno", str(e))
+
 

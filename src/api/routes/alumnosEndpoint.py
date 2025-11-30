@@ -23,7 +23,8 @@ from services.alumnoServices import (
     obtener_horarios_alumno,
     actualizar_horarios_alumno,
     actualizar_perfil_alumno,
-    actualizar_plan_alumno
+    actualizar_plan_alumno,
+    eliminar_alumno
 )
 from api.dependencies.security import (
     staff_required,
@@ -67,7 +68,7 @@ async def activar_nuevo_alumno(
     response_model=List[AlumnoListado],
     summary="Listar todos los alumnos (Admin)",
     response_description="Una lista con los detalles de cada alumno en el sistema.",
-    dependencies=[Depends(admin_required)] # <-- ¡Solo para administradores!
+    dependencies=[Depends(staff_required)] # <-- ¡Solo para administradores!
 )
 async def obtener_lista_alumnos(
     db: Connection = Depends(get_db)
@@ -188,3 +189,22 @@ async def actualizar_plan_de_alumno(
     Requiere permisos de **staff (administrador o empleado)**.
     """
     return await actualizar_plan_alumno(conn=db, dni=dni, data=data)
+
+@router.delete(
+    "/{dni}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Eliminar un alumno (Staff)",
+    description="Elimina permanentemente al alumno y todos sus datos asociados (Persona, Cuotas, Asistencias, etc).",
+    dependencies=[Depends(staff_required)] # <-- Permite Admin y Empleado
+)
+async def eliminar_alumno_por_dni(
+    dni: str,
+    db: Connection = Depends(get_db)
+):
+    """
+    Endpoint para dar de baja definitiva a un alumno.
+    Borra al usuario de la tabla Persona y, por cascada, todo su historial.
+    """
+    await eliminar_alumno(conn=db, dni=dni)
+    return
+

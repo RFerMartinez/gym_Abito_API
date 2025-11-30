@@ -25,8 +25,9 @@ from api.routes.authEndpoint import router as auth_endpoint                     
 from api.routes.alumnosEndpoint import router as alumnos_endpoint               # alumnos (acttivar alumno)
 from api.routes.reclamoEndpoint import router as reclamo_endpoint               # reclamos
 from api.routes.cuotaEndpoint import router as cuota_endpoint                   # cuotas
-from api.routes.personaEndpoint import router as persona_endpoint             # personas
+from api.routes.personaEndpoint import router as persona_endpoint               # personas
 from api.routes.estadisticasEndpoint import router as estadisticas_endpoint     # EndPoint
+from api.routes.avisoEndpoint import router as aviso_endpoint                   # avisos
 
 from api.routes.adminExample import router as admin_example_endpoint            # ejemplo admin
 from api.routes.alumnosExample import router as alumnos_example_endpoint        # ejemplo alumnos
@@ -102,6 +103,7 @@ app.include_router(reclamo_endpoint)
 app.include_router(cuota_endpoint)
 app.include_router(persona_endpoint)
 app.include_router(estadisticas_endpoint)
+app.include_router(aviso_endpoint)
 
 if __name__ == "__main__":
     import uvicorn
