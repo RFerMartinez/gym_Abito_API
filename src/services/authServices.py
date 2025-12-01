@@ -65,7 +65,7 @@ async def completar_registro_paso2(conn: Connection, user_data: RegistroPaso2, e
     # Hashear la contraseña
     hashed_password = get_password_hash(contrasenia)
 
-    # --- CAMBIO: Añadimos 'sexo' al INSERT y pasamos user_data.sexo ($9) ---
+    # Insertar la Persona con todos sus datos, incluyendo sexo
     result = await conn.fetchrow('''
         INSERT INTO "Persona" (dni, nombre, apellido, telefono, email, usuario, contrasenia, "requiereCambioClave", sexo)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -79,12 +79,28 @@ async def completar_registro_paso2(conn: Connection, user_data: RegistroPaso2, e
     usuario, 
     hashed_password, 
     False, 
-    user_data.sexo # <--- Nuevo valor
+    user_data.sexo
     )
 
     user = dict(result)
 
-    # Crear la dirección (El resto sigue igual)
+    # --- CORRECCIÓN: Asegurar existencia de Provincia y Localidad ---
+    
+    # 1. Crear Provincia si no existe
+    await conn.execute('''
+        INSERT INTO "Provincia" ("nomProvincia")
+        VALUES ($1)
+        ON CONFLICT ("nomProvincia") DO NOTHING
+    ''', user_data.nomProvincia)
+    
+    # 2. Crear Localidad si no existe
+    await conn.execute('''
+        INSERT INTO "Localidad" ("nomLocalidad", "nomProvincia")
+        VALUES ($1, $2)
+        ON CONFLICT ("nomLocalidad", "nomProvincia") DO NOTHING
+    ''', user_data.nomLocalidad, user_data.nomProvincia)
+
+    # Crear la dirección
     try:
         await conn.execute('''
             INSERT INTO "Direccion" ("nomLocalidad", "nomProvincia", numero, calle, dni)
@@ -92,13 +108,15 @@ async def completar_registro_paso2(conn: Connection, user_data: RegistroPaso2, e
         ''', user_data.nomLocalidad, user_data.nomProvincia, user_data.numero,
             user_data.calle, user_data.dni)
     except Exception as e:
+        # Si falla la dirección, hacemos rollback manual de la persona para no dejar datos huérfanos
         await conn.execute('DELETE FROM "Persona" WHERE dni = $1', user_data.dni)
         raise DatabaseException("crear dirección", str(e))
 
     if email_service is not None:
-        email_service.send_welcome_email(email, user_data.nombre)
+        await email_service.send_welcome_email(email, user_data.nombre)
 
     return user
+
 
 async def authenticate_user(conn: Connection, username: str, password: str) -> Optional[dict]:
     """Autentica un usuario por username/email y contraseña"""

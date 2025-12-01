@@ -66,7 +66,7 @@ async def registro_paso1(
     except DuplicateEntryException as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=str(e)
+            detail=str(e.detail)
         )
     except Exception as e:
         raise HTTPException(
