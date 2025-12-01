@@ -6,7 +6,8 @@ from datetime import datetime
 from schemas.reclamoSchema import (
     ReclamoCreate,
     ReclamoUpdate,
-    ReclamoResponse
+    ReclamoResponse,
+    ReclamoListadoAdmin
 )
 from utils.exceptions import (
     DatabaseException,
@@ -73,4 +74,29 @@ async def eliminar_reclamo(conn: Connection, id_reclamo: int, dni_alumno: str):
         raise
     except Exception as e:
         raise DatabaseException("eliminar reclamo", str(e))
+
+async def listar_todos_reclamos(conn: Connection) -> List[ReclamoListadoAdmin]:
+    """
+    Obtiene todos los reclamos del sistema (para Admin), incluyendo nombre y apellido.
+    Ordenados por fecha y hora descendente (más nuevos primero).
+    """
+    try:
+        query = """
+        SELECT 
+            r."idReclamo",
+            r.comentario,
+            r.fecha,
+            r.hora,
+            r.dni,
+            p.nombre,
+            p.apellido
+        FROM "Reclamo" r
+        JOIN "Persona" p ON r.dni = p.dni
+        ORDER BY r.fecha DESC, r.hora DESC
+        """
+        reclamos = await conn.fetch(query)
+        return [ReclamoListadoAdmin(**dict(row)) for row in reclamos]
+    except Exception as e:
+        raise DatabaseException("listar todos los reclamos", str(e))
+
 

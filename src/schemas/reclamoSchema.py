@@ -21,3 +21,8 @@ class ReclamoResponse(ReclamoBase):
     class Config:
         from_attributes = True
 
+class ReclamoListadoAdmin(ReclamoResponse):
+    nombre: str = Field(..., description="Nombre del alumno")
+    apellido: str = Field(..., description="Apellido del alumno")
+    
+
