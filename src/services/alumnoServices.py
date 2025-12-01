@@ -497,4 +497,66 @@ async def eliminar_alumno(conn: Connection, dni: str) -> None:
         except Exception as e:
             raise DatabaseException("eliminar alumno", str(e))
 
+async def desactivar_alumno(conn: Connection, dni: str) -> None:
+    """
+    Pasa a un alumno de estado 'Activo' a 'Inactivo'.
+    1. Lo elimina de 'AlumnoActivo' (El CASCADE borra sus horarios en 'Asiste').
+    2. Lo inserta en 'AlumnoInactivo'.
+    3. Las cuotas se mantienen intactas.
+    """
+    async with conn.transaction():
+        try:
+            # 1. Verificar que sea un alumno activo
+            es_activo = await conn.fetchval('SELECT 1 FROM "AlumnoActivo" WHERE dni = $1', dni)
+            
+            if not es_activo:
+                # Verificamos si ya es inactivo para dar un mensaje más claro
+                es_inactivo = await conn.fetchval('SELECT 1 FROM "AlumnoInactivo" WHERE dni = $1', dni)
+                if es_inactivo:
+                    raise BusinessRuleException("El alumno ya se encuentra en estado inactivo.")
+                
+                # Si no está en ninguna, quizás no es alumno
+                raise NotFoundException("Alumno Activo", dni)
+
+            # 2. Eliminar de Activos
+            # Gracias a tu SQL, esto borra automáticamente los registros en "Asiste"
+            await conn.execute('DELETE FROM "AlumnoActivo" WHERE dni = $1', dni)
+
+            # 3. Insertar en Inactivos
+            await conn.execute('INSERT INTO "AlumnoInactivo" (dni) VALUES ($1)', dni)
+
+        except (BusinessRuleException, NotFoundException):
+            raise
+        except Exception as e:
+            raise DatabaseException("desactivar alumno", str(e))
+
+async def reactivar_alumno(conn: Connection, dni: str) -> None:
+    """
+    Pasa a un alumno de estado 'Inactivo' a 'Activo'.
+    1. Verifica que esté en 'AlumnoInactivo'.
+    2. Lo elimina de 'AlumnoInactivo'.
+    3. Lo inserta en 'AlumnoActivo'.
+    """
+    async with conn.transaction():
+        try:
+            # 1. Verificar origen
+            es_inactivo = await conn.fetchval('SELECT 1 FROM "AlumnoInactivo" WHERE dni = $1', dni)
+            
+            if not es_inactivo:
+                # Verificamos si ya es activo para dar feedback
+                es_activo = await conn.fetchval('SELECT 1 FROM "AlumnoActivo" WHERE dni = $1', dni)
+                if es_activo:
+                    raise BusinessRuleException("El alumno ya se encuentra activo.")
+                
+                raise NotFoundException("Alumno Inactivo", dni)
+
+            # 2. Mover de tabla
+            await conn.execute('DELETE FROM "AlumnoInactivo" WHERE dni = $1', dni)
+            await conn.execute('INSERT INTO "AlumnoActivo" (dni) VALUES ($1)', dni)
+
+        except (BusinessRuleException, NotFoundException):
+            raise
+        except Exception as e:
+            raise DatabaseException("reactivar alumno", str(e))
+
 

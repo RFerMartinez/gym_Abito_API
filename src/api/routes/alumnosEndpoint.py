@@ -24,7 +24,9 @@ from services.alumnoServices import (
     actualizar_horarios_alumno,
     actualizar_perfil_alumno,
     actualizar_plan_alumno,
-    eliminar_alumno
+    eliminar_alumno,
+    desactivar_alumno,
+    reactivar_alumno
 )
 from api.dependencies.security import (
     staff_required,
@@ -207,4 +209,39 @@ async def eliminar_alumno_por_dni(
     """
     await eliminar_alumno(conn=db, dni=dni)
     return
+
+@router.post(
+    "/{dni}/desactivar",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Desactivar un alumno (Staff)",
+    description="Pasa al alumno a estado inactivo. Se eliminan sus horarios pero se conserva su historial de cuotas.",
+    dependencies=[Depends(staff_required)] # <-- Admin y Empleado
+)
+async def desactivar_alumno_status(
+    dni: str,
+    db: Connection = Depends(get_db)
+):
+    """
+    Mueve al alumno de la tabla AlumnoActivo a AlumnoInactivo.
+    """
+    await desactivar_alumno(conn=db, dni=dni)
+    return
+
+@router.post(
+    "/{dni}/reactivar",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Reactivar un alumno (Staff)",
+    description="Pasa al alumno a estado activo. El alumno volverá a estar habilitado para asignarle horarios y generar cuotas.",
+    dependencies=[Depends(staff_required)]
+)
+async def reactivar_alumno_status(
+    dni: str,
+    db: Connection = Depends(get_db)
+):
+    """
+    Mueve al alumno de la tabla AlumnoInactivo a AlumnoActivo.
+    """
+    await reactivar_alumno(conn=db, dni=dni)
+    return
+
 
