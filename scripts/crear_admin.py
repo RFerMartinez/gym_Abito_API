@@ -22,7 +22,7 @@ async def crear_administrador():
     # Obtener datos de conexión directamente de .env
     database_url = os.getenv("DATABASE_URL")
     if not database_url:
-        print("❌ DATABASE_URL no encontrado en .env")
+        print("DATABASE_URL no encontrado en .env")
         return
     
     admin_data = {
@@ -47,7 +47,7 @@ async def crear_administrador():
         )
         
         if existe:
-            print("ℹ️  El administrador ya existe")
+            print("El administrador ya existe")
             await conn.close()
             return
         
@@ -64,13 +64,13 @@ async def crear_administrador():
         admin_data["telefono"], admin_data["email"], admin_data["usuario"],
         hashed_password, True, admin_data["esAdmin"])
         
-        print("✅ Administrador creado exitosamente!")
-        print(f"📋 Usuario: {admin_data['usuario']}")
-        print(f"🔑 Contraseña: {admin_data['password']}")
-        print("⚠️  Debe cambiar la contraseña en el primer login")
+        print("Administrador creado exitosamente!")
+        print(f"Usuario: {admin_data['usuario']}")
+        print(f"Contraseña: {admin_data['password']}")
+        print("Debe cambiar la contraseña en el primer login")
         
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
         import traceback
         traceback.print_exc()
     finally:

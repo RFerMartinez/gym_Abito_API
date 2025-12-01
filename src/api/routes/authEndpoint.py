@@ -41,8 +41,6 @@ router = APIRouter(
     }
 )
 
-# Almacenamiento temporal para datos del paso 1
-# temp_registry = {}
 
 @router.post("/registro-paso1", status_code=status.HTTP_200_OK)
 async def registro_paso1(
@@ -54,13 +52,6 @@ async def registro_paso1(
     """
     try:
         token = await iniciar_registro_paso1(db, user_data)
-        
-        # Almacenar temporalmente los datos del paso 1
-        # temp_registry[token] = {
-        #     "email": user_data.email,
-        #     "usuario": user_data.usuario,
-        #     "contrasenia": user_data.contrasenia
-        # }
         
         return {"message": "Correo de verificación enviado", "token": token}
     except DuplicateEntryException as e:
@@ -100,9 +91,6 @@ async def registro_paso2(
     try:
         # Completar registro
         user = await completar_registro_paso2(db, user_data, email, usuario, contrasenia)
-        
-        # Eliminar datos temporales
-        #del temp_registry[token]
         
         return user
     except DuplicateEntryException as e:
