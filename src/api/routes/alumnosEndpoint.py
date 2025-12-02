@@ -8,6 +8,7 @@ from core.session import get_db
 from schemas.alumnoSchema import (
     AlumnoActivate,
     AlumnoActivateResponse,
+    AlumnoCreateFull,
     AlumnoListado,
     AlumnoDetalle,
     HorarioAlumno,
@@ -26,7 +27,8 @@ from services.alumnoServices import (
     actualizar_plan_alumno,
     eliminar_alumno,
     desactivar_alumno,
-    reactivar_alumno
+    reactivar_alumno,
+    crear_alumno_completo
 )
 from api.dependencies.security import (
     staff_required,
@@ -244,4 +246,16 @@ async def reactivar_alumno_status(
     await reactivar_alumno(conn=db, dni=dni)
     return
 
+@router.post(
+    "/nuevo",
+    response_model=AlumnoActivateResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Crear nuevo alumno completo (Staff)",
+    description="Crea Persona, Dirección, Alumno, activa y genera cuota inicial. Password = DNI.",
+    dependencies=[Depends(staff_required)] # <-- Admin y Empleado
+)
+async def crear_nuevo_alumno_completo(
+    data: AlumnoCreateFull,
+    db: Connection = Depends(get_db)
+):return await crear_alumno_completo(conn=db, data=data)
 

@@ -137,3 +137,33 @@ class AlumnoPlanUpdate(BaseModel):
             }
         }
 
+class AlumnoCreateFull(BaseModel):
+    # --- Datos Persona ---
+    dni: str = Field(..., min_length=8, max_length=8, pattern="^[0-9]+$")
+    nombre: str = Field(..., max_length=40)
+    apellido: str = Field(..., max_length=40)
+    sexo: str = Field(..., max_length=1, description="'M' o 'F'")
+    email: EmailStr = Field(...)
+    telefono: str = Field(..., max_length=15)
+    
+    # --- Datos Dirección ---
+    nomProvincia: str = Field(..., max_length=40)
+    nomLocalidad: str = Field(..., max_length=40)
+    calle: str = Field(..., max_length=60)
+    numero: str = Field(default="S/N", max_length=5)
+
+    # --- Datos Alumno (Plan) ---
+    nombreTrabajo: str = Field(..., description="Nombre del trabajo/metodología")
+    nombreSuscripcion: str = Field(..., description="Nombre de la suscripción")
+    nivel: Optional[str] = Field(None, max_length=3)
+    
+    # --- Horarios ---
+    horarios: List[HorarioAsignado] = Field(default=[])
+
+    @field_validator('sexo')
+    @classmethod
+    def validar_sexo(cls, v: str) -> str:
+        if v.upper() not in ['M', 'F']:
+            raise ValueError("Sexo debe ser 'M' o 'F'")
+        return v.upper()
+

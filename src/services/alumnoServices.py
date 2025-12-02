@@ -8,6 +8,7 @@ import calendar
 from schemas.alumnoSchema import (
     AlumnoActivate,
     AlumnoActivateResponse,
+    AlumnoCreateFull,
     AlumnoListado,
     AlumnoDetalle,
     HorarioAlumno,
@@ -18,6 +19,7 @@ from schemas.alumnoSchema import (
     AlumnoPlanUpdate
 )
 
+from utils.security import get_password_hash
 from utils.exceptions import (
     NotFoundException,
     DuplicateEntryException,
@@ -559,4 +561,99 @@ async def reactivar_alumno(conn: Connection, dni: str) -> None:
         except Exception as e:
             raise DatabaseException("reactivar alumno", str(e))
 
+async def crear_alumno_completo(conn: Connection, data: AlumnoCreateFull) -> AlumnoActivateResponse:
+    """
+    Crea un alumno desde cero: Persona -> Dirección -> Alumno -> Activo -> Horarios -> Cuota.
+    """
+    async with conn.transaction():
+        try:
+            # 1. Validar duplicados (DNI, Email, Usuario)
+            persona_existe = await conn.fetchval(
+                'SELECT 1 FROM "Persona" WHERE dni = $1 OR email = $2', 
+                data.dni, data.email
+            )
+            if persona_existe:
+                raise DuplicateEntryException("Persona (DNI, Email o Usuario)", data.dni)
+
+            # 2. Validar FKs de Plan (Trabajo y Suscripción)
+            trabajo_existe = await conn.fetchval('SELECT 1 FROM "Trabajo" WHERE "nombreTrabajo" = $1', data.nombreTrabajo)
+            if not trabajo_existe:
+                raise NotFoundException("Trabajo", data.nombreTrabajo)
+            
+            suscripcion_data = await conn.fetchrow('SELECT precio FROM "Suscripcion" WHERE "nombreSuscripcion" = $1', data.nombreSuscripcion)
+            if not suscripcion_data:
+                raise NotFoundException("Suscripción", data.nombreSuscripcion)
+            monto_cuota = suscripcion_data['precio']
+
+            # 3. Crear Persona (Pass = Hash del DNI)
+            hashed_pass = get_password_hash(data.dni)
+            await conn.execute('''
+                INSERT INTO "Persona" (dni, nombre, apellido, sexo, telefono, email, usuario, contrasenia, "requiereCambioClave")
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, TRUE)
+            ''', data.dni, data.nombre, data.apellido, data.sexo, data.telefono, data.email, data.dni, hashed_pass)
+
+            # 4. Crear Dirección (Upsert Provincia/Localidad)
+            await conn.execute('INSERT INTO "Provincia" ("nomProvincia") VALUES ($1) ON CONFLICT DO NOTHING', data.nomProvincia)
+            await conn.execute('INSERT INTO "Localidad" ("nomLocalidad", "nomProvincia") VALUES ($1, $2) ON CONFLICT DO NOTHING', data.nomLocalidad, data.nomProvincia)
+            
+            await conn.execute('''
+                INSERT INTO "Direccion" ("nomLocalidad", "nomProvincia", numero, calle, dni)
+                VALUES ($1, $2, $3, $4, $5)
+            ''', data.nomLocalidad, data.nomProvincia, data.numero, data.calle, data.dni)
+
+            # 5. Crear Alumno
+            await conn.execute('''
+                INSERT INTO "Alumno" (dni, "nombreTrabajo", "nombreSuscripcion", nivel)
+                VALUES ($1, $2, $3, $4)
+            ''', data.dni, data.nombreTrabajo, data.nombreSuscripcion, data.nivel)
+
+            # 6. Activar Alumno
+            await conn.execute('INSERT INTO "AlumnoActivo" (dni) VALUES ($1)', data.dni)
+
+            # 7. Asignar Horarios (Verificando cupo)
+            for horario in data.horarios:
+                nroGrupo = horario.nroGrupo
+                
+                # Check capacidad
+                query_capacidad = '''
+                    SELECT p."capacidadMax", COUNT(a.dni) as inscritos
+                    FROM "Pertenece" p
+                    LEFT JOIN "Asiste" a ON p."nroGrupo" = a."nroGrupo" AND p.dia = a.dia
+                    WHERE p."nroGrupo" = $1 AND p.dia = $2
+                    GROUP BY p."capacidadMax"
+                '''
+                capacidad = await conn.fetchrow(query_capacidad, nroGrupo, horario.dia)
+
+                if not capacidad:
+                    raise NotFoundException("Grupo/Día", f"{nroGrupo}-{horario.dia}")
+                
+                if capacidad['inscritos'] >= capacidad['capacidadMax']:
+                    raise BusinessRuleException(f"El grupo {nroGrupo} del día {horario.dia} está completo.")
+
+                await conn.execute('''
+                    INSERT INTO "Asiste" (dni, "nroGrupo", dia) VALUES ($1, $2, $3)
+                ''', data.dni, nroGrupo, horario.dia)
+
+            # 8. Generar Primera Cuota
+            hoy = date.today()
+            fecha_fin = hoy + timedelta(days=30)
+            nombre_mes = calendar.month_name[hoy.month].capitalize()
+
+            await conn.execute('''
+                INSERT INTO "Cuota" (dni, pagada, monto, "fechaComienzo", "fechaFin", mes, "nombreTrabajo", "nombreSuscripcion")
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ''', data.dni, False, monto_cuota, hoy, fecha_fin, nombre_mes, data.nombreTrabajo, data.nombreSuscripcion)
+
+            return AlumnoActivateResponse(
+                dni=data.dni,
+                nombre=data.nombre,
+                apellido=data.apellido,
+                email=data.email,
+                message="Alumno creado y activado correctamente."
+            )
+
+        except (DuplicateEntryException, NotFoundException, BusinessRuleException):
+            raise
+        except Exception as e:
+            raise DatabaseException("crear alumno completo", str(e))
 
