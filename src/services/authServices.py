@@ -166,6 +166,7 @@ async def verify_email_token(conn: Connection, token: str) -> Optional[str]:
     await delete_email_verification_token(conn, token)
     return email
 
+
 # ===================================
 # Verificación usuario/admin/Empleado
 # ===================================
@@ -208,6 +209,8 @@ async def es_alumno(conn: Connection, dni: str) -> bool:
         dni
     )
     return result is not None
+# ====================================
+
 
 async def obtener_tipo_usuario(conn: Connection, dni: str) -> dict:
     """Obtiene el tipo de usuario y sus permisos"""
@@ -269,4 +272,17 @@ async def ejecutar_recuperacion_contrasenia(conn: Connection, data: PasswordRese
 
     if result == "UPDATE 0":
         raise NotFoundException("Usuario", email_token)
+
+async def cambiar_contrasenia_primer_ingreso(conn: Connection, dni: str, new_password: str) -> None:
+    """
+    Actualiza la contraseña del usuario logueado y desactiva el flag 'requiereCambioClave'.
+    """
+    # 1. Hashear la nueva contraseña
+    hashed_password = get_password_hash(new_password)
+    
+    # 2. Actualizar en BD
+    await conn.execute(
+        'UPDATE "Persona" SET contrasenia = $1, "requiereCambioClave" = FALSE WHERE dni = $2',
+        hashed_password, dni
+    )
 

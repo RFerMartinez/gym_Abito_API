@@ -106,3 +106,7 @@ class PasswordResetRequest(BaseModel):
 class PasswordResetConfirm(BaseModel):
     token: str
     new_password: str
+
+class ChangePasswordRequest(BaseModel):
+    new_password: str = Field(..., min_length=8, description="La nueva contraseña del usuario")
+

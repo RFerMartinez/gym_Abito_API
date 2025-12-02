@@ -34,7 +34,8 @@ async def get_mi_perfil_persona(
     "/",
     response_model=List[PersonaListado],
     summary="Listar todas las personas (Staff)",
-    response_description="Lista de DNI, Nombre y Apellido de todas las personas"
+    response_description="Lista de DNI, Nombre y Apellido de todas las personas",
+    dependencies=[Depends(staff_required)]
 )
 async def get_lista_personas(
     db: Connection = Depends(get_db)
@@ -50,7 +51,8 @@ async def get_lista_personas(
     "/{dni}",
     response_model=PersonaDetalle,
     summary="Obtener detalles de una persona (Staff)",
-    response_description="Información detallada de la persona"
+    response_description="Información detallada de la persona",
+    dependencies=[Depends(staff_required)]
 )
 async def get_persona_detalle(
     dni: str,

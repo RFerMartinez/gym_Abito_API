@@ -15,7 +15,8 @@ from schemas.authSchema import (
     UserResponse,
     EmailVerificationRequest,
     PasswordResetRequest,
-    PasswordResetConfirm
+    PasswordResetConfirm,
+    ChangePasswordRequest
 )
 
 from services.authServices import (
@@ -26,7 +27,8 @@ from services.authServices import (
     solicitar_recuperacion_contrasenia,
     verify_email_token,
     es_alumno,
-    es_empleado
+    es_empleado,
+    cambiar_contrasenia_primer_ingreso
 )
 
 from utils.security import (
@@ -207,4 +209,19 @@ async def reset_password(
     """
     await ejecutar_recuperacion_contrasenia(conn=db, data=data)
     return {"message": "Contraseña actualizada correctamente."}
+
+@router.post(
+    "/change-password",
+    status_code=status.HTTP_200_OK,
+    summary="Cambiar contraseña (Usuario Logueado)",
+    description="Permite cambiar la contraseña actual y desactiva la obligación de cambio de clave."
+)
+async def change_password(
+    request: ChangePasswordRequest,
+    current_user: dict = Depends(get_current_user), # <--- Requiere estar logueado
+    db: Connection = Depends(get_db)
+):
+    dni = current_user['dni']
+    await cambiar_contrasenia_primer_ingreso(conn=db, dni=dni, new_password=request.new_password)
+    return {"message": "Contraseña actualizada correctamente. Sesión asegurada."}
 
