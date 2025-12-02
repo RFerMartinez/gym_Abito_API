@@ -40,6 +40,34 @@ def verify_registration_token(token: str) -> Optional[dict]:
         return None
 
 
+# ==========================================
+# FUNCIONES PARA RECUPERACIÓN DE CONTRASEÑA
+# ==========================================
+def create_password_reset_token(data: dict) -> str:
+    """Crea un token JWT específico para restablecer contraseña."""
+    to_encode = data.copy()
+    # Expiración corta (ej: 15 minutos)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    
+    # Forzamos el propósito correcto
+    to_encode.update({"exp": expire, "purpose": "password_reset"})
+    
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return encoded_jwt
+
+def verify_password_reset_token(token: str) -> Optional[dict]:
+    """Valida que el token sea válido y tenga el propósito de reset."""
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        
+        # Validación estricta del propósito
+        if payload.get("purpose") != "password_reset":
+            return None
+            
+        return payload
+    except JWTError:
+        return None
+
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:

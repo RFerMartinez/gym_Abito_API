@@ -56,17 +56,19 @@ class EmailService:
     async def send_password_reset_email(self, email: str, token: str) -> bool:
         """Envía email para resetear contraseña"""
         subject = "Restablecer contraseña - Gimnasio Abito"
-        reset_url = f"{self.frontend_url}/reset-password?token={token}"
+        
+        # Apunta a la ruta del Frontend que para la recuperación (flujo "¿olvidaste la contraseña?")
+        reset_url = f"{self.frontend_url}/Recuperacion?token={token}"
         
         body_html = f"""
         <html>
         <body>
             <h2>Restablecer contraseña</h2>
             <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:</p>
-            <p><a href="{reset_url}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Restablecer Contraseña</a></p>
+            <p><a href="{reset_url}" style="background-color: #e50914; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Restablecer Contraseña</a></p>
             <p>Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
             <p>{reset_url}</p>
-            <p>Este enlace expirará en 1 hora.</p>
+            <p>Este enlace expirará en 15 minutos.</p>
             <br>
             <p>Si no solicitaste restablecer tu contraseña, ignora este mensaje.</p>
         </body>

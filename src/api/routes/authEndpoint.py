@@ -6,6 +6,7 @@ from datetime import timedelta
 from fastapi.security import OAuth2PasswordRequestForm
 
 from core.session import get_db
+
 from schemas.authSchema import (
     RegistroPaso1, 
     RegistroPaso2, 
@@ -16,20 +17,26 @@ from schemas.authSchema import (
     PasswordResetRequest,
     PasswordResetConfirm
 )
+
 from services.authServices import (
+    ejecutar_recuperacion_contrasenia,
     iniciar_registro_paso1,
     completar_registro_paso2,
     authenticate_user,
+    solicitar_recuperacion_contrasenia,
     verify_email_token,
     es_alumno,
     es_empleado
 )
+
 from utils.security import (
     create_access_token,
     create_refresh_token,
     verify_registration_token
 )
+
 from api.dependencies.auth import get_current_user
+
 from utils.exceptions import DuplicateEntryException, DatabaseException
 
 router = APIRouter(
@@ -178,3 +185,26 @@ async def get_current_user_info(
     })
     
     return current_user
+
+@router.post("/forgot-password", status_code=status.HTTP_200_OK)
+async def forgot_password(
+    request: PasswordResetRequest,
+    db: Connection = Depends(get_db)
+):
+    """
+    Paso 1: Recibe el email y envía el correo con el enlace de recuperación.
+    """
+    await solicitar_recuperacion_contrasenia(conn=db, email=request.email)
+    return {"message": "Si el correo existe, se ha enviado un enlace de recuperación."}
+
+@router.post("/reset-password", status_code=status.HTTP_200_OK)
+async def reset_password(
+    data: PasswordResetConfirm,
+    db: Connection = Depends(get_db)
+):
+    """
+    Paso 2: Recibe el token y la nueva contraseña para actualizarla.
+    """
+    await ejecutar_recuperacion_contrasenia(conn=db, data=data)
+    return {"message": "Contraseña actualizada correctamente."}
+
