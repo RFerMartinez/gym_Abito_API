@@ -151,3 +151,13 @@ async def procesar_pago_exitoso(conn: Connection, payment_id: str) -> bool:
     except Exception as e:
         print(f"❌ Error procesando webhook: {e}")
         raise DatabaseException("procesar webhook", str(e))
+
+
+async def obtener_estado_pago_cuota(conn: Connection, id_cuota: int) -> bool:
+    """Retorna True si la cuota está pagada, False si no."""
+    query = 'SELECT pagada FROM "Cuota" WHERE "idCuota" = $1'
+    pagada = await conn.fetchval(query, id_cuota)
+    if pagada is None:
+        raise NotFoundException("Cuota", id_cuota)
+    return pagada
+

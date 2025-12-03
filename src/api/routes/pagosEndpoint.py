@@ -5,7 +5,7 @@ from asyncpg import Connection
 
 from core.session import get_db
 from api.dependencies.security import alumno_required
-from services.pagoServices import crear_preferencia_pago, procesar_pago_exitoso
+from services.pagoServices import crear_preferencia_pago, procesar_pago_exitoso, obtener_estado_pago_cuota
 from schemas.pagoSchema import PreferenciaPagoResponse
 
 router = APIRouter(
@@ -91,3 +91,13 @@ async def retorno_pago(request: Request):
     # Redirigimos al navegador del usuario
     return RedirectResponse(url=url_final)
 
+@router.get("/{id_cuota}/estado", response_model=bool)
+async def verificar_estado_cuota(
+    id_cuota: int,
+    db: Connection = Depends(get_db)
+):
+    """
+    Devuelve True si la cuota ya fue pagada. 
+    Usado por el Frontend para polling mientras se escanea el QR.
+    """
+    return await obtener_estado_pago_cuota(conn=db, id_cuota=id_cuota)
