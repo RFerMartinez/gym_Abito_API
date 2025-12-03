@@ -20,9 +20,18 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> Preferencia
         # 1. Buscar la cuota en la BD para obtener el monto real y verificar que exista
         # (Nunca confíes en el monto que viene del frontend)
         query = """
-            SELECT "idCuota", monto, mes, "nombreTrabajo"
-            FROM "Cuota"
-            WHERE "idCuota" = $1
+            SELECT 
+                c."idCuota", 
+                c.monto, 
+                c.mes, 
+                c."nombreTrabajo",
+                p.dni,
+                p.email,
+                p.nombre,
+                p.apellido
+            FROM "Cuota" c
+            JOIN "Persona" p ON c.dni = p.dni
+            WHERE c."idCuota" = $1
         """
         cuota = await conn.fetchrow(query, id_cuota)
         
@@ -48,7 +57,15 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> Preferencia
                 }
             ],
             # Datos del pagador (Opcional, pero recomendado si tienes los datos del alumno)
-            # "payer": { "email": "alumno@email.com" },
+            "payer": { 
+                "email": cuota["email"],
+                "name": cuota["nombre"],
+                "surname": cuota["apellido"],
+                "identification": {
+                    "type": "DNI",
+                    "number": cuota["dni"]
+                }
+            },
             
             # Referencia externa: Vital para saber qué cuota se pagó cuando vuelva el webhook
             "external_reference": str(cuota["idCuota"]),
@@ -62,7 +79,10 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> Preferencia
             "auto_return": "approved",
             
             # Aquí es donde MP notificará el pago a tu Backend (vía Ngrok)
-            "notification_url": f"{mi_url_ngrok}/pagos/webhook"
+            "notification_url": f"{mi_url_ngrok}/pagos/webhook",
+
+            # Opcional: Esto hace que no puedan cambiar el email en el checkout
+            "binary_mode": True
         }
 
 
