@@ -7,7 +7,8 @@ from utils.exceptions import NotFoundException, DatabaseException
 from schemas.pagoSchema import PreferenciaPagoResponse
 
 # Inicializamos el SDK de MercadoPago con tu Token
-sdk = mercadopago.SDK(settings.MP_ACCESS_TOKEN.get_secret_value())
+token_value = settings.MP_ACCESS_TOKEN.get_secret_value()
+sdk = mercadopago.SDK(token_value)
 
 # -------------------------
 # Crear preferencia de pago
@@ -17,8 +18,13 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> Preferencia
     Genera una preferencia de pago en MercadoPago para una cuota específica.
     """
     try:
-        # 1. Buscar la cuota en la BD para obtener el monto real y verificar que exista
-        # (Nunca confíes en el monto que viene del frontend)
+        # --- DEBUG TOKEN ---
+        # Imprimimos los primeros caracteres del token para verificar cuál estás usando
+        prefix = token_value[:10] if token_value else "NONE"
+        print(f"\n[DEBUG] Usando Token que empieza con: {prefix}...")
+        # -------------------
+
+        # 1. Buscar la cuota en la BD
         query = """
             SELECT 
                 c."idCuota", 
@@ -39,11 +45,6 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> Preferencia
             raise NotFoundException("Cuota", id_cuota)
 
         # 2. Configurar los datos de la preferencia
-        # Aquí usamos la URL de Ngrok que generaste (deberías ponerla en tu .env)
-        # Por ahora la hardcodeamos o la tomamos de config si la agregas
-        # Ejemplo: settings.BACKEND_DOMAIN = "https://tu-url-ngrok.app"
-        
-        # NOTA: Reemplaza ESTA variable con tu URL de Ngrok actual
         mi_url_ngrok = settings.URL_NGROK 
         
         preference_data = {
@@ -70,7 +71,6 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> Preferencia
             # Referencia externa: Vital para saber qué cuota se pagó cuando vuelva el webhook
             "external_reference": str(cuota["idCuota"]),
 
-            # A dónde vuelve el usuario según el resultado
             "back_urls": {
                 "success": f"{mi_url_ngrok}/pagos/retorno",
                 "failure": f"{mi_url_ngrok}/pagos/retorno",
@@ -85,23 +85,32 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> Preferencia
             "binary_mode": True
         }
 
-
-        print("--- DEBUG PREFERENCIA ---")
-        print(preference_data)  # <--- Agrega esto para ver qué se envía
-        print("-------------------------")
-
+        # --- DEBUG PREFERENCIA ---
+        print("\n--- DEBUG: ENVIANDO PREFERENCIA A MP ---")
+        print(preference_data)
+        print("----------------------------------------\n")
 
         # 3. Crear la preferencia en la API de MercadoPago
         preference_response = sdk.preference().create(preference_data)
         
+        # --- DEBUG RESPUESTA ---
+        print("--- DEBUG: RESPUESTA DE MP ---")
+        print(f"Status: {preference_response.get('status')}")
+        # Verificamos si hay sandbox_init_point en la respuesta cruda
+        raw_response = preference_response.get("response", {})
+        print(f"Sandbox Init Point: {raw_response.get('sandbox_init_point')}")
+        print("------------------------------\n")
+        # -----------------------
+
         if preference_response["status"] != 201:
+            print(f"ERROR MP DETALLE: {preference_response}") # Ver error completo si falla
             raise Exception(f"Error al crear preferencia en MP: {preference_response}")
 
         response_data = preference_response["response"]
 
         return PreferenciaPagoResponse(
-            init_point=response_data["init_point"], # URL para producción
-            sandbox_init_point=response_data["sandbox_init_point"] # URL para pruebas
+            init_point=response_data["init_point"], 
+            sandbox_init_point=response_data["sandbox_init_point"] 
         )
 
     except NotFoundException:
