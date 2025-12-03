@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     # -- Mercado Pago
     MP_ACCESS_TOKEN: SecretStr
 
+    # -- NGROK
+    URL_NGROK: str
+
     @property
     def DATABASE_URL(self) -> PostgresDsn:
         return PostgresDsn.build(

@@ -16,8 +16,6 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-
-# ESTA FUNCIÓN ES NUEVA
 def create_registration_token(data: dict) -> str:
     """Crea un token JWT de corta duración para el proceso de registro."""
     to_encode = data.copy()

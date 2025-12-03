@@ -29,6 +29,7 @@ from api.routes.personaEndpoint import router as persona_endpoint               
 from api.routes.estadisticasEndpoint import router as estadisticas_endpoint     # EndPoint
 from api.routes.avisoEndpoint import router as aviso_endpoint                   # avisos
 from api.routes.empleadoEndpoint import router as empleado_endpoint             # empleados
+from api.routes.pagosEndpoint import router as pagos_endpoint                   # MercadoPago
 
 from api.routes.adminExample import router as admin_example_endpoint            # ejemplo admin
 from api.routes.alumnosExample import router as alumnos_example_endpoint        # ejemplo alumnos
@@ -38,6 +39,7 @@ async def lifespan(app: FastAPI):
     # Start app
     await connect_to_db()
     print("Conexión a la base de datos establecida")
+    print(f"url_ngrok: {settings.URL_NGROK}")
     yield
     # Shutdown app
     await close_db_connection()
@@ -106,6 +108,7 @@ app.include_router(persona_endpoint)
 app.include_router(estadisticas_endpoint)
 app.include_router(aviso_endpoint)
 app.include_router(empleado_endpoint)
+app.include_router(pagos_endpoint)
 
 if __name__ == "__main__":
     import uvicorn
