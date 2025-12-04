@@ -4,8 +4,8 @@ from fastapi.responses import RedirectResponse
 from asyncpg import Connection
 
 from core.session import get_db
-from api.dependencies.security import alumno_required
-from services.pagoServices import crear_preferencia_pago, procesar_pago_exitoso, obtener_estado_pago_cuota
+from api.dependencies.security import admin_required, alumno_required
+from services.pagoServices import crear_preferencia_pago, marcar_pago_manual, procesar_pago_exitoso, obtener_estado_pago_cuota
 from schemas.pagoSchema import PreferenciaPagoResponse
 
 from fastapi.responses import StreamingResponse
@@ -123,3 +123,18 @@ async def descargar_comprobante(
         media_type="application/pdf",
         headers={"Content-Disposition": f"inline; filename=comprobante_{id_cuota}.pdf"}
     )
+
+# Endpoint para Pago Manual (Admin)
+@router.put(
+    "/marcar-pagada/{id_cuota}",
+    summary="Marcar cuota como pagada manualmente (Admin)",
+    description="Actualiza el estado a pagado y registra la fecha actual. Uso exclusivo administrativo.",
+    dependencies=[Depends(admin_required)]
+)
+async def registrar_pago_manual(
+    id_cuota: int,
+    db: Connection = Depends(get_db)
+):
+    await marcar_pago_manual(conn=db, id_cuota=id_cuota)
+    return {"message": "Pago registrado exitosamente."}
+

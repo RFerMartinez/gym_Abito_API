@@ -258,4 +258,28 @@ async def generar_comprobante_pdf(conn: Connection, id_cuota: int):
     buffer.seek(0)
     return buffer
 
+async def marcar_pago_manual(conn: Connection, id_cuota: int) -> bool:
+    """
+    Permite al administrador marcar manualmente una cuota como pagada.
+    Registra la fecha y hora del sistema.
+    """
+    try:
+        query = '''
+            UPDATE "Cuota" 
+            SET pagada = TRUE, 
+                "fechaDePago" = CURRENT_DATE, 
+                "horaDePago" = CURRENT_TIME(0)
+            WHERE "idCuota" = $1
+            RETURNING "idCuota"
+        '''
+        id_actualizado = await conn.fetchval(query, id_cuota)
+        
+        if not id_actualizado:
+            raise NotFoundException("Cuota", id_cuota)
+            
+        return True
+
+    except Exception as e:
+        raise DatabaseException("marcar pago manual", str(e))
+
 
