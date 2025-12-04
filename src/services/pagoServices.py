@@ -146,7 +146,13 @@ async def procesar_pago_exitoso(conn: Connection, payment_id: str) -> bool:
             id_cuota = int(id_cuota_str)
             
             # Actualizar la cuota a pagada=True
-            query = 'UPDATE "Cuota" SET pagada = TRUE WHERE "idCuota" = $1'
+            query = '''
+                UPDATE "Cuota" 
+                SET pagada = TRUE, 
+                    "fechaDePago" = CURRENT_DATE, 
+                    "horaDePago" = CURRENT_TIME(0)
+                WHERE "idCuota" = $1
+            '''
             result = await conn.execute(query, id_cuota)
             
             if result == "UPDATE 1":

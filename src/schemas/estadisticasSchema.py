@@ -15,3 +15,22 @@ class EstadisticaTrabajoItem(BaseModel):
 
     class Config:
         from_attributes = True # Permite crear el modelo desde objetos de base de datos
+
+class DashboardKPIs(BaseModel):
+    alumnos_activos: int
+    cuotas_vencidas: int
+    monto_cuotas_vencidas: float
+    ingreso_mensual: float
+    cantidad_cobrado: float
+    porcentaje_cobro: float
+
+class DatasetTurno(BaseModel):
+    label: str          # "Mañana" o "Tarde"
+    data: List[int]     # Array de 7 enteros [10, 20, 5, ...]
+    backgroundColor: str
+    borderColor: str
+    borderWidth: int = 1
+
+class GraficoTurnosResponse(BaseModel):
+    labels: List[str]   # ["Ene", "Feb", ...]
+    datasets: List[DatasetTurno]

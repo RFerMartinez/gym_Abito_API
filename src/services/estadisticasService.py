@@ -1,11 +1,15 @@
-# src/services/estadisticasService.py
 
+from datetime import date
 from asyncpg import Connection
 from typing import List
+from dateutil.relativedelta import relativedelta
 
 from schemas.estadisticasSchema import (
+    DashboardKPIs,
+    DatasetTurno,
     EstadisticaTrabajoData,
-    EstadisticaTrabajoItem
+    EstadisticaTrabajoItem,
+    GraficoTurnosResponse
 )
 
 from utils.exceptions import DatabaseException
@@ -40,3 +44,191 @@ async def obtener_alumnos_por_trabajo(conn: Connection) -> List[EstadisticaTraba
 
     except Exception as e:
         raise DatabaseException("obtener estadísticas de alumnos por trabajo", str(e))
+
+# Helper para obtener nombre del mes en español (ajusta según tu BD)
+def obtener_nombre_mes_actual():
+    meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    mes_actual_idx = date.today().month - 1
+    return meses[mes_actual_idx]
+
+async def obtener_kpis_generales(conn: Connection) -> DashboardKPIs:
+    try:
+        hoy = date.today()
+        
+        # Variables para filtros numéricos (más robusto que el string "Diciembre")
+        mes_actual = hoy.month
+        anio_actual = hoy.year
+
+        # ---------------------------------------------------------
+        # 1. ALUMNOS ACTIVOS
+        # ---------------------------------------------------------
+        query_activos = 'SELECT COUNT(*) FROM "AlumnoActivo"'
+        alumnos_activos = await conn.fetchval(query_activos)
+
+        # ---------------------------------------------------------
+        # 2. CUOTAS VENCIDAS (Cantidad y Monto Total)
+        # ---------------------------------------------------------
+        # Condición: No pagadas Y fechaFin menor a hoy
+        query_vencidas_data = '''
+            SELECT COUNT(*) as cantidad, COALESCE(SUM(monto), 0) as total
+            FROM "Cuota" 
+            WHERE pagada = FALSE AND "fechaFin" < $1
+        '''
+        res_vencidas = await conn.fetchrow(query_vencidas_data, hoy)
+        cant_vencidas = res_vencidas['cantidad']
+        monto_vencidas = float(res_vencidas['total'])
+
+        # ---------------------------------------------------------
+        # 3. INGRESOS / RECAUDACIÓN (Monto)
+        # ---------------------------------------------------------
+        # Cuotas pagadas efectivamente en este mes (por fechaDePago)
+        query_cobrado = '''
+            SELECT COALESCE(SUM(monto), 0) 
+            FROM "Cuota" 
+            WHERE pagada = TRUE 
+                AND EXTRACT(MONTH FROM "fechaDePago") = $1
+                AND EXTRACT(YEAR FROM "fechaDePago") = $2
+        '''
+        cantidad_cobrado = await conn.fetchval(query_cobrado, mes_actual, anio_actual)
+        ingreso_mensual = cantidad_cobrado 
+
+        # ---------------------------------------------------------
+        # 4. PORCENTAJE DE COBRO
+        # ---------------------------------------------------------
+        
+        # A) DENOMINADOR: Cuotas Generadas este mes
+        # Usamos 'fechaComienzo' en lugar de la columna 'mes' para evitar problemas de idioma
+        query_generadas = '''
+            SELECT COUNT(*) 
+            FROM "Cuota" 
+            WHERE EXTRACT(MONTH FROM "fechaComienzo") = $1
+                AND EXTRACT(YEAR FROM "fechaComienzo") = $2
+        '''
+        total_generadas = await conn.fetchval(query_generadas, mes_actual, anio_actual)
+
+        # B) NUMERADOR: Cuotas Pagadas este mes (Recaudación)
+        query_pagadas_mes_actual = '''
+            SELECT COUNT(*) 
+            FROM "Cuota" 
+            WHERE pagada = TRUE 
+                AND EXTRACT(MONTH FROM "fechaDePago") = $1 
+                AND EXTRACT(YEAR FROM "fechaDePago") = $2
+        '''
+        total_pagadas_este_mes = await conn.fetchval(query_pagadas_mes_actual, mes_actual, anio_actual)
+
+        porcentaje = 0.0
+        if total_generadas > 0:
+            porcentaje = round((total_pagadas_este_mes / total_generadas) * 100, 2)
+
+        return DashboardKPIs(
+            alumnos_activos=alumnos_activos,
+            cuotas_vencidas=cant_vencidas,
+            monto_cuotas_vencidas=monto_vencidas,
+            ingreso_mensual=float(ingreso_mensual),
+            cantidad_cobrado=float(cantidad_cobrado),
+            porcentaje_cobro=porcentaje
+        )
+
+    except Exception as e:
+        raise DatabaseException("Error al calcular KPIs del dashboard", str(e))
+
+
+async def obtener_alumnos_por_turno_mensual(conn: Connection) -> GraficoTurnosResponse:
+    try:
+        hoy = date.today()
+        
+        # --- 1. Calcular fecha de inicio (hace 6 meses) MANUALMENTE ---
+        # Restamos meses manejando el cambio de año
+        mes_inicio = hoy.month - 6
+        anio_inicio = hoy.year
+        if mes_inicio <= 0:
+            mes_inicio += 12
+            anio_inicio -= 1
+        
+        fecha_inicio = date(anio_inicio, mes_inicio, 1)
+        
+        # --- 2. Generar etiquetas y keys para los últimos 7 meses ---
+        nombres_meses = {
+            1: "Ene", 2: "Feb", 3: "Mar", 4: "Abr", 5: "May", 6: "Jun",
+            7: "Jul", 8: "Ago", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dic"
+        }
+        
+        labels = []
+        meses_keys = []
+        
+        # Iteramos desde la fecha de inicio avanzando mes a mes
+        curr_m = mes_inicio
+        curr_y = anio_inicio
+        
+        for _ in range(7):
+            labels.append(nombres_meses[curr_m])
+            meses_keys.append((curr_y, curr_m))
+            
+            # Avanzar al siguiente mes
+            curr_m += 1
+            if curr_m > 12:
+                curr_m = 1
+                curr_y += 1
+
+        # Inicializar contadores
+        data_manana = [0] * 7
+        data_tarde = [0] * 7
+
+        # --- 3. Consulta SQL CORREGIDA ---
+        # El GROUP BY ahora usa las expresiones completas para evitar el error de Postgres
+        query = """
+            SELECT 
+                EXTRACT(YEAR FROM c."fechaComienzo")::int as anio,
+                EXTRACT(MONTH FROM c."fechaComienzo")::int as mes,
+                MIN(h."horaInicio") as hora_inicio,
+                c.dni
+            FROM "Cuota" c
+            JOIN "Asiste" a ON c.dni = a.dni
+            JOIN "Horario" h ON a."nroGrupo" = h."nroGrupo"
+            WHERE c."fechaComienzo" >= $1
+            GROUP BY 
+                EXTRACT(YEAR FROM c."fechaComienzo"), 
+                EXTRACT(MONTH FROM c."fechaComienzo"), 
+                c.dni
+        """
+        
+        rows = await conn.fetch(query, fecha_inicio)
+
+        # --- 4. Procesar resultados ---
+        for row in rows:
+            key = (row['anio'], row['mes'])
+            
+            if key in meses_keys:
+                idx = meses_keys.index(key)
+                
+                # Turno Mañana < 13:00, Tarde >= 13:00
+                hora = row['hora_inicio']
+                if hora.hour < 13:
+                    data_manana[idx] += 1
+                else:
+                    data_tarde[idx] += 1
+
+        return GraficoTurnosResponse(
+            labels=labels,
+            datasets=[
+                DatasetTurno(
+                    label="Mañana",
+                    data=data_manana,
+                    backgroundColor="rgba(210, 214, 222, 0.8)",
+                    borderColor="rgba(210, 214, 222, 1)"
+                ),
+                DatasetTurno(
+                    label="Tarde",
+                    data=data_tarde,
+                    backgroundColor="rgba(0, 192, 239, 0.8)",
+                    borderColor="rgba(0, 192, 239, 1)"
+                )
+            ]
+        )
+
+    except Exception as e:
+        # Imprimir error en consola del backend para debug fácil
+        print(f"DEBUG ERROR: {str(e)}")
+        raise DatabaseException("Error al calcular gráfico de turnos", str(e))
+
