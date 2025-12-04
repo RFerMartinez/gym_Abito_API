@@ -10,7 +10,7 @@ from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
-from datetime import datetime
+from datetime import datetime, date
 
 # Inicializamos el SDK de MercadoPago con tu Token
 token_value = settings.MP_ACCESS_TOKEN.get_secret_value()
@@ -21,22 +21,18 @@ sdk = mercadopago.SDK(token_value)
 # -------------------------
 async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> PreferenciaPagoResponse:
     """
-    Genera una preferencia de pago en MercadoPago para una cuota específica.
+    Genera una preferencia de pago en MercadoPago.
+    Aplica un 10% de recargo si la cuota está vencida.
     """
     try:
-        # --- DEBUG TOKEN ---
-        # Imprimimos los primeros caracteres del token para verificar cuál estás usando
-        prefix = token_value[:10] if token_value else "NONE"
-        print(f"\n[DEBUG] Usando Token que empieza con: {prefix}...")
-        # -------------------
-
-        # 1. Buscar la cuota en la BD
+        # 1. Buscar la cuota (Agregamos c."fechaFin" a la consulta)
         query = """
             SELECT 
                 c."idCuota", 
                 c.monto, 
                 c.mes, 
                 c."nombreTrabajo",
+                c."fechaFin",  -- <--- NECESARIO PARA CALCULAR VENCIMIENTO
                 p.dni,
                 p.email,
                 p.nombre,
@@ -50,20 +46,35 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> Preferencia
         if not cuota:
             raise NotFoundException("Cuota", id_cuota)
 
-        # 2. Configurar los datos de la preferencia
+        # --- LÓGICA DE RECARGO ---
+        hoy = date.today()
+        fecha_vencimiento = cuota["fechaFin"]
+        monto_final = float(cuota["monto"])
+        titulo_concepto = f"Cuota {cuota['mes']} - {cuota['nombreTrabajo']}"
+
+        # Si hoy es mayor a la fecha de fin, aplicamos 10%
+        if hoy > fecha_vencimiento:
+            recargo = monto_final * 0.10
+            monto_final += recargo
+            # Avisamos en el título que tiene recargo
+            titulo_concepto += " (Con Recargo por Mora)"
+            print(f"--- APLICANDO RECARGO: Cuota {id_cuota} venció el {fecha_vencimiento}. Nuevo monto: {monto_final}")
+
+        # -------------------------
+
+        # 2. Configurar MercadoPago
         mi_url_ngrok = settings.URL_NGROK 
         
         preference_data = {
             "items": [
                 {
                     "id": str(cuota["idCuota"]),
-                    "title": f"Cuota {cuota['mes']} - {cuota['nombreTrabajo']}",
+                    "title": titulo_concepto, # Usamos el título modificado
                     "quantity": 1,
-                    "unit_price": float(cuota["monto"]),
+                    "unit_price": monto_final, # Usamos el monto con (o sin) recargo
                     "currency_id": "ARS"
                 }
             ],
-            # Datos del pagador (Opcional, pero recomendado si tienes los datos del alumno)
             "payer": { 
                 "email": cuota["email"],
                 "name": cuota["nombre"],
@@ -73,50 +84,28 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> Preferencia
                     "number": cuota["dni"]
                 }
             },
-            
-            # Referencia externa: Vital para saber qué cuota se pagó cuando vuelva el webhook
             "external_reference": str(cuota["idCuota"]),
-
             "back_urls": {
                 "success": f"{mi_url_ngrok}/pagos/retorno",
                 "failure": f"{mi_url_ngrok}/pagos/retorno",
                 "pending": f"{mi_url_ngrok}/pagos/retorno"
             },
             "auto_return": "approved",
-            
-            # Aquí es donde MP notificará el pago a tu Backend (vía Ngrok)
             "notification_url": f"{mi_url_ngrok}/pagos/webhook",
-
-            # Opcional: Esto hace que no puedan cambiar el email en el checkout
             "binary_mode": True
         }
 
-        # --- DEBUG PREFERENCIA ---
-        print("\n--- DEBUG: ENVIANDO PREFERENCIA A MP ---")
-        print(preference_data)
-        print("----------------------------------------\n")
-
-        # 3. Crear la preferencia en la API de MercadoPago
+        # 3. Crear la preferencia
         preference_response = sdk.preference().create(preference_data)
         
-        # --- DEBUG RESPUESTA ---
-        print("--- DEBUG: RESPUESTA DE MP ---")
-        print(f"Status: {preference_response.get('status')}")
-        # Verificamos si hay sandbox_init_point en la respuesta cruda
-        raw_response = preference_response.get("response", {})
-        print(f"Sandbox Init Point: {raw_response.get('sandbox_init_point')}")
-        print("------------------------------\n")
-        # -----------------------
-
         if preference_response["status"] != 201:
-            print(f"ERROR MP DETALLE: {preference_response}") # Ver error completo si falla
             raise Exception(f"Error al crear preferencia en MP: {preference_response}")
 
         response_data = preference_response["response"]
 
         return PreferenciaPagoResponse(
             init_point=response_data["init_point"], 
-            sandbox_init_point=response_data["sandbox_init_point"] 
+            sandbox_init_point=response_data["sandbox_init_point"]
         )
 
     except NotFoundException:
@@ -124,17 +113,16 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> Preferencia
     except Exception as e:
         print(f"Error creando preferencia: {e}")
         raise DatabaseException("iniciar pago", str(e))
-
 # -------------------------
 # Webhook
 # -------------------------
 async def procesar_pago_exitoso(conn: Connection, payment_id: str) -> bool:
     """
-    1. Consulta a MercadoPago el estado real del pago usando su ID.
-    2. Si está aprobado ('approved'), marca la cuota como pagada en la BD.
+    Recibe la confirmación de pago.
+    Actualiza el estado Y EL MONTO (por si hubo recargo).
     """
     try:
-        # 1. Consultar a MercadoPago (Fuente de la verdad)
+        # 1. Consultar a MercadoPago
         payment_info = sdk.payment().get(payment_id)
         
         if payment_info["status"] != 200:
@@ -144,34 +132,40 @@ async def procesar_pago_exitoso(conn: Connection, payment_id: str) -> bool:
         payment_data = payment_info["response"]
         estado = payment_data.get("status")
         id_cuota_str = payment_data.get("external_reference")
+        
+        # Obtenemos cuánto pagó realmente el usuario (transaction_amount)
+        monto_pagado_real = payment_data.get("transaction_amount") 
 
-        print(f"🔔 Webhook recibido: Pago {payment_id} para Cuota {id_cuota_str} - Estado: {estado}")
+        print(f"🔔 Webhook: Pago {payment_id} para Cuota {id_cuota_str} - Estado: {estado} - Monto: {monto_pagado_real}")
 
         # 2. Si el pago está aprobado, actualizamos la base de datos
         if estado == "approved" and id_cuota_str:
             id_cuota = int(id_cuota_str)
             
-            # Actualizar la cuota a pagada=True
+            # Actualizamos 'monto' con lo que realmente pagó (para que el comprobante salga bien)
             query = '''
                 UPDATE "Cuota" 
                 SET pagada = TRUE, 
                     "fechaDePago" = CURRENT_DATE, 
-                    "horaDePago" = CURRENT_TIME(0)
+                    "horaDePago" = CURRENT_TIME(0),
+                    monto = $2 
                 WHERE "idCuota" = $1
             '''
-            result = await conn.execute(query, id_cuota)
+            # Pasamos id_cuota y el monto_pagado_real
+            result = await conn.execute(query, id_cuota, float(monto_pagado_real))
             
             if result == "UPDATE 1":
-                print(f"✅ Cuota {id_cuota} marcada como PAGADA exitosamente.")
+                print(f"✅ Cuota {id_cuota} actualizada: PAGADA. Monto final registrado: {monto_pagado_real}")
                 return True
             else:
-                print(f"❌ Error: La cuota {id_cuota} no se encontró o no se pudo actualizar.")
+                print(f"❌ Error: La cuota {id_cuota} no se encontró.")
         
         return False
 
     except Exception as e:
         print(f"❌ Error procesando webhook: {e}")
         raise DatabaseException("procesar webhook", str(e))
+
 
 async def obtener_estado_pago_cuota(conn: Connection, id_cuota: int) -> bool:
     """Retorna True si la cuota está pagada, False si no."""
