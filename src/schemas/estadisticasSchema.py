@@ -34,3 +34,13 @@ class DatasetTurno(BaseModel):
 class GraficoTurnosResponse(BaseModel):
     labels: List[str]   # ["Ene", "Feb", ...]
     datasets: List[DatasetTurno]
+
+class EntrenadorStats(BaseModel):
+    nombre: str
+    apellido: str
+    dni: str
+    rol: str
+    alumnos_a_cargo: int
+    monto_recaudado_mes: float
+    cuotas_pendientes: int
+

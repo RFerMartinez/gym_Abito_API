@@ -7,7 +7,7 @@ from api.dependencies.security import admin_required, staff_required
 from api.dependencies.auth import get_current_user
 
 # --- Importaciones para Estadísticas ---
-from schemas.estadisticasSchema import DashboardKPIs, EstadisticaTrabajoItem, GraficoTurnosResponse
+from schemas.estadisticasSchema import DashboardKPIs, EntrenadorStats, EstadisticaTrabajoItem, GraficoTurnosResponse
 from services import estadisticasService # Importamos el nuevo servicio
 
 router = APIRouter(
@@ -65,3 +65,32 @@ async def get_stats_alumnos_turno(
     en los últimos 7 meses.
     """
     return await estadisticasService.obtener_alumnos_por_turno_mensual(db)
+
+
+@router.get(
+    "/perfil-entrenador",
+    response_model=EntrenadorStats,
+    summary="Estadísticas personales del Entrenador",
+    description="Devuelve métricas de rendimiento basadas en los grupos a cargo del usuario logueado."
+)
+async def get_stats_entrenador(
+    current_user: dict = Depends(get_current_user), # Necesitamos saber quién es
+    db: Connection = Depends(get_db)
+):
+    """
+    Obtiene la tarjeta de rendimiento del usuario actual.
+    """
+    dni_empleado = current_user['dni']
+    return await estadisticasService.obtener_estadisticas_entrenador(db, dni_empleado)
+
+@router.get(
+    "/rendimiento-staff",
+    response_model=List[EntrenadorStats],
+    summary="Rendimiento de todo el Staff (Admin)",
+    description="Devuelve una lista con las métricas de cada empleado.",
+    dependencies=[Depends(admin_required)]
+)
+async def get_all_staff_stats(
+    db: Connection = Depends(get_db)
+):
+    return await estadisticasService.obtener_stats_todos_empleados(db)

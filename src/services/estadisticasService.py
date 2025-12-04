@@ -7,12 +7,13 @@ from dateutil.relativedelta import relativedelta
 from schemas.estadisticasSchema import (
     DashboardKPIs,
     DatasetTurno,
+    EntrenadorStats,
     EstadisticaTrabajoData,
     EstadisticaTrabajoItem,
     GraficoTurnosResponse
 )
 
-from utils.exceptions import DatabaseException
+from utils.exceptions import DatabaseException, NotFoundException
 
 async def obtener_alumnos_por_trabajo(conn: Connection) -> List[EstadisticaTrabajoItem]:
     """
@@ -226,9 +227,120 @@ async def obtener_alumnos_por_turno_mensual(conn: Connection) -> GraficoTurnosRe
                 )
             ]
         )
-
     except Exception as e:
         # Imprimir error en consola del backend para debug fácil
         print(f"DEBUG ERROR: {str(e)}")
         raise DatabaseException("Error al calcular gráfico de turnos", str(e))
+
+
+async def obtener_estadisticas_entrenador(conn: Connection, dni_empleado: str) -> EntrenadorStats:
+    """
+    Calcula métricas específicas para el entrenador/staff logueado:
+    1. Datos personales.
+    2. Alumnos únicos que asisten a sus grupos.
+    3. Recaudación de ESOS alumnos en el mes actual.
+    4. Deudas pendientes de ESOS alumnos.
+    """
+    try:
+        hoy = date.today()
+        mes_actual = hoy.month
+        anio_actual = hoy.year
+
+        # 1. Obtener datos básicos del Empleado (unimos Persona y Empleado para sacar el Rol)
+        query_empleado = '''
+            SELECT p.nombre, p.apellido, e.dni, e.rol
+            FROM "Empleado" e
+            JOIN "Persona" p ON e.dni = p.dni
+            WHERE e.dni = $1
+        '''
+        empleado = await conn.fetchrow(query_empleado, dni_empleado)
+        
+        if not empleado:
+            # Si no es empleado (ej: es Admin puro sin registro en tabla Empleado, aunque tu lógica los crea),
+            # devolvemos datos vacíos o buscamos solo en Persona.
+            # Asumiremos que existe en Empleado o Persona.
+            raise NotFoundException("Empleado", dni_empleado)
+
+        # 2. Identificar a los alumnos a cargo (Subquery reutilizable)
+        # Un alumno está "a cargo" si asiste a un grupo (Pertenece) donde el dniEmpleado es el del usuario.
+        subquery_mis_alumnos = '''
+            SELECT DISTINCT a.dni
+            FROM "Asiste" a
+            JOIN "Pertenece" p ON a."nroGrupo" = p."nroGrupo" AND a.dia = p.dia
+            WHERE p."dniEmpleado" = $1
+        '''
+
+        # A) Cantidad de Alumnos a Cargo
+        query_cant_alumnos = f'''
+            SELECT COUNT(*) FROM ({subquery_mis_alumnos}) as mis_alumnos
+        '''
+        alumnos_a_cargo = await conn.fetchval(query_cant_alumnos, dni_empleado)
+
+        # B) Monto Recaudado (Mes Actual) de MIS alumnos
+        # Sumamos las cuotas pagadas este mes, pero SOLO de los DNIs que me pertenecen
+        query_recaudado = f'''
+            SELECT COALESCE(SUM(c.monto), 0)
+            FROM "Cuota" c
+            WHERE c.pagada = TRUE
+                AND EXTRACT(MONTH FROM c."fechaDePago") = $2
+                AND EXTRACT(YEAR FROM c."fechaDePago") = $3
+                AND c.dni IN ({subquery_mis_alumnos})
+        '''
+        monto_recaudado = await conn.fetchval(query_recaudado, dni_empleado, mes_actual, anio_actual)
+
+        # C) Cuotas Pendientes de MIS alumnos
+        # Contamos todas las cuotas impagas de mis alumnos (históricas)
+        query_pendientes = f'''
+            SELECT COUNT(*)
+            FROM "Cuota" c
+            WHERE c.pagada = FALSE
+                AND c.dni IN ({subquery_mis_alumnos})
+        '''
+        cuotas_pendientes = await conn.fetchval(query_pendientes, dni_empleado)
+
+        return EntrenadorStats(
+            nombre=empleado['nombre'],
+            apellido=empleado['apellido'],
+            dni=empleado['dni'],
+            rol=empleado['rol'],
+            alumnos_a_cargo=alumnos_a_cargo,
+            monto_recaudado_mes=float(monto_recaudado),
+            cuotas_pendientes=cuotas_pendientes
+        )
+
+    except Exception as e:
+        # Si el error es NotFound, lo dejamos pasar, sino es de BD
+        if "NotFound" in str(e): raise
+        raise DatabaseException("Error al calcular estadísticas de entrenador", str(e))
+
+async def obtener_stats_todos_empleados(conn: Connection) -> List[EntrenadorStats]:
+    """
+    Obtiene las estadísticas de rendimiento para TODOS los empleados registrados.
+    """
+    try:
+        # 1. Obtener lista de todos los empleados
+        query_empleados = '''
+            SELECT e.dni 
+            FROM "Empleado" e
+            JOIN "Persona" p ON e.dni = p.dni
+            ORDER BY p.apellido, p.nombre
+        '''
+        empleados_rows = await conn.fetch(query_empleados)
+        
+        lista_stats = []
+        
+        # 2. Iterar y calcular stats por cada uno
+        # (Reutilizamos la lógica que diseñamos antes, pero encapsulada o inline)
+        for row in empleados_rows:
+            # Llamamos a la función individual para cada DNI
+            # Nota: Esto hace varias queries. Si tienes 50 empleados podría ser lento,
+            # pero para un gimnasio normal (5-10 profes) es perfectamente aceptable y más limpio.
+            stats = await obtener_estadisticas_entrenador(conn, row['dni'])
+            lista_stats.append(stats)
+            
+        return lista_stats
+
+    except Exception as e:
+        raise DatabaseException("Error listando stats de empleados", str(e))
+
 
