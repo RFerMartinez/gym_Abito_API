@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status, Request, HTTPException
-from fastapi.responses import RedirectResponse  # <--- NUEVO IMPORT
+from fastapi.responses import RedirectResponse
 
 from asyncpg import Connection
 
@@ -7,6 +7,10 @@ from core.session import get_db
 from api.dependencies.security import alumno_required
 from services.pagoServices import crear_preferencia_pago, procesar_pago_exitoso, obtener_estado_pago_cuota
 from schemas.pagoSchema import PreferenciaPagoResponse
+
+from fastapi.responses import StreamingResponse
+from services.pagoServices import generar_comprobante_pdf
+from api.dependencies.auth import get_current_user
 
 router = APIRouter(
     prefix="/pagos",
@@ -101,3 +105,21 @@ async def verificar_estado_cuota(
     Usado por el Frontend para polling mientras se escanea el QR.
     """
     return await obtener_estado_pago_cuota(conn=db, id_cuota=id_cuota)
+
+@router.get(
+    "/comprobante/{id_cuota}",
+    summary="Descargar comprobante de pago",
+    dependencies=[Depends(get_current_user)] # Idealmente protegido
+)
+async def descargar_comprobante(
+    id_cuota: int,
+    db: Connection = Depends(get_db)
+):
+    pdf_buffer = await generar_comprobante_pdf(conn=db, id_cuota=id_cuota)
+    
+    # Retornamos el archivo como un stream con el header correcto
+    return StreamingResponse(
+        pdf_buffer, 
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"inline; filename=comprobante_{id_cuota}.pdf"}
+    )

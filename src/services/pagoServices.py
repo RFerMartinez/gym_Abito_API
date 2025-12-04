@@ -6,6 +6,12 @@ from core.config import settings
 from utils.exceptions import NotFoundException, DatabaseException
 from schemas.pagoSchema import PreferenciaPagoResponse
 
+from io import BytesIO
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import cm
+from datetime import datetime
+
 # Inicializamos el SDK de MercadoPago con tu Token
 token_value = settings.MP_ACCESS_TOKEN.get_secret_value()
 sdk = mercadopago.SDK(token_value)
@@ -167,7 +173,6 @@ async def procesar_pago_exitoso(conn: Connection, payment_id: str) -> bool:
         print(f"❌ Error procesando webhook: {e}")
         raise DatabaseException("procesar webhook", str(e))
 
-
 async def obtener_estado_pago_cuota(conn: Connection, id_cuota: int) -> bool:
     """Retorna True si la cuota está pagada, False si no."""
     query = 'SELECT pagada FROM "Cuota" WHERE "idCuota" = $1'
@@ -175,4 +180,82 @@ async def obtener_estado_pago_cuota(conn: Connection, id_cuota: int) -> bool:
     if pagada is None:
         raise NotFoundException("Cuota", id_cuota)
     return pagada
+
+# -------------------------
+# Generar comprobante de pago PDF
+# -------------------------
+async def generar_comprobante_pdf(conn: Connection, id_cuota: int):
+    """
+    Genera un archivo PDF en memoria con los datos del comprobante.
+    """
+    # 1. Obtener datos completos de la cuota y el alumno
+    query = """
+        SELECT 
+            c."idCuota", c.monto, c.mes, c."nombreTrabajo", c."nombreSuscripcion",
+            c."fechaDePago", c."horaDePago",
+            p.nombre, p.apellido, p.dni, p.email
+        FROM "Cuota" c
+        JOIN "Persona" p ON c.dni = p.dni
+        WHERE c."idCuota" = $1 AND c.pagada = TRUE
+    """
+    row = await conn.fetchrow(query, id_cuota)
+
+    if not row:
+        raise NotFoundException("Comprobante no disponible (Cuota no pagada o inexistente)", id_cuota)
+
+    # 2. Crear el PDF en memoria
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    # --- DISEÑO DEL COMPROBANTE ---
+    
+    # Encabezado
+    c.setFont("Helvetica-Bold", 20)
+    c.drawString(2 * cm, height - 3 * cm, "GIMNASIO ABITO")
+    
+    c.setFont("Helvetica", 10)
+    c.drawString(2 * cm, height - 4 * cm, "Comprobante de Pago")
+    c.drawString(2 * cm, height - 4.5 * cm, f"Fecha de emisión: {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+
+    # Datos del Alumno
+    c.line(2 * cm, height - 5 * cm, width - 2 * cm, height - 5 * cm)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(2 * cm, height - 6 * cm, "Datos del Alumno")
+    
+    c.setFont("Helvetica", 11)
+    y = height - 7 * cm
+    c.drawString(2.5 * cm, y, f"Nombre: {row['nombre']} {row['apellido']}")
+    c.drawString(2.5 * cm, y - 15, f"DNI: {row['dni']}")
+    c.drawString(2.5 * cm, y - 30, f"Email: {row['email']}")
+
+    # Detalle del Pago
+    c.line(2 * cm, y - 50, width - 2 * cm, y - 50)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(2 * cm, y - 70, "Detalle del Pago")
+
+    y_detalle = y - 90
+    c.setFont("Helvetica", 11)
+    
+    # Formatear fecha y hora de pago si existen
+    fecha_pago = row['fechaDePago'].strftime('%d/%m/%Y') if row['fechaDePago'] else "-"
+    hora_pago = row['horaDePago'].strftime('%H:%M') if row['horaDePago'] else "-"
+
+    c.drawString(2.5 * cm, y_detalle, f"Concepto: Cuota {row['mes']} - {row['nombreTrabajo']}")
+    c.drawString(2.5 * cm, y_detalle - 15, f"Plan: {row['nombreSuscripcion']}")
+    c.drawString(2.5 * cm, y_detalle - 30, f"Fecha de Pago: {fecha_pago} a las {hora_pago} hs")
+    c.drawString(2.5 * cm, y_detalle - 45, f"ID Transacción: #{row['idCuota']}")
+
+    # Total
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(12 * cm, y_detalle - 80, f"TOTAL: ${row['monto']:,.2f}")
+
+    # Pie de página
+    c.setFont("Helvetica-Oblique", 8)
+    c.drawCentredString(width / 2, 2 * cm, "Gracias por confiar en Gimnasio Abito")
+
+    c.save()
+    buffer.seek(0)
+    return buffer
+
 
