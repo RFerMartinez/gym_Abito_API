@@ -19,20 +19,17 @@ sdk = mercadopago.SDK(token_value)
 # -------------------------
 # Crear preferencia de pago
 # -------------------------
-async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> PreferenciaPagoResponse:
+async def crear_preferencia_pago(conn: Connection, id_cuota: int, monto_final: float) -> PreferenciaPagoResponse:
     """
-    Genera una preferencia de pago en MercadoPago.
-    Aplica un 10% de recargo si la cuota está vencida.
+    Genera una preferencia de pago en MercadoPago usando el monto provisto.
     """
     try:
-        # 1. Buscar la cuota (Agregamos c."fechaFin" a la consulta)
+        # 1. Buscar datos descriptivos de la cuota y del usuario
         query = """
             SELECT 
                 c."idCuota", 
-                c.monto, 
                 c.mes, 
                 c."nombreTrabajo",
-                c."fechaFin",  -- <--- NECESARIO PARA CALCULAR VENCIMIENTO
                 p.dni,
                 p.email,
                 p.nombre,
@@ -46,21 +43,8 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> Preferencia
         if not cuota:
             raise NotFoundException("Cuota", id_cuota)
 
-        # --- LÓGICA DE RECARGO ---
-        hoy = date.today()
-        fecha_vencimiento = cuota["fechaFin"]
-        monto_final = float(cuota["monto"])
+        # Usamos el título base
         titulo_concepto = f"Cuota {cuota['mes']} - {cuota['nombreTrabajo']}"
-
-        # Si hoy es mayor a la fecha de fin, aplicamos 10%
-        if hoy > fecha_vencimiento:
-            recargo = monto_final * 0.10
-            monto_final += recargo
-            # Avisamos en el título que tiene recargo
-            titulo_concepto += " (Con Recargo por Mora)"
-            print(f"--- APLICANDO RECARGO: Cuota {id_cuota} venció el {fecha_vencimiento}. Nuevo monto: {monto_final}")
-
-        # -------------------------
 
         # 2. Configurar MercadoPago
         mi_url_ngrok = settings.URL_NGROK 
@@ -69,9 +53,9 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int) -> Preferencia
             "items": [
                 {
                     "id": str(cuota["idCuota"]),
-                    "title": titulo_concepto, # Usamos el título modificado
+                    "title": titulo_concepto,
                     "quantity": 1,
-                    "unit_price": monto_final, # Usamos el monto con (o sin) recargo
+                    "unit_price": float(monto_final), # <--- AQUÍ USAMOS EL DATO DEL FRONT
                     "currency_id": "ARS"
                 }
             ],

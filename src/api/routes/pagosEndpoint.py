@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Request, HTTPException
+from fastapi import APIRouter, Depends, status, Request, HTTPException, Body
 from fastapi.responses import RedirectResponse
 
 from asyncpg import Connection
@@ -22,16 +22,19 @@ router = APIRouter(
     "/crear-preferencia/{id_cuota}",
     response_model=PreferenciaPagoResponse,
     summary="Crear preferencia de pago MP",
-    dependencies=[Depends(alumno_required)] # <-- Solo alumnos autenticados
+    dependencies=[Depends(alumno_required)] 
 )
 async def iniciar_pago_cuota(
     id_cuota: int,
+    monto_final: float = Body(..., embed=True, description="Monto final calculado por el front"), # <--- Nuevo parámetro
     db: Connection = Depends(get_db)
 ):
     """
     Genera el link de pago (init_point) para una cuota específica.
+    Recibe el monto final (con o sin recargos) calculado por el Frontend.
     """
-    return await crear_preferencia_pago(conn=db, id_cuota=id_cuota)
+    # Pasamos el monto_final al servicio
+    return await crear_preferencia_pago(conn=db, id_cuota=id_cuota, monto_final=monto_final)
 
 
 # 2. Endpoint para recibir notificaciones (Para Mercado Pago)
