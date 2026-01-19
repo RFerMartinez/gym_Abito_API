@@ -38,6 +38,7 @@ class Settings(BaseSettings):
 
     # -- Mercado Pago
     MP_ACCESS_TOKEN: SecretStr
+    MP_ACCESS_TOKEN_DAVOR: SecretStr
 
     # -- NGROK
     URL_NGROK: str

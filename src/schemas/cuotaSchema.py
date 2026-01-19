@@ -1,6 +1,7 @@
 
 from pydantic import BaseModel
 from datetime import date
+from typing import Optional
 
 # Agrega esta clase si no la tienes
 class CuotaBase(BaseModel):
@@ -9,6 +10,8 @@ class CuotaBase(BaseModel):
     monto: float
     mes: str
     anio: int
+    metodoDePago: Optional[str] = None # <--- Nuevo campo
+    idFacturacion: Optional[int] = None # <--- Nuevo campo
 
 class CuotaResponseAlumnoAuth(CuotaBase):
     trabajo: str

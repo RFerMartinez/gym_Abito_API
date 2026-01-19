@@ -13,8 +13,33 @@ from reportlab.lib.units import cm
 from datetime import datetime, date
 
 # Inicializamos el SDK de MercadoPago con tu Token
-token_value = settings.MP_ACCESS_TOKEN.get_secret_value()
-sdk = mercadopago.SDK(token_value)
+# token_value = settings.MP_ACCESS_TOKEN.get_secret_value()
+# sdk = mercadopago.SDK(token_value)
+
+def obtener_sdk(cuenta: str = "mia") -> mercadopago.SDK:
+    """Devuelve una instancia del SDK según la cuenta solicitada."""
+    if cuenta == "davor":
+        return mercadopago.SDK(settings.MP_ACCESS_TOKEN_DAVOR.get_secret_value())
+    return mercadopago.SDK(settings.MP_ACCESS_TOKEN.get_secret_value())
+
+async def obtener_turno_pago(conn: Connection, id_cuota: int) -> str:
+    """
+    Determina si el pago es para 'mañana' o 'tarde' basado en el 
+    primer grupo asignado al alumno de la cuota.
+    """
+    query = """
+        SELECT 
+            CASE
+                WHEN LEFT(MIN(asis."nroGrupo"), 1) IN ('1', '2') THEN 'mañana'
+                WHEN LEFT(MIN(asis."nroGrupo"), 1) IN ('3', '4', '5') THEN 'tarde'
+                ELSE 'mañana'
+            END as turno
+        FROM "Asiste" asis
+        JOIN "Cuota" c ON asis.dni = c.dni
+        WHERE c."idCuota" = $1
+    """
+    turno = await conn.fetchval(query, id_cuota)
+    return turno or "mañana"
 
 # -------------------------
 # Crear preferencia de pago
@@ -24,50 +49,22 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int, monto_final: f
     Genera una preferencia de pago en MercadoPago usando el monto provisto.
     """
     try:
-        # 1. Buscar datos descriptivos de la cuota y del usuario
-        query = """
-            SELECT 
-                c."idCuota", 
-                c.mes, 
-                c."nombreTrabajo",
-                p.dni,
-                p.email,
-                p.nombre,
-                p.apellido
-            FROM "Cuota" c
-            JOIN "Persona" p ON c.dni = p.dni
-            WHERE c."idCuota" = $1
-        """
-        cuota = await conn.fetchrow(query, id_cuota)
-        
-        if not cuota:
-            raise NotFoundException("Cuota", id_cuota)
+        # 1. Buscar datos y determinar turno
+        turno = await obtener_turno_pago(conn, id_cuota)
+        cuenta_destino = "davor" if turno == "tarde" else "mia"
+        sdk = obtener_sdk(cuenta_destino)
 
-        # Usamos el título base
-        titulo_concepto = f"Cuota {cuota['mes']} - {cuota['nombreTrabajo']}"
+        # Buscar datos descriptivos (mantener tu query actual)
+        query = 'SELECT c."idCuota", c.mes, c."nombreTrabajo", p.dni, p.email, p.nombre, p.apellido FROM "Cuota" c JOIN "Persona" p ON c.dni = p.dni WHERE c."idCuota" = $1'
+        cuota = await conn.fetchrow(query, id_cuota)
+        if not cuota: raise NotFoundException("Cuota", id_cuota)
 
         # 2. Configurar MercadoPago
         mi_url_ngrok = settings.URL_NGROK 
         
         preference_data = {
-            "items": [
-                {
-                    "id": str(cuota["idCuota"]),
-                    "title": titulo_concepto,
-                    "quantity": 1,
-                    "unit_price": float(monto_final), # <--- AQUÍ USAMOS EL DATO DEL FRONT
-                    "currency_id": "ARS"
-                }
-            ],
-            "payer": { 
-                "email": cuota["email"],
-                "name": cuota["nombre"],
-                "surname": cuota["apellido"],
-                "identification": {
-                    "type": "DNI",
-                    "number": cuota["dni"]
-                }
-            },
+            "items": [{"id": str(cuota["idCuota"]), "title": f"Cuota {cuota['mes']} - {cuota['nombreTrabajo']}", "quantity": 1, "unit_price": float(monto_final), "currency_id": "ARS"}],
+            "payer": {"email": cuota["email"], "name": cuota["nombre"], "surname": cuota["apellido"], "identification": {"type": "DNI", "number": cuota["dni"]}},
             "external_reference": str(cuota["idCuota"]),
             "back_urls": {
                 "success": f"{mi_url_ngrok}/pagos/retorno",
@@ -75,11 +72,11 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int, monto_final: f
                 "pending": f"{mi_url_ngrok}/pagos/retorno"
             },
             "auto_return": "approved",
-            "notification_url": f"{mi_url_ngrok}/pagos/webhook",
+            # AGREGAMOS ?owner=... para que el webhook sepa qué token usar al verificar
+            "notification_url": f"{mi_url_ngrok}/pagos/webhook?owner={cuenta_destino}",
             "binary_mode": True
         }
 
-        # 3. Crear la preferencia
         preference_response = sdk.preference().create(preference_data)
         
         if preference_response["status"] != 201:
@@ -100,13 +97,10 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int, monto_final: f
 # -------------------------
 # Webhook
 # -------------------------
-async def procesar_pago_exitoso(conn: Connection, payment_id: str) -> bool:
-    """
-    Recibe la confirmación de pago.
-    Actualiza el estado Y EL MONTO (por si hubo recargo).
-    """
+async def procesar_pago_exitoso(conn: Connection, payment_id: str, owner: str = "mia") -> bool:
     try:
-        # 1. Consultar a MercadoPago
+        # Usamos el SDK correcto para validar el pago
+        sdk = obtener_sdk(owner)
         payment_info = sdk.payment().get(payment_id)
         
         if payment_info["status"] != 200:
@@ -132,7 +126,8 @@ async def procesar_pago_exitoso(conn: Connection, payment_id: str) -> bool:
                 SET pagada = TRUE, 
                     "fechaDePago" = CURRENT_DATE, 
                     "horaDePago" = CURRENT_TIME(0),
-                    monto = $2 
+                    monto = $2,
+                    "metodoDePago" = 'qr' -- <--- Registramos el método digital
                 WHERE "idCuota" = $1
             '''
             # Pasamos id_cuota y el monto_pagado_real

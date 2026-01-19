@@ -30,6 +30,7 @@ from api.routes.estadisticasEndpoint import router as estadisticas_endpoint     
 from api.routes.avisoEndpoint import router as aviso_endpoint                   # avisos
 from api.routes.empleadoEndpoint import router as empleado_endpoint             # empleados
 from api.routes.pagosEndpoint import router as pagos_endpoint                   # MercadoPago
+from api.routes.facturacionEndpoint import router as facturacion_endpoint       # Facturacion
 
 from api.routes.adminExample import router as admin_example_endpoint            # ejemplo admin
 from api.routes.alumnosExample import router as alumnos_example_endpoint        # ejemplo alumnos
@@ -109,6 +110,7 @@ app.include_router(estadisticas_endpoint)
 app.include_router(aviso_endpoint)
 app.include_router(empleado_endpoint)
 app.include_router(pagos_endpoint)
+app.include_router(facturacion_endpoint)
 
 if __name__ == "__main__":
     import uvicorn

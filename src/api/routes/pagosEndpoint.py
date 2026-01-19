@@ -38,38 +38,25 @@ async def iniciar_pago_cuota(
 
 
 # 2. Endpoint para recibir notificaciones (Para Mercado Pago)
-@router.post("/webhook", include_in_schema=False) # Oculto de la doc para no confundir
-async def recibir_notificacion_mp(
-    request: Request,
-    db: Connection = Depends(get_db)
-):
-    """
-    Recibe las notificaciones de MercadoPago.
-    MP envía un JSON con el 'type' y 'data.id'.
-    """
+@router.post("/webhook", include_in_schema=False)
+async def recibir_notificacion_mp(request: Request, db: Connection = Depends(get_db)):
     try:
-        # Obtenemos los parámetros de la URL (MP suele enviar ?topic=payment&id=...)
-        # O el body JSON. MP a veces varía, revisamos ambos.
         params = request.query_params
+        owner = params.get("owner", "mia") # <--- Capturar quién es el dueño
         topic = params.get("topic") or params.get("type")
         payment_id = params.get("id") or params.get("data.id")
 
-        # Si viene en el body (formato más nuevo)
         if not payment_id:
             body = await request.json()
             topic = body.get("type")
-            data = body.get("data", {})
-            payment_id = data.get("id")
+            payment_id = body.get("data", {}).get("id")
 
         if topic == "payment" and payment_id:
-            await procesar_pago_exitoso(conn=db, payment_id=payment_id)
+            # Pasamos el owner al servicio
+            await procesar_pago_exitoso(conn=db, payment_id=payment_id, owner=owner)
         
-        # Siempre responder 200 OK a MercadoPago, o seguirán enviando la alerta
         return {"status": "ok"}
-        
-    except Exception as e:
-        print(f"Error en webhook: {e}")
-        # Aunque falle, respondemos OK para que MP no reintente infinitamente
+    except Exception:
         return {"status": "ok"}
 
 
