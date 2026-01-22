@@ -3,6 +3,10 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+# Cron Job
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+
 # Imports Dependencies
 from api.dependencies.auth import get_current_user
 
@@ -14,7 +18,7 @@ from utils.exceptions import AppException
 
 # imports settings, session
 from core.config import settings, env_path
-from core.session import connect_to_db, close_db_connection
+from core.session import connect_to_db, close_db_connection, get_db
 
 # imports endPoints
 from api.routes.suscripcionEndpoint import router as suscripcion_endpoint       # suscripcion
@@ -35,16 +39,47 @@ from api.routes.facturacionEndpoint import router as facturacion_endpoint       
 from api.routes.adminExample import router as admin_example_endpoint            # ejemplo admin
 from api.routes.alumnosExample import router as alumnos_example_endpoint        # ejemplo alumnos
 
+from services.cuotaServices import generar_cuotas_masivas_mensuales
+
+async def tarea_generar_cuotas():
+    """Esta función se ejecutará automáticamente el día 5."""
+    print("⏰ [Scheduler] Iniciando generación automática de cuotas...")
+    async for db in get_db(): # Obtenemos conexión del pool
+        cantidad = await generar_cuotas_masivas_mensuales(db)
+        if cantidad > 0:
+            print(f"✅ [Scheduler] Se generaron {cantidad} cuotas.")
+        break
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Start app
+    # 1. INICIO DE LA APP
+    
+    # A) Conectar Base de Datos (TU CÓDIGO ACTUAL)
     await connect_to_db()
-    print("Conexión a la base de datos establecida")
-    print(f"url_ngrok: {settings.URL_NGROK}")
-    yield
-    # Shutdown app
+    print("✅ Conexión a la base de datos establecida")
+    print(f"📡 url_ngrok: {settings.URL_NGROK}")
+
+    # B) Iniciar Scheduler (LO NUEVO)
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(
+        tarea_generar_cuotas, 
+        CronTrigger(day=5, hour=0, minute=0), # Día 5 de cada mes a las 08:00 hs
+        id="generacion_cuotas_mensual"
+    )
+    scheduler.start()
+    print("📅 Planificador de tareas (Scheduler) iniciado.")
+    
+    yield # <--- Aquí la app corre y recibe peticiones
+    
+    # 2. APAGADO DE LA APP
+    
+    # C) Apagar Scheduler (LO NUEVO)
+    print("🛑 Deteniendo planificador...")
+    scheduler.shutdown()
+    
+    # D) Desconectar Base de Datos (TU CÓDIGO ACTUAL)
     await close_db_connection()
-    print("Conexión a la base de datos cerrada")
+    print("👋 Conexión a la base de datos cerrada")
 
 app = FastAPI(
     title=settings.PROJECT_TITLE,

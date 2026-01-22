@@ -117,14 +117,17 @@ async def descargar_comprobante(
 # Endpoint para Pago Manual (Admin)
 @router.put(
     "/marcar-pagada/{id_cuota}",
-    summary="Marcar cuota como pagada manualmente (Admin)",
-    description="Actualiza el estado a pagado y registra la fecha actual. Uso exclusivo administrativo.",
+    summary="Marcar cuota como pagada (Admin)",
     dependencies=[Depends(admin_required)]
 )
 async def registrar_pago_manual(
     id_cuota: int,
+    metodo_pago: str = Body(..., embed=True, description="Puede ser 'Efectivo' o 'Transferencia'"), 
     db: Connection = Depends(get_db)
 ):
-    await marcar_pago_manual(conn=db, id_cuota=id_cuota)
-    return {"message": "Pago registrado exitosamente."}
+    """
+    Registra el pago manual de una cuota.
+    El body debe ser un JSON: { "metodo_pago": "Efectivo" }
+    """
+    return await marcar_pago_manual(conn=db, id_cuota=id_cuota, metodo_pago=metodo_pago)
 

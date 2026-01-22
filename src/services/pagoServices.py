@@ -231,28 +231,41 @@ async def generar_comprobante_pdf(conn: Connection, id_cuota: int):
     buffer.seek(0)
     return buffer
 
-async def marcar_pago_manual(conn: Connection, id_cuota: int) -> bool:
+async def marcar_pago_manual(conn: Connection, id_cuota: int, metodo_pago: str) -> bool:
     """
-    Permite al administrador marcar manualmente una cuota como pagada.
-    Registra la fecha y hora del sistema.
+    Marca una cuota como pagada manualmente.
+    Si la cuota está vencida (fechaFin < HOY), aplica un 10% de recargo al monto automáticamente.
     """
     try:
-        query = '''
-            UPDATE "Cuota" 
-            SET pagada = TRUE, 
-                "fechaDePago" = CURRENT_DATE, 
-                "horaDePago" = CURRENT_TIME(0)
+        # Consulta SQL inteligente:
+        # 1. Actualiza el estado a pagado y registra fecha/hora/metodo.
+        # 2. En la columna 'monto', verifica si la fechaFin es menor a la fecha actual (CURRENT_DATE).
+        # 3. Si es menor (vencida), multiplica el monto actual por 1.10. Si no, deja el monto igual.
+        query = """
+            UPDATE "Cuota"
+            SET 
+                pagada = TRUE,
+                "fechaDePago" = CURRENT_DATE,
+                "horaDePago" = CURRENT_TIME,
+                "metodoDePago" = $2,
+                monto = CASE 
+                            WHEN "fechaFin" < CURRENT_DATE THEN ROUND(monto * 1.10, 2)
+                            ELSE monto 
+                        END
             WHERE "idCuota" = $1
-            RETURNING "idCuota"
-        '''
-        id_actualizado = await conn.fetchval(query, id_cuota)
+            RETURNING "idCuota"; 
+        """
         
-        if not id_actualizado:
+        # Usamos fetchval para verificar si devolvió un ID (significa que encontró y actualizó la fila)
+        result_id = await conn.fetchval(query, id_cuota, metodo_pago)
+        
+        if not result_id:
             raise NotFoundException("Cuota", id_cuota)
-            
+
         return True
 
     except Exception as e:
+        print(f"Error en marcar_pago_manual: {e}")
         raise DatabaseException("marcar pago manual", str(e))
 
 

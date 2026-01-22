@@ -54,10 +54,10 @@ async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActiva
             if not trabajo:
                 raise NotFoundException("Trabajo", data.nombreTrabajo)
             
-            suscripcion = await conn.fetchrow('SELECT precio FROM "Suscripcion" WHERE "nombreSuscripcion" = $1', data.nombreSuscripcion)
-            if not suscripcion:
+            # (Cambio) Solo verificamos existencia con SELECT 1, no necesitamos el precio
+            suscripcion_existe = await conn.fetchval('SELECT 1 FROM "Suscripcion" WHERE "nombreSuscripcion" = $1', data.nombreSuscripcion)
+            if not suscripcion_existe:
                 raise NotFoundException("Suscripción", data.nombreSuscripcion)
-            monto_cuota = suscripcion['precio']
 
             # 4. Insertar en Alumno
             await conn.execute('''
@@ -68,7 +68,7 @@ async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActiva
             # 5. Insertar en AlumnoActivo
             await conn.execute('INSERT INTO "AlumnoActivo" (dni) VALUES ($1)', data.dni)
 
-            # 6. Asignar horarios (LÓGICA CORREGIDA)
+            # 6. Asignar horarios
             for horario in data.horarios:
                 nroGrupo = horario.nroGrupo
 
@@ -88,33 +88,21 @@ async def activar_alumno(conn: Connection, data: AlumnoActivate) -> AlumnoActiva
                 if capacidad['inscritos'] >= capacidad['capacidadMax']:
                     raise BusinessRuleException(f"El grupo {nroGrupo} del día {horario.dia} está completo.")
 
-                # === ¡LA CORRECCIÓN ESTÁ AQUÍ! ===
-                # Mover la inserción DENTRO del bucle 'for'
                 await conn.execute('''
                     INSERT INTO "Asiste" (dni, "nroGrupo", dia)
                     VALUES ($1, $2, $3)
                 ''', data.dni, nroGrupo, horario.dia)
-
-            # === NUEVA LÓGICA: GENERAR LA PRIMERA CUOTA ===
-            hoy = date.today()
-            fecha_fin = hoy + timedelta(days=30) # La cuota dura 30 días
-            nombre_mes = calendar.month_name[hoy.month].capitalize()
-
-            await conn.execute('''
-                INSERT INTO "Cuota" (dni, pagada, monto, "fechaComienzo", "fechaFin", mes, "nombreTrabajo", "nombreSuscripcion")
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            ''', data.dni, False, monto_cuota, hoy, fecha_fin, nombre_mes, data.nombreTrabajo, data.nombreSuscripcion)
 
             return AlumnoActivateResponse(
                 dni=persona['dni'],
                 nombre=persona['nombre'],
                 apellido=persona['apellido'],
                 email=persona['email'],
-                message="Alumno activado y primera cuota generada correctamente."
+                message="Alumno activado correctamente." # Mensaje actualizado
             )
 
         except (NotFoundException, DuplicateEntryException, BusinessRuleException) as e:
-            raise e # Re-lanzar excepciones de negocio para que el handler las capture
+            raise e 
         except Exception as e:
             raise DatabaseException("activar alumno", str(e))
 
@@ -220,7 +208,6 @@ async def obtener_detalle_alumno(conn: Connection, dni: str) -> AlumnoDetalle:
     except Exception as e:
         raise DatabaseException("obtener detalle de alumno", str(e))
 
-# === SERVICIO MODIFICADO PARA OBTENER HORARIOS DE UN ALUMNO ===
 async def obtener_horarios_alumno(conn: Connection, dni: str) -> List[HorarioAlumno]:
     """
     Servicio para obtener los días y rangos horarios a los que asiste un alumno.
@@ -265,7 +252,6 @@ async def obtener_horarios_alumno(conn: Connection, dni: str) -> List[HorarioAlu
     except Exception as e:
         raise DatabaseException("obtener horarios de alumno", str(e))
 
-# === NUEVO SERVICIO PARA ACTUALIZAR HORARIOS ===
 async def actualizar_horarios_alumno(conn: Connection, dni: str, data: HorariosUpdate) -> HorariosAlumnoResponse:
     """
     Reemplaza la lista de horarios de un alumno activo.
@@ -563,7 +549,8 @@ async def reactivar_alumno(conn: Connection, dni: str) -> None:
 
 async def crear_alumno_completo(conn: Connection, data: AlumnoCreateFull) -> AlumnoActivateResponse:
     """
-    Crea un alumno desde cero: Persona -> Dirección -> Alumno -> Activo -> Horarios -> Cuota.
+    Crea un alumno desde cero: Persona -> Dirección -> Alumno -> Activo -> Horarios.
+    NO genera cuota inicial.
     """
     async with conn.transaction():
         try:
@@ -580,10 +567,10 @@ async def crear_alumno_completo(conn: Connection, data: AlumnoCreateFull) -> Alu
             if not trabajo_existe:
                 raise NotFoundException("Trabajo", data.nombreTrabajo)
             
-            suscripcion_data = await conn.fetchrow('SELECT precio FROM "Suscripcion" WHERE "nombreSuscripcion" = $1', data.nombreSuscripcion)
-            if not suscripcion_data:
+            # (Cambio) Solo verificamos existencia, no traemos el precio
+            suscripcion_existe = await conn.fetchval('SELECT 1 FROM "Suscripcion" WHERE "nombreSuscripcion" = $1', data.nombreSuscripcion)
+            if not suscripcion_existe:
                 raise NotFoundException("Suscripción", data.nombreSuscripcion)
-            monto_cuota = suscripcion_data['precio']
 
             # 3. Crear Persona (Pass = Hash del DNI)
             hashed_pass = get_password_hash(data.dni)
@@ -634,15 +621,7 @@ async def crear_alumno_completo(conn: Connection, data: AlumnoCreateFull) -> Alu
                     INSERT INTO "Asiste" (dni, "nroGrupo", dia) VALUES ($1, $2, $3)
                 ''', data.dni, nroGrupo, horario.dia)
 
-            # 8. Generar Primera Cuota
-            hoy = date.today()
-            fecha_fin = hoy + timedelta(days=30)
-            nombre_mes = calendar.month_name[hoy.month].capitalize()
-
-            await conn.execute('''
-                INSERT INTO "Cuota" (dni, pagada, monto, "fechaComienzo", "fechaFin", mes, "nombreTrabajo", "nombreSuscripcion")
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            ''', data.dni, False, monto_cuota, hoy, fecha_fin, nombre_mes, data.nombreTrabajo, data.nombreSuscripcion)
+            # [ELIMINADO] Bloque de generación de cuota
 
             return AlumnoActivateResponse(
                 dni=data.dni,
@@ -656,4 +635,5 @@ async def crear_alumno_completo(conn: Connection, data: AlumnoCreateFull) -> Alu
             raise
         except Exception as e:
             raise DatabaseException("crear alumno completo", str(e))
+
 

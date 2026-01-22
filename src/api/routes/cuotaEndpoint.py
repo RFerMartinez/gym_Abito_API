@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from asyncpg import Connection
 from typing import List
 
@@ -10,11 +10,14 @@ from api.dependencies.security import alumno_required, staff_required
 # --- Schemas y Services ---
 from schemas.cuotaSchema import (
     CuotaResponseAlumnoAuth,
-    CuotaResponsePorDNI
+    CuotaResponsePorDNI,
+    CuotaUpdateRequest
 )
 from services.cuotaServices import (
     obtener_cuotas_por_dni,
-    obtener_cuotas_por_alumno
+    obtener_cuotas_por_alumno,
+    modificar_cuota,
+    eliminar_cuota
 )
 
 router = APIRouter(
@@ -56,4 +59,44 @@ async def listar_cuotas_de_alumno(
     Requiere permisos de **staff (administrador o empleado)**.
     """
     return await obtener_cuotas_por_dni(conn=db, dni=dni)
+
+@router.put(
+    "/{id_cuota}",
+    summary="Modificar una cuota (Staff)",
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(staff_required)] # Solo administradores/empleados
+)
+async def actualizar_cuota(
+    id_cuota: int,
+    cuota_data: CuotaUpdateRequest,
+    db: Connection = Depends(get_db)
+):
+    """
+    Actualiza una cuota existente.
+    - Si se marca como NO PAGADA, se borran fecha, hora y método de pago.
+    """
+    # Validación extra de seguridad (opcional): asegurar que el ID de la URL coincida con el del body
+    if id_cuota != cuota_data.idCuota:
+        raise HTTPException(status_code=400, detail="El ID de la URL no coincide con el ID del cuerpo de la petición")
+
+    updated = await modificar_cuota(conn=db, id_cuota=id_cuota, cuota_data=cuota_data)
+    
+    return {"message": "Cuota actualizada correctamente", "success": updated}
+
+
+@router.delete(
+    "/{id_cuota}",
+    summary="Eliminar una cuota (Staff)",
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(staff_required)] # Solo staff puede borrar
+)
+async def borrar_cuota(
+    id_cuota: int,
+    db: Connection = Depends(get_db)
+):
+    """
+    Elimina permanentemente una cuota del sistema.
+    """
+    await eliminar_cuota(conn=db, id_cuota=id_cuota)
+    return {"message": "Cuota eliminada correctamente", "success": True}
 

@@ -5,6 +5,7 @@ from typing import List
 from core.session import get_db
 from api.dependencies.security import admin_required, staff_required
 from api.dependencies.auth import get_current_user
+from services.cuotaServices import generar_cuotas_masivas_mensuales
 
 router = APIRouter(prefix="/admin", tags=["Administración"])
 
@@ -38,3 +39,9 @@ async def perfil_admin(
 ):
     """Cualquier usuario autenticado puede ver su perfil"""
     return current_user
+
+
+# En cuotaEndpoint.py (Solo para pruebas)
+@router.post("/test-generacion-masiva")
+async def forzar_generacion(db: Connection = Depends(get_db)):
+    return await generar_cuotas_masivas_mensuales(db)

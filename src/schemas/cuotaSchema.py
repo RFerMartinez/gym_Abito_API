@@ -27,5 +27,19 @@ class CuotaResponsePorDNI(CuotaBase):
     trabajo: str
     suscripcion: str
 
+class CuotaUpdateRequest(BaseModel):
+    idCuota: int
+    pagada: bool
+    monto: float
+    mes: str
+    anio: Optional[int] = None # El front lo manda, pero en BD usamos fechas
+    metodoDePago: Optional[str] = None
+    idFacturacion: Optional[int] = None
+    dni: str
+    fechaComienzo: date
+    vencimiento: date
+    trabajo: str
+    suscripcion: str
+
 
 
