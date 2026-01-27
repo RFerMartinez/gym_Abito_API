@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from asyncpg import Connection
 from typing import List
 from datetime import date
@@ -52,4 +52,40 @@ async def obtener_reporte(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener reporte: {str(e)}")
+
+@router.get(
+    "/reporte/{id_facturacion}/pdf",
+    summary="Descargar/Visualizar reporte PDF",
+    responses={
+        200: {
+            "content": {"application/pdf": {}},
+            "description": "Retorna el archivo PDF."
+        }
+    }
+)
+async def obtener_reporte_pdf(
+    id_facturacion: int,
+    db: Connection = Depends(get_db)
+):
+    try:
+        # 1. Obtenemos los datos (reutilizando la lógica existente)
+        reporte_data = await facturacionServices.obtener_reporte_por_id(db, id_facturacion)
+        
+        if not reporte_data:
+            raise HTTPException(status_code=404, detail="Facturación no encontrada")
+
+        # 2. Generamos el PDF
+        pdf_bytes = facturacionServices.generar_pdf_reporte(reporte_data)
+
+        # 3. Retornamos como respuesta streaming/raw
+        headers = {
+            'Content-Disposition': f'inline; filename="Reporte_Facturacion_{id_facturacion}.pdf"'
+        }
+        
+        return Response(content=pdf_bytes, media_type="application/pdf", headers=headers)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al generar PDF: {str(e)}")
 
