@@ -1,18 +1,34 @@
 from pydantic import BaseModel
 from datetime import date, datetime
-from typing import List
+from typing import List, Optional
 
-class FacturacionResponse(BaseModel):
-    idFacturacion: int
+# Modelo base para la Factura
+class FacturacionBase(BaseModel):
     fechaInicio: date
     fechaFin: date
     fechaGeneracion: datetime
     montoTotal: float
     cantidadCuotas: int
+    titular: str
 
-class ReporteDetalleCuota(BaseModel):
-    alumno: str
+# Modelo completo con ID (Salida)
+class FacturacionResponse(FacturacionBase):
+    idFacturacion: int
+
+    class Config:
+        from_attributes = True
+
+# --- Modelos para el Reporte Detallado ---
+
+class DetalleCuotaFactura(BaseModel):
+    idCuota: int
     dni: str
+    alumno: str
     monto: float
-    fechaPago: date
-    metodoDePago: str
+    fechaPago: Optional[date]
+    metodoDePago: Optional[str]
+    concepto: str 
+
+class ReporteFacturacion(FacturacionResponse):
+    detalles: List[DetalleCuotaFactura]
+
