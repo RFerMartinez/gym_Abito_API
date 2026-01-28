@@ -4,6 +4,7 @@ from typing import Annotated, Optional
 from datetime import timedelta
 
 from fastapi.security import OAuth2PasswordRequestForm
+from jose import JWTError, jwt
 
 from core.session import get_db
 
@@ -31,10 +32,13 @@ from services.authServices import (
     cambiar_contrasenia_primer_ingreso
 )
 
+from core.config import settings
+from utils.simpleQueries import get_user_by_username
 from utils.security import (
     create_access_token,
     create_refresh_token,
-    verify_registration_token
+    verify_registration_token,
+    
 )
 
 from api.dependencies.auth import get_current_user
@@ -147,7 +151,7 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    access_token_expires = timedelta(minutes=120)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user["usuario"]}, 
         expires_delta=access_token_expires
@@ -225,3 +229,46 @@ async def change_password(
     await cambiar_contrasenia_primer_ingreso(conn=db, dni=dni, new_password=request.new_password)
     return {"message": "Contraseña actualizada correctamente. Sesión asegurada."}
 
+@router.post("/refresh", response_model=Token)
+async def refresh_token(
+    refresh_token: str, 
+    db: Connection = Depends(get_db)
+):
+    """
+    Genera un nuevo access_token usando un refresh_token válido.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="No se pudieron validar las credenciales",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    try:
+        # Validar el refresh token (usando la misma lógica que get_current_user pero solo validación)
+        payload = jwt.decode(refresh_token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    # Verificar que el usuario siga existiendo en BD (Opcional pero recomendado)
+    user = await get_user_by_username(db, username)
+    if not user:
+        raise credentials_exception
+
+    # Crear nuevo access token
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": username}, 
+        expires_delta=access_token_expires
+    )
+    
+    # Podrías rotar el refresh token aquí también si quisieras mayor seguridad, 
+    # pero para simplificar devolvemos solo el access_token nuevo y el mismo refresh (o uno nuevo)
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "refresh_token": refresh_token # Devolvemos el mismo para mantenerlo vivo
+    }
