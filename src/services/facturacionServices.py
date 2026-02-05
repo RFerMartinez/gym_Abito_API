@@ -18,11 +18,11 @@ from schemas.facturacionSchema import FacturacionResponse, ReporteFacturacion, D
 async def generar_cierre_quincenal(conn: Connection, fecha_inicio: date, fecha_fin: date) -> List[FacturacionResponse]:
     """
     Genera el cierre de facturación agrupado por Titular.
-    SOLO incluye pagos por 'qr' o 'transferencia'.
-    Excluye explícitamente los pagos en 'efectivo'.
+    Toma TODAS las cuotas que estén pagadas y no facturadas (QR o Transferencia),
+    sin importar la fecha en que se realizó el pago.
     """
     
-    # Query filtrada por método de pago
+    # Query modificada: Se eliminó la condición 'c."fechaDePago" BETWEEN $1 AND $2'
     query_busqueda = """
         WITH "TitularAsignado" AS (
             SELECT DISTINCT ON (asiste.dni)
@@ -39,14 +39,14 @@ async def generar_cierre_quincenal(conn: Connection, fecha_inicio: date, fecha_f
             COALESCE(ta.nombre_titular, 'Administración') as nombre_titular
         FROM "Cuota" c
         LEFT JOIN "TitularAsignado" ta ON c.dni = ta.dni
-        WHERE c."fechaDePago" BETWEEN $1 AND $2
-            AND c.pagada = True 
+        WHERE c.pagada = True 
             AND c.facturado = False
-            AND c."metodoDePago" IN ('qr', 'transferencia')  -- <--- FILTRO AGREGADO
+            AND c."metodoDePago" IN ('qr', 'transferencia')
     """
 
     async with conn.transaction():
-        rows = await conn.fetch(query_busqueda, fecha_inicio, fecha_fin)
+        # Ya no pasamos fechas al fetch porque no se usan en el WHERE
+        rows = await conn.fetch(query_busqueda)
 
         if not rows:
             return []
@@ -75,6 +75,7 @@ async def generar_cierre_quincenal(conn: Connection, fecha_inicio: date, fecha_f
         # Insertar facturas y actualizar cuotas
         for titular, datos in agrupado.items():
             # A. Insertar Factura
+            # Las fechas inicio/fin se guardan solo como referencia del periodo administrativo
             insert_factura = """
                 INSERT INTO "Facturacion" 
                 ("fechaInicio", "fechaFin", "fechaGeneracion", "montoTotal", "cantidadCuotas", "titular")
