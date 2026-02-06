@@ -184,7 +184,7 @@ def generar_pdf_reporte(reporte: ReporteFacturacion) -> bytes:
     info_data = [
         [f"TITULAR: {reporte.titular.upper()}", f"GENERADO: {f_generacion}"],
         [f"PERIODO: {f_inicio} - {f_fin}", f"TOTAL CUOTAS: {reporte.cantidadCuotas}"],
-        [f"MONTO TOTAL FACTURADO:", f"$ {reporte.montoTotal:,.2f}"]
+        [f"MONTO TOTAL :", f"$ {reporte.montoTotal:,.2f}"]
     ]
 
     t_info = Table(info_data, colWidths=[10*cm, 8*cm])
