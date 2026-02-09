@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import date, datetime
+from datetime import date, datetime, time
 from typing import List, Optional
 
 # Modelo base para la Factura
@@ -26,6 +26,7 @@ class DetalleCuotaFactura(BaseModel):
     alumno: str
     monto: float
     fechaPago: Optional[date]
+    horaDePago: Optional[time] = None
     metodoDePago: Optional[str]
     concepto: str 
 

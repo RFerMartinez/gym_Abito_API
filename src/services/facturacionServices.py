@@ -111,9 +111,10 @@ async def generar_cierre_quincenal(conn: Connection, fecha_inicio: date, fecha_f
 
 async def obtener_reporte_por_id(conn: Connection, id_facturacion: int) -> Optional[ReporteFacturacion]:
     """
-    Obtiene el reporte completo de una facturación específica y sus detalles.
+    Obtiene el reporte completo de una facturación específica y sus detalles,
+    incluyendo la hora de pago para el nuevo formato de PDF.
     """
-    # 1. Cabecera
+    # 1. Cabecera (Se mantiene igual)
     query_factura = """
         SELECT "idFacturacion", "fechaInicio", "fechaFin", "fechaGeneracion", "montoTotal", "cantidadCuotas", "titular"
         FROM "Facturacion"
@@ -124,7 +125,7 @@ async def obtener_reporte_por_id(conn: Connection, id_facturacion: int) -> Optio
     if not factura_row:
         return None
 
-    # 2. Detalles
+    # 2. Detalles: Se agregó la columna "horaDePago"
     query_detalles = """
         SELECT 
             c."idCuota",
@@ -132,6 +133,7 @@ async def obtener_reporte_por_id(conn: Connection, id_facturacion: int) -> Optio
             p.nombre || ' ' || p.apellido as alumno,
             c.monto,
             c."fechaDePago" as "fechaPago",
+            c."horaDePago", -- Agregado para el reporte
             c."metodoDePago",
             c.mes || ' - ' || c."nombreSuscripcion" as concepto
         FROM "Cuota" c
@@ -140,6 +142,7 @@ async def obtener_reporte_por_id(conn: Connection, id_facturacion: int) -> Optio
     """
     detalles_rows = await conn.fetch(query_detalles, id_facturacion)
 
+    # Convertimos a objetos Pydantic (Asegúrate de que DetalleCuotaFactura en schemas acepte horaDePago)
     detalles = [DetalleCuotaFactura(**dict(row)) for row in detalles_rows]
 
     # 3. Construir respuesta
@@ -177,12 +180,12 @@ def generar_pdf_reporte(reporte: ReporteFacturacion) -> bytes:
     elements.append(Spacer(1, 0.5*cm))
 
     # --- 2. Información General ---
-    f_generacion = reporte.fechaGeneracion.strftime("%d/%m/%Y %H:%M")
+    # Eliminamos la variable f_generacion para limpiar el encabezado
     f_inicio = reporte.fechaInicio.strftime("%d/%m/%Y")
     f_fin = reporte.fechaFin.strftime("%d/%m/%Y")
     
     info_data = [
-        [f"TITULAR: {reporte.titular.upper()}", f"GENERADO: {f_generacion}"],
+        [f"TITULAR: {reporte.titular.upper()}", ""],
         [f"PERIODO: {f_inicio} - {f_fin}", f"TOTAL CUOTAS: {reporte.cantidadCuotas}"],
         [f"MONTO TOTAL :", f"$ {reporte.montoTotal:,.2f}"]
     ]
@@ -200,23 +203,34 @@ def generar_pdf_reporte(reporte: ReporteFacturacion) -> bytes:
     elements.append(Spacer(1, 1*cm))
 
     # --- 3. Tabla de Detalles ---
-    headers = ["ID", "FECHA", "ALUMNO", "DNI", "CONCEPTO", "MÉTODO", "MONTO"]
+    # Columnas: Fecha, Hora, Concepto, Método y Monto
+    headers = ["FECHA", "HORA", "CONCEPTO", "MÉTODO", "MONTO"]
     data_tabla = [headers]
     
     for det in reporte.detalles:
-        fecha_fmt = det.fechaPago.strftime("%d/%m") if det.fechaPago else "-"
+        # Fecha con año completo DD/MM/YYYY
+        fecha_fmt = det.fechaPago.strftime("%d/%m/%Y") if det.fechaPago else "-"
+        
+        # CORRECCIÓN: Usamos horaDePago según la estructura de la DB
+        # Si es un objeto time de Python, lo formateamos; si no, lo mostramos directo
+        hora_fmt = "-"
+        if hasattr(det, 'horaDePago') and det.horaDePago:
+            try:
+                hora_fmt = det.horaDePago.strftime("%H:%M:%S")
+            except AttributeError:
+                hora_fmt = str(det.horaDePago)
+        
         row = [
-            str(det.idCuota),
             fecha_fmt,
-            det.alumno[:20],
-            det.dni,
-            det.concepto[:25],
+            hora_fmt,
+            det.concepto[:35],
             det.metodoDePago.upper() if det.metodoDePago else "-",
             f"$ {det.monto:,.0f}"
         ]
         data_tabla.append(row)
 
-    col_widths = [1.5*cm, 2*cm, 4*cm, 2.5*cm, 4.5*cm, 2*cm, 2*cm]
+    # Reajuste de anchos para las 5 columnas
+    col_widths = [3*cm, 2.5*cm, 7.5*cm, 2.5*cm, 2.5*cm]
     t_detalles = Table(data_tabla, colWidths=col_widths)
 
     style_tabla = TableStyle([
@@ -230,9 +244,8 @@ def generar_pdf_reporte(reporte: ReporteFacturacion) -> bytes:
         ('FONTNAME', (0,1), (-1,-1), 'Helvetica'),
         ('FONTSIZE', (0,1), (-1,-1), 8),
         ('ALIGN', (0,1), (-1,-1), 'CENTER'),
-        ('ALIGN', (2,1), (2,-1), 'LEFT'),
-        ('ALIGN', (4,1), (4,-1), 'LEFT'),
-        ('ALIGN', (-1,1), (-1,-1), 'RIGHT'),
+        ('ALIGN', (2,1), (2,-1), 'LEFT'), # Concepto a la izquierda
+        ('ALIGN', (-1,1), (-1,-1), 'RIGHT'), # Monto a la derecha
         ('LINEBELOW', (0,0), (-1,0), 1, colors.black),
         ('LINEBELOW', (0,1), (-1,-1), 0.5, colors.lightgrey),
     ])
