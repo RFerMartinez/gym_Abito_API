@@ -191,7 +191,10 @@ async def generar_comprobante_pdf(conn: Connection, id_cuota: int):
 
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
-    c.setTitle("Comprobante de Pago - Gym Abito")
+    # METADATOS VITALES:
+    c.setTitle(f"Comprobante de Pago - {row['nombre']} {row['apellido']}")
+    c.setAuthor("Gimnasio Abito")
+    c.setSubject(f"Cuota ID: {id_cuota}")
     width, height = A4
 
     # --- 1. MARCA DE AGUA (GRANDE Y DISTRIBUIDA) ---

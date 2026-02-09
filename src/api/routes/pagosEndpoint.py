@@ -99,17 +99,25 @@ async def verificar_estado_cuota(
 @router.get(
     "/comprobante/{id_cuota}",
     summary="Descargar comprobante de pago",
-    dependencies=[Depends(get_current_user)] # Idealmente protegido
+    dependencies=[Depends(get_current_user)]
 )
 async def descargar_comprobante(
-    id_cuota: int,
+    id_cuota: int, 
     db: Connection = Depends(get_db)
 ):
     pdf_buffer = await generar_comprobante_pdf(conn=db, id_cuota=id_cuota)
     
-    # IMPORTANTE: filename="ComprobantePago.pdf" con comillas dobles internas
+    if not pdf_buffer:
+        raise HTTPException(status_code=404, detail="Comprobante no encontrado o cuota no pagada")
+
+    # Definimos el nombre exacto que quieres
+    filename = "ComprobantePago.pdf"
+
+    # Forzamos la descarga con el nombre elegido ignorando la ruta del endpoint
     headers = {
-        "Content-Disposition": 'inline; filename="ComprobantePago.pdf"'
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "Access-Control-Expose-Headers": "Content-Disposition",
+        "Cache-Control": "no-cache" # Evita que el navegador cachee nombres viejos
     }
     
     return StreamingResponse(
