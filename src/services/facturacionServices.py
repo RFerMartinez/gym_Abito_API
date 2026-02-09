@@ -152,7 +152,7 @@ async def obtener_reporte_por_id(conn: Connection, id_facturacion: int) -> Optio
 def generar_pdf_reporte(reporte: ReporteFacturacion) -> bytes:
     """
     Genera un PDF con diseño técnico minimalista basado en los datos del reporte.
-    Retorna los bytes del PDF.
+    Retorna los bytes del PDF con metadatos de título corregidos.
     """
     buffer = BytesIO()
     doc = SimpleDocTemplate(
@@ -162,6 +162,16 @@ def generar_pdf_reporte(reporte: ReporteFacturacion) -> bytes:
         topMargin=1.5*cm, bottomMargin=1.5*cm
     )
     
+    # Formateamos las fechas para el título interno
+    f_inicio = reporte.fechaInicio.strftime("%d/%m/%Y")
+    f_fin = reporte.fechaFin.strftime("%d/%m/%Y")
+    titulo_metadato = f"ReporteFacturacion ({f_inicio} - {f_fin})"
+
+    # --- Función interna para fijar el título en el canvas ---
+    def fijar_metadatos(canvas, doc):
+        canvas.setTitle(titulo_metadato)
+        canvas.setAuthor("Gimnasio Abito")
+
     elements = []
     styles = getSampleStyleSheet()
 
@@ -180,10 +190,6 @@ def generar_pdf_reporte(reporte: ReporteFacturacion) -> bytes:
     elements.append(Spacer(1, 0.5*cm))
 
     # --- 2. Información General ---
-    # Eliminamos la variable f_generacion para limpiar el encabezado
-    f_inicio = reporte.fechaInicio.strftime("%d/%m/%Y")
-    f_fin = reporte.fechaFin.strftime("%d/%m/%Y")
-    
     info_data = [
         [f"TITULAR: {reporte.titular.upper()}", ""],
         [f"PERIODO: {f_inicio} - {f_fin}", f"TOTAL CUOTAS: {reporte.cantidadCuotas}"],
@@ -203,16 +209,12 @@ def generar_pdf_reporte(reporte: ReporteFacturacion) -> bytes:
     elements.append(Spacer(1, 1*cm))
 
     # --- 3. Tabla de Detalles ---
-    # Columnas: Fecha, Hora, Concepto, Método y Monto
     headers = ["FECHA", "HORA", "CONCEPTO", "MÉTODO", "MONTO"]
     data_tabla = [headers]
     
     for det in reporte.detalles:
-        # Fecha con año completo DD/MM/YYYY
         fecha_fmt = det.fechaPago.strftime("%d/%m/%Y") if det.fechaPago else "-"
         
-        # CORRECCIÓN: Usamos horaDePago según la estructura de la DB
-        # Si es un objeto time de Python, lo formateamos; si no, lo mostramos directo
         hora_fmt = "-"
         if hasattr(det, 'horaDePago') and det.horaDePago:
             try:
@@ -229,7 +231,6 @@ def generar_pdf_reporte(reporte: ReporteFacturacion) -> bytes:
         ]
         data_tabla.append(row)
 
-    # Reajuste de anchos para las 5 columnas
     col_widths = [3*cm, 2.5*cm, 7.5*cm, 2.5*cm, 2.5*cm]
     t_detalles = Table(data_tabla, colWidths=col_widths)
 
@@ -244,8 +245,8 @@ def generar_pdf_reporte(reporte: ReporteFacturacion) -> bytes:
         ('FONTNAME', (0,1), (-1,-1), 'Helvetica'),
         ('FONTSIZE', (0,1), (-1,-1), 8),
         ('ALIGN', (0,1), (-1,-1), 'CENTER'),
-        ('ALIGN', (2,1), (2,-1), 'LEFT'), # Concepto a la izquierda
-        ('ALIGN', (-1,1), (-1,-1), 'RIGHT'), # Monto a la derecha
+        ('ALIGN', (2,1), (2,-1), 'LEFT'),
+        ('ALIGN', (-1,1), (-1,-1), 'RIGHT'),
         ('LINEBELOW', (0,0), (-1,0), 1, colors.black),
         ('LINEBELOW', (0,1), (-1,-1), 0.5, colors.lightgrey),
     ])
@@ -253,7 +254,10 @@ def generar_pdf_reporte(reporte: ReporteFacturacion) -> bytes:
     t_detalles.setStyle(style_tabla)
     elements.append(t_detalles)
 
-    doc.build(elements)
+    # --- CAMBIO CLAVE ---
+    # Pasamos la función fijar_metadatos a onFirstPage
+    doc.build(elements, onFirstPage=fijar_metadatos)
+    
     pdf = buffer.getvalue()
     buffer.close()
     return pdf

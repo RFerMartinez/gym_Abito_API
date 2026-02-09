@@ -11,6 +11,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
 from datetime import datetime, date
+from reportlab.lib import colors
 
 # Inicializamos el SDK de MercadoPago con tu Token
 # token_value = settings.MP_ACCESS_TOKEN.get_secret_value()
@@ -172,13 +173,12 @@ async def obtener_estado_pago_cuota(conn: Connection, id_cuota: int) -> bool:
 # -------------------------
 async def generar_comprobante_pdf(conn: Connection, id_cuota: int):
     """
-    Genera un archivo PDF en memoria con los datos del comprobante.
+    Genera un comprobante de pago con diseño premium y marca de seguridad.
     """
-    # 1. Obtener datos completos de la cuota y el alumno
     query = """
         SELECT 
             c."idCuota", c.monto, c.mes, c."nombreTrabajo", c."nombreSuscripcion",
-            c."fechaDePago", c."horaDePago",
+            c."fechaDePago", c."horaDePago", c."metodoDePago",
             p.nombre, p.apellido, p.dni, p.email
         FROM "Cuota" c
         JOIN "Persona" p ON c.dni = p.dni
@@ -187,58 +187,117 @@ async def generar_comprobante_pdf(conn: Connection, id_cuota: int):
     row = await conn.fetchrow(query, id_cuota)
 
     if not row:
-        raise NotFoundException("Comprobante no disponible (Cuota no pagada o inexistente)", id_cuota)
+        return None
 
-    # 2. Crear el PDF en memoria
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
+    c.setTitle("Comprobante de Pago - Gym Abito")
     width, height = A4
 
-    # --- DISEÑO DEL COMPROBANTE ---
+    # --- 1. MARCA DE AGUA (GRANDE Y DISTRIBUIDA) ---
+    c.saveState()
+    c.setFillColorRGB(0.96, 0.96, 0.96) 
+    c.setFont("Helvetica-Bold", 110) 
+    c.translate(width/2, height/2)
+    c.rotate(35)
     
-    # Encabezado
-    c.setFont("Helvetica-Bold", 20)
-    c.drawString(2 * cm, height - 3 * cm, "GIMNASIO ABITO")
+    for x in range(-3, 4):
+        for y in range(-5, 6):
+            c.drawCentredString(x*700, y*280, "GYM ABITO")
+    c.restoreState()
+
+    # --- 2. ENCABEZADO ---
+    c.setFillColorRGB(0.89, 0.04, 0.08) # Rojo Abito
+    c.rect(0, height - 4*cm, 1.2*cm, 3*cm, fill=1, stroke=0)
+    
+    c.setFillColorRGB(0.1, 0.1, 0.1)
+    c.setFont("Helvetica-Bold", 26)
+    c.drawString(2*cm, height - 2.5*cm, "GIMNASIO")
+    
+    c.setFillColorRGB(0.89, 0.04, 0.08)
+    c.drawString(7.2*cm, height - 2.5*cm, "ABITO") 
+    
+    c.setFont("Helvetica", 11)
+    c.setFillColorRGB(0.4, 0.4, 0.4)
+    c.drawString(2*cm, height - 3.2*cm, "COMPROBANTE DE PAGO") 
     
     c.setFont("Helvetica", 10)
-    c.drawString(2 * cm, height - 4 * cm, "Comprobante de Pago")
-    c.drawString(2 * cm, height - 4.5 * cm, f"Fecha de emisión: {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+    c.drawRightString(width - 2*cm, height - 2.5*cm, f"Emitido: {datetime.now().strftime('%d/%m/%Y')}")
 
-    # Datos del Alumno
-    c.line(2 * cm, height - 5 * cm, width - 2 * cm, height - 5 * cm)
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(2 * cm, height - 6 * cm, "Datos del Alumno")
+    # --- 3. TARJETA DE INFORMACIÓN DEL ALUMNO ---
+    c.setStrokeColorRGB(0.9, 0.9, 0.9)
+    c.setFillColorRGB(0.98, 0.98, 0.98)
+    c.roundRect(1.8*cm, height - 7.5*cm, width - 3.6*cm, 3*cm, 15, stroke=1, fill=1)
+    
+    c.setFillColorRGB(0.2, 0.2, 0.2)
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(2.5*cm, height - 5.5*cm, "TITULAR DEL PAGO")
     
     c.setFont("Helvetica", 11)
-    y = height - 7 * cm
-    c.drawString(2.5 * cm, y, f"Nombre: {row['nombre']} {row['apellido']}")
-    c.drawString(2.5 * cm, y - 15, f"DNI: {row['dni']}")
-    c.drawString(2.5 * cm, y - 30, f"Email: {row['email']}")
+    c.drawString(2.5*cm, height - 6.2*cm, f"{row['nombre'].upper()} {row['apellido'].upper()}")
+    c.setFont("Helvetica", 10)
+    c.setFillColorRGB(0.5, 0.5, 0.5)
+    c.drawString(2.5*cm, height - 6.8*cm, f"DNI: {row['dni']}  |  {row['email']}")
 
-    # Detalle del Pago
-    c.line(2 * cm, y - 50, width - 2 * cm, y - 50)
+    # --- 4. DETALLES DE TRANSACCIÓN ---
+    y_detalle = height - 9.5*cm
+    c.setFillColorRGB(0.1, 0.1, 0.1)
     c.setFont("Helvetica-Bold", 12)
-    c.drawString(2 * cm, y - 70, "Detalle del Pago")
-
-    y_detalle = y - 90
-    c.setFont("Helvetica", 11)
+    c.drawString(2*cm, y_detalle, "DETALLE DE TRANSACCIÓN")
     
-    # Formatear fecha y hora de pago si existen
-    fecha_pago = row['fechaDePago'].strftime('%d/%m/%Y') if row['fechaDePago'] else "-"
-    hora_pago = row['horaDePago'].strftime('%H:%M') if row['horaDePago'] else "-"
+    c.setStrokeColorRGB(0.89, 0.04, 0.08)
+    c.setLineWidth(2)
+    c.line(2*cm, y_detalle - 0.2*cm, 4*cm, y_detalle - 0.2*cm)
 
-    c.drawString(2.5 * cm, y_detalle, f"Concepto: Cuota {row['mes']} - {row['nombreTrabajo']}")
-    c.drawString(2.5 * cm, y_detalle - 15, f"Plan: {row['nombreSuscripcion']}")
-    c.drawString(2.5 * cm, y_detalle - 30, f"Fecha de Pago: {fecha_pago} a las {hora_pago} hs")
-    c.drawString(2.5 * cm, y_detalle - 45, f"ID Transacción: #{row['idCuota']}")
+    fecha_p = row['fechaDePago'].strftime('%d/%m/%Y') if row['fechaDePago'] else "-"
+    hora_p = row['horaDePago'].strftime('%H:%M') if row['horaDePago'] else "-"
 
-    # Total
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(12 * cm, y_detalle - 80, f"TOTAL: ${row['monto']:,.2f}")
+    c.setLineWidth(1)
+    c.setStrokeColorRGB(0.92, 0.92, 0.92)
+    y_pos = y_detalle - 1.5*cm
+    
+    items = [
+        ("SERVICIO", f"{row['nombreTrabajo']} - {row['nombreSuscripcion']}"),
+        ("PERIODO", f"Cuota de {row['mes']}"),
+        ("FECHA DE PAGO", f"{fecha_p} a las {hora_p} hs"),
+        ("MÉTODO DE PAGO", row['metodoDePago'].upper() if row['metodoDePago'] else "TRANSFERENCIA / QR"),
+        ("ID TRANSACCIÓN", f"#{row['idCuota']}")
+    ]
 
-    # Pie de página
+    for label, val in items:
+        c.setFont("Helvetica-Bold", 9)
+        c.setFillColorRGB(0.5, 0.5, 0.5)
+        c.drawString(2.5*cm, y_pos, label)
+        c.setFont("Helvetica", 11)
+        c.setFillColorRGB(0.15, 0.15, 0.15)
+        c.drawRightString(width - 2.5*cm, y_pos, str(val))
+        c.line(2.5*cm, y_pos - 0.3*cm, width - 2.5*cm, y_pos - 0.3*cm)
+        y_pos -= 1*cm
+
+    # --- 5. TOTAL (AJUSTE FINAL DE POSICIÓN) ---
+    y_total = y_pos - 1.0*cm
+    c.setStrokeColorRGB(0.89, 0.04, 0.08)
+    c.setLineWidth(2.5)
+    
+    # La línea ahora es más larga para dar soporte visual a ambos textos separados
+    c.line(2.5*cm, y_total + 1.2*cm, width - 2*cm, y_total + 1.2*cm)
+    
+    # ETIQUETA: Alineada a la IZQUIERDA (2.5cm)
+    c.setFillColorRGB(0.1, 0.1, 0.1)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(2.5*cm, y_total + 0.4*cm, "TOTAL ABONADO") 
+    
+    # MONTO: Alineado a la DERECHA (width - 2.2cm)
+    c.setFillColorRGB(0.89, 0.04, 0.08)
+    c.setFont("Helvetica-Bold", 24)
+    c.drawRightString(width - 2.2*cm, y_total + 0.4*cm, f"$ {row['monto']:,.2f}") 
+
+    # --- 6. PIE DE PÁGINA ---
+    c.setFillColorRGB(0.5, 0.5, 0.5)
     c.setFont("Helvetica-Oblique", 8)
-    c.drawCentredString(width / 2, 2 * cm, "Gracias por confiar en Gimnasio Abito")
+    hash_seguridad = f"AUTH-{row['idCuota']}Z{row['dni'][-4:]}"
+    c.drawCentredString(width/2, 2*cm, f"Código de autenticación: {hash_seguridad}")
+    c.drawCentredString(width/2, 1.5*cm, "Gimnasio Abito - Las Breñas, Chaco")
 
     c.save()
     buffer.seek(0)

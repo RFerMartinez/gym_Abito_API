@@ -107,11 +107,15 @@ async def descargar_comprobante(
 ):
     pdf_buffer = await generar_comprobante_pdf(conn=db, id_cuota=id_cuota)
     
-    # Retornamos el archivo como un stream con el header correcto
+    # IMPORTANTE: filename="ComprobantePago.pdf" con comillas dobles internas
+    headers = {
+        "Content-Disposition": 'inline; filename="ComprobantePago.pdf"'
+    }
+    
     return StreamingResponse(
         pdf_buffer, 
         media_type="application/pdf",
-        headers={"Content-Disposition": f"inline; filename=comprobante_{id_cuota}.pdf"}
+        headers=headers
     )
 
 # Endpoint para Pago Manual (Admin)
