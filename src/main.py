@@ -180,4 +180,3 @@ if __name__ == "__main__":
         # log_level="info"
     )
 
-print(f"database_url: {settings.DATABASE_URL}")
