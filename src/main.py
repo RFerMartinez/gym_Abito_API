@@ -69,7 +69,6 @@ async def lifespan(app: FastAPI):
     # A) Conectar Base de Datos (TU CÓDIGO ACTUAL)
     await connect_to_db()
     print("Conexión a la base de datos establecida")
-    print(f"url_ngrok: {settings.URL_NGROK}")
 
     # B) Iniciar Scheduler (LO NUEVO)
     scheduler = AsyncIOScheduler()
