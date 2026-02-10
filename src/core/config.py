@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     MP_ACCESS_TOKEN_DAVOR: SecretStr
 
     # -- NGROK
-    URL_NGROK: str
+    # URL_NGROK: str
 
     @property
     def DATABASE_URL(self) -> PostgresDsn:

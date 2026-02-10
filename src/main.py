@@ -46,16 +46,16 @@ from services.facturacionServices import procesar_cierre_automatico
 # FUNCIONES WRAPPER -----------
 async def tarea_generar_cuotas():
     """Esta función se ejecutará automáticamente el día 5."""
-    print("⏰ [Scheduler] Iniciando generación automática de cuotas...")
+    print("[Scheduler] Iniciando generación automática de cuotas...")
     async for db in get_db(): # Obtenemos conexión del pool
         cantidad = await generar_cuotas_masivas_mensuales(db)
         if cantidad > 0:
-            print(f"✅ [Scheduler] Se generaron {cantidad} cuotas.")
+            print(f"[Scheduler] Se generaron {cantidad} cuotas.")
         break
 
 async def tarea_cierre_facturacion():
     """Se ejecuta el día 1 y 15 para cerrar la facturación."""
-    print("⏰ [Scheduler] Iniciando cierre de facturación automático...")
+    print("[Scheduler] Iniciando cierre de facturación automático...")
     # Usamos el generador de dependencias tal como en tarea_generar_cuotas
     async for db in get_db(): 
         await procesar_cierre_automatico(db)
@@ -68,8 +68,8 @@ async def lifespan(app: FastAPI):
     
     # A) Conectar Base de Datos (TU CÓDIGO ACTUAL)
     await connect_to_db()
-    print("✅ Conexión a la base de datos establecida")
-    print(f"📡 url_ngrok: {settings.URL_NGROK}")
+    print("Conexión a la base de datos establecida")
+    print(f"url_ngrok: {settings.URL_NGROK}")
 
     # B) Iniciar Scheduler (LO NUEVO)
     scheduler = AsyncIOScheduler()
@@ -87,19 +87,19 @@ async def lifespan(app: FastAPI):
     )
     
     scheduler.start()
-    print("📅 Planificador de tareas (Scheduler) iniciado.")
+    print("Planificador de tareas (Scheduler) iniciado.")
     
     yield # <--- Aquí la app corre y recibe peticiones
     
     # 2. APAGADO DE LA APP
     
     # C) Apagar Scheduler (LO NUEVO)
-    print("🛑 Deteniendo planificador...")
+    print("Deteniendo planificador...")
     scheduler.shutdown()
     
     # D) Desconectar Base de Datos (TU CÓDIGO ACTUAL)
     await close_db_connection()
-    print("👋 Conexión a la base de datos cerrada")
+    print("Conexión a la base de datos cerrada")
 
 app = FastAPI(
     title=settings.PROJECT_TITLE,
@@ -114,6 +114,8 @@ app = FastAPI(
 origins = [
     "http://localhost:8081",
     "http://localhost:8080",
+    "https://gymabito.com",
+    "https://www.gymabito.com"
 ]
 # Agregar el middleware CORS a la aplicación
 app.add_middleware(
