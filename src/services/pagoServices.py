@@ -61,20 +61,21 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int, monto_final: f
         if not cuota: raise NotFoundException("Cuota", id_cuota)
 
         # 2. Configurar MercadoPago
-        mi_url_ngrok = settings.URL_NGROK 
+        mi_url_back = settings.BACKEND_URL
+	mi_url_front = settings.FRONTEND_URL
         
         preference_data = {
             "items": [{"id": str(cuota["idCuota"]), "title": f"Cuota {cuota['mes']} - {cuota['nombreTrabajo']}", "quantity": 1, "unit_price": float(monto_final), "currency_id": "ARS"}],
             "payer": {"email": cuota["email"], "name": cuota["nombre"], "surname": cuota["apellido"], "identification": {"type": "DNI", "number": cuota["dni"]}},
             "external_reference": str(cuota["idCuota"]),
             "back_urls": {
-                "success": f"{mi_url_ngrok}/pagos/retorno",
-                "failure": f"{mi_url_ngrok}/pagos/retorno",
-                "pending": f"{mi_url_ngrok}/pagos/retorno"
+                "success": f"{mi_url_front}/pagos/retorno",
+                "failure": f"{mi_url_front}/pagos/retorno",
+                "pending": f"{mi_url_front}/pagos/retorno"
             },
             "auto_return": "approved",
             # AGREGAMOS ?owner=... para que el webhook sepa qué token usar al verificar
-            "notification_url": f"{mi_url_ngrok}/pagos/webhook?owner={cuenta_destino}",
+            "notification_url": f"{mi_url_back}/pagos/webhook?owner={cuenta_destino}",
             "binary_mode": True
         }
 
