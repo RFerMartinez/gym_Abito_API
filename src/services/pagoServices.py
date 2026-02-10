@@ -62,7 +62,7 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int, monto_final: f
 
         # 2. Configurar MercadoPago
         mi_url_back = settings.BACKEND_URL
-	mi_url_front = settings.FRONTEND_URL
+        mi_url_front = settings.FRONTEND_URL
         
         preference_data = {
             "items": [{"id": str(cuota["idCuota"]), "title": f"Cuota {cuota['mes']} - {cuota['nombreTrabajo']}", "quantity": 1, "unit_price": float(monto_final), "currency_id": "ARS"}],
