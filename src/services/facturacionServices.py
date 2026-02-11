@@ -308,21 +308,21 @@ async def procesar_cierre_automatico(conn: Connection):
         fecha_fin = hoy
     else:
         # Por seguridad, si el scheduler corre otro día, no hacemos nada o asumimos manual
-        print(f"⚠️ [Facturacion Auto] Ejecución en día no estándar ({hoy.day}). Se omitirá.")
+        print(f"[Facturacion Auto] Ejecución en día no estándar ({hoy.day}). Se omitirá.")
         return
 
-    print(f"🔄 [Facturacion Auto] Procesando cierre para periodo: {fecha_inicio} al {fecha_fin}")
+    print(f"[Facturacion Auto] Procesando cierre para periodo: {fecha_inicio} al {fecha_fin}")
 
     try:
         # Llamamos a la función que ya creamos antes
         reportes = await generar_cierre_quincenal(conn, fecha_inicio, fecha_fin)
         
         if reportes:
-            print(f"✅ [Facturacion Auto] Cierre exitoso. {len(reportes)} facturas generadas.")
+            print(f"[Facturacion Auto] Cierre exitoso. {len(reportes)} facturas generadas.")
         else:
-            print("ℹ️ [Facturacion Auto] No hubo movimientos para facturar en este periodo.")
+            print("[Facturacion Auto] No hubo movimientos para facturar en este periodo.")
             
     except Exception as e:
-        print(f"❌ [Facturacion Auto] Error crítico: {str(e)}")
+        print(f"[Facturacion Auto] Error crítico: {str(e)}")
 
 

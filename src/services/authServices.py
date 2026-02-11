@@ -59,16 +59,16 @@ async def iniciar_registro_paso1(conn: Connection, user_data: RegistroPaso1) -> 
 
     # Enviar email de verificación (solo si el servicio está configurado)
     if email_service is None:
-        print("⚠️  Servicio de email no configurado, omitiendo envío")
+        print("Servicio de email no configurado, omitiendo envío")
     else:
-        print(f"📧 Intentando enviar email a: {user_data.email}")
+        print(f"Intentando enviar email a: {user_data.email}")
         # El token que enviamos en el email ahora es el JWT
         # NOTA: En producción, es mejor enviar un token opaco y no el JWT directamente en la URL
         # pero para este ejemplo, es funcional.
         success = await email_service.send_verification_email(user_data.email, token)
 
         if not success:
-            print("⚠️  No se pudo enviar el email de verificación, pero el registro continuará")
+            print("No se pudo enviar el email de verificación, pero el registro continuará")
 
     return token
 

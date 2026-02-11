@@ -108,7 +108,7 @@ async def procesar_pago_exitoso(conn: Connection, payment_id: str, owner: str = 
         payment_info = sdk.payment().get(payment_id)
         
         if payment_info["status"] != 200:
-            print(f"⚠️ No se pudo obtener el pago {payment_id} de MP")
+            print(f"No se pudo obtener el pago {payment_id} de MP")
             return False
             
         payment_data = payment_info["response"]
@@ -116,7 +116,7 @@ async def procesar_pago_exitoso(conn: Connection, payment_id: str, owner: str = 
         id_cuota_str = payment_data.get("external_reference")
         monto_pagado_mp = payment_data.get("transaction_amount") 
 
-        print(f"🔔 Webhook: Pago {payment_id} para Cuota {id_cuota_str} - Estado: {estado} - Monto MP: {monto_pagado_mp}")
+        print(f"Webhook: Pago {payment_id} para Cuota {id_cuota_str} - Estado: {estado} - Monto MP: {monto_pagado_mp}")
 
         if estado == "approved" and id_cuota_str:
             id_cuota = int(id_cuota_str)
@@ -140,7 +140,7 @@ async def procesar_pago_exitoso(conn: Connection, payment_id: str, owner: str = 
             result = await conn.execute(query, id_cuota)
             
             if result == "UPDATE 1":
-                print(f"✅ Cuota {id_cuota} pagada. Base de datos actualizada correctamente.")
+                print(f"Cuota {id_cuota} pagada. Base de datos actualizada correctamente.")
                 return True
             else:
                 # Si el UPDATE no afectó ninguna fila, verificamos por qué
@@ -148,16 +148,16 @@ async def procesar_pago_exitoso(conn: Connection, payment_id: str, owner: str = 
                 chequeo = await conn.fetchrow('SELECT pagada FROM "Cuota" WHERE "idCuota" = $1', id_cuota)
                 
                 if chequeo and chequeo['pagada']:
-                    print(f"ℹ️ Webhook duplicado: La cuota {id_cuota} ya estaba registrada como pagada. No se realizan cambios.")
+                    print(f"ℹWebhook duplicado: La cuota {id_cuota} ya estaba registrada como pagada. No se realizan cambios.")
                     return True # Retornamos True porque el estado final es correcto (Pagada)
                 else:
-                    print(f"❌ Error: La cuota {id_cuota} no se encontró.")
+                    print(f"Error: La cuota {id_cuota} no se encontró.")
                     return False
         
         return False
 
     except Exception as e:
-        print(f"❌ Error procesando webhook: {e}")
+        print(f"Error procesando webhook: {e}")
         raise DatabaseException("procesar webhook", str(e))
 
 
