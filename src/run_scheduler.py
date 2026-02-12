@@ -43,7 +43,7 @@ async def main():
     # Tarea: Generar Cuotas (Día 12 a las 14:45)
     scheduler.add_job(
         tarea_generar_cuotas, 
-        CronTrigger(day=12, hour=15, minute=7),
+        CronTrigger(day=12, hour=15, minute=17),
         id="generacion_cuotas_mensual"
     )
     

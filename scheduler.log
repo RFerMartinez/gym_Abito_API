@@ -1,0 +1,5 @@
+2026-02-12 15:05:04,208 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 15:05:04,212 [INFO] Added job "tarea_generar_cuotas" to job store "default"
+2026-02-12 15:05:04,213 [INFO] Scheduler started
+2026-02-12 15:07:00,096 [INFO] Running job "tarea_generar_cuotas (trigger: cron[day='12', hour='15', minute='7'], next run at: 2026-03-12 15:07:00 -03)" (scheduled at 2026-02-12 15:07:00-03:00)
+2026-02-12 15:07:00,139 [INFO] Job "tarea_generar_cuotas (trigger: cron[day='12', hour='15', minute='7'], next run at: 2026-03-12 15:07:00 -03)" executed successfully
