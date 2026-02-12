@@ -4,7 +4,7 @@ from datetime import datetime
 
 # Esquema para el Paso 1 del registro
 class RegistroPaso1(BaseModel):
-    email: EmailStr = Field(..., description="Email del usuario")
+    email: EmailStr = Field(..., max_length=60 ,description="Email del usuario")
     usuario: str = Field(..., min_length=3, max_length=30, description="Nombre de usuario")
     contrasenia: str = Field(..., min_length=6, description="Contraseña")
     confirmar_contrasenia: str = Field(..., description="Confirmación de contraseña")
