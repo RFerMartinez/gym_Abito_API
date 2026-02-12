@@ -27,3 +27,41 @@
 2026-02-12 15:46:55,770 [INFO] Added job "tarea_generar_cuotas" to job store "default"
 2026-02-12 15:46:55,770 [INFO] Scheduler started
 2026-02-12 15:46:55,770 [INFO] Scheduler iniciado y esperando tareas...
+2026-02-12 16:01:03,260 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 16:01:03,268 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 16:01:03,269 [INFO] Added job "tarea_generar_cuotas" to job store "default"
+2026-02-12 16:01:03,269 [INFO] Added job "tarea_cierre_facturacion" to job store "default"
+2026-02-12 16:01:03,270 [INFO] Scheduler started
+2026-02-12 16:01:03,270 [INFO] Scheduler iniciado y esperando tareas...
+2026-02-12 16:11:05,915 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 16:11:05,915 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 16:11:05,916 [INFO] Added job "tarea_generar_cuotas" to job store "default"
+2026-02-12 16:11:05,916 [INFO] Added job "tarea_cierre_facturacion" to job store "default"
+2026-02-12 16:11:05,916 [INFO] Scheduler started
+2026-02-12 16:11:05,917 [INFO] Scheduler iniciado y esperando tareas...
+2026-02-12 16:13:00,052 [INFO] Running job "tarea_cierre_facturacion (trigger: cron[day='1,12', hour='16', minute='13'], next run at: 2026-03-01 16:13:00 -03)" (scheduled at 2026-02-12 16:13:00-03:00)
+2026-02-12 16:13:00,052 [INFO] [Scheduler] Iniciando cierre de facturación automático...
+2026-02-12 16:13:00,052 [INFO] [Scheduler] Cierre de facturación finalizado con éxito.
+2026-02-12 16:13:00,053 [INFO] Job "tarea_cierre_facturacion (trigger: cron[day='1,12', hour='16', minute='13'], next run at: 2026-03-01 16:13:00 -03)" executed successfully
+2026-02-12 16:30:07,298 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 16:30:07,298 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 16:30:07,299 [INFO] Added job "tarea_generar_cuotas" to job store "default"
+2026-02-12 16:30:07,299 [INFO] Added job "tarea_cierre_facturacion" to job store "default"
+2026-02-12 16:30:07,299 [INFO] Scheduler started
+2026-02-12 16:30:07,299 [INFO] Scheduler iniciado y esperando tareas...
+2026-02-12 16:31:00,044 [INFO] Running job "tarea_cierre_facturacion (trigger: cron[day='1,12', hour='16', minute='31'], next run at: 2026-03-01 16:31:00 -03)" (scheduled at 2026-02-12 16:31:00-03:00)
+2026-02-12 16:31:00,045 [INFO] [Scheduler] Iniciando cierre de facturación automático...
+2026-02-12 16:31:00,084 [INFO] [Scheduler] Cierre de facturación finalizado con éxito.
+2026-02-12 16:31:00,084 [INFO] Job "tarea_cierre_facturacion (trigger: cron[day='1,12', hour='16', minute='31'], next run at: 2026-03-01 16:31:00 -03)" executed successfully
+2026-02-12 16:34:16,567 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 16:34:16,568 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 16:34:16,569 [INFO] Added job "tarea_generar_cuotas" to job store "default"
+2026-02-12 16:34:16,570 [INFO] Added job "tarea_cierre_facturacion" to job store "default"
+2026-02-12 16:34:16,570 [INFO] Scheduler started
+2026-02-12 16:34:16,570 [INFO] Scheduler iniciado y esperando tareas...
+2026-02-12 17:00:28,242 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 17:00:28,243 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 17:00:28,243 [INFO] Added job "tarea_generar_cuotas" to job store "default"
+2026-02-12 17:00:28,244 [INFO] Added job "tarea_cierre_facturacion" to job store "default"
+2026-02-12 17:00:28,244 [INFO] Scheduler started
+2026-02-12 17:00:28,244 [INFO] Scheduler iniciado y esperando tareas...

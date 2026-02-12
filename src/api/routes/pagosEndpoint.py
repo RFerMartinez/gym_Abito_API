@@ -59,6 +59,7 @@ async def recibir_notificacion_mp(request: Request, db: Connection = Depends(get
     except Exception:
         return {"status": "ok"}
 
+from core.config import settings
 
 # 3. Endpoint "Puente" para redirección post-pago
 # Este endpoint recibe al usuario desde MP (vía Ngrok) y lo manda a Vue (Localhost)
@@ -74,7 +75,7 @@ async def retorno_pago(request: Request):
 
     # Construimos la URL de tu Frontend
     # IMPORTANTE: Aquí pones la ruta de tu vista en Vue
-    url_frontend = "http://localhost:8080/Usuario" 
+    url_frontend = f"{settings.FRONTEND_URL}/Usuario" 
 
     # Reconstruimos el query string para no perder datos
     query_string = "&".join([f"{k}={v}" for k, v in params.items()])
