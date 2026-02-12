@@ -3,3 +3,27 @@
 2026-02-12 15:05:04,213 [INFO] Scheduler started
 2026-02-12 15:07:00,096 [INFO] Running job "tarea_generar_cuotas (trigger: cron[day='12', hour='15', minute='7'], next run at: 2026-03-12 15:07:00 -03)" (scheduled at 2026-02-12 15:07:00-03:00)
 2026-02-12 15:07:00,139 [INFO] Job "tarea_generar_cuotas (trigger: cron[day='12', hour='15', minute='7'], next run at: 2026-03-12 15:07:00 -03)" executed successfully
+2026-02-12 15:33:55,436 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 15:33:55,437 [INFO] Added job "tarea_generar_cuotas" to job store "default"
+2026-02-12 15:33:55,437 [INFO] Scheduler started
+2026-02-12 15:33:55,437 [INFO] Scheduler iniciado y esperando tareas...
+2026-02-12 15:34:34,648 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 15:34:34,649 [INFO] Added job "tarea_generar_cuotas" to job store "default"
+2026-02-12 15:34:34,649 [INFO] Scheduler started
+2026-02-12 15:34:34,649 [INFO] Scheduler iniciado y esperando tareas...
+2026-02-12 15:35:00,017 [INFO] Running job "tarea_generar_cuotas (trigger: cron[day='12', hour='15', minute='35'], next run at: 2026-03-12 15:35:00 -03)" (scheduled at 2026-02-12 15:35:00-03:00)
+2026-02-12 15:35:00,017 [INFO] [Scheduler] Iniciando generación automática de cuotas...
+2026-02-12 15:35:00,040 [INFO] [Scheduler] Se generaron 4 cuotas.
+2026-02-12 15:35:00,040 [INFO] Job "tarea_generar_cuotas (trigger: cron[day='12', hour='15', minute='35'], next run at: 2026-03-12 15:35:00 -03)" executed successfully
+2026-02-12 15:41:55,689 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 15:41:55,689 [INFO] Added job "tarea_generar_cuotas" to job store "default"
+2026-02-12 15:41:55,690 [INFO] Scheduler started
+2026-02-12 15:41:55,690 [INFO] Scheduler iniciado y esperando tareas...
+2026-02-12 15:45:00,072 [INFO] Running job "tarea_generar_cuotas (trigger: cron[day='12', hour='15', minute='45'], next run at: 2026-03-12 15:45:00 -03)" (scheduled at 2026-02-12 15:45:00-03:00)
+2026-02-12 15:45:00,073 [INFO] [Scheduler] Iniciando generación automática de cuotas...
+2026-02-12 15:45:00,093 [INFO] [Scheduler] Se generaron 4 cuotas.
+2026-02-12 15:45:00,094 [INFO] Job "tarea_generar_cuotas (trigger: cron[day='12', hour='15', minute='45'], next run at: 2026-03-12 15:45:00 -03)" executed successfully
+2026-02-12 15:46:55,769 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-12 15:46:55,770 [INFO] Added job "tarea_generar_cuotas" to job store "default"
+2026-02-12 15:46:55,770 [INFO] Scheduler started
+2026-02-12 15:46:55,770 [INFO] Scheduler iniciado y esperando tareas...
