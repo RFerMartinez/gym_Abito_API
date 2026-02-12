@@ -71,21 +71,21 @@ async def lifespan(app: FastAPI):
     print("Conexión a la base de datos establecida")
 
     # B) Iniciar Scheduler (LO NUEVO)
-    scheduler = AsyncIOScheduler()
+    # scheduler = AsyncIOScheduler()
 
-    scheduler.add_job(
-        tarea_generar_cuotas, 
-        CronTrigger(day=5, hour=0, minute=0), # Día 5 de cada mes a las 08:00 hs
-        id="generacion_cuotas_mensual"
-    )
+    # scheduler.add_job(
+    #     tarea_generar_cuotas, 
+    #     CronTrigger(day=5, hour=0, minute=0), # Día 5 de cada mes a las 08:00 hs
+    #     id="generacion_cuotas_mensual"
+    # )
 
-    scheduler.add_job(
-        tarea_cierre_facturacion,
-        CronTrigger(day='1,15', hour=23, minute=30),
-        id="cierre_facturacion_auto"
-    )
+    # scheduler.add_job(
+    #     tarea_cierre_facturacion,
+    #     CronTrigger(day='1,15', hour=23, minute=30),
+    #     id="cierre_facturacion_auto"
+    # )
     
-    scheduler.start()
+    # scheduler.start()
     print("Planificador de tareas (Scheduler) iniciado.")
     
     yield # <--- Aquí la app corre y recibe peticiones
@@ -94,7 +94,7 @@ async def lifespan(app: FastAPI):
     
     # C) Apagar Scheduler (LO NUEVO)
     print("Deteniendo planificador...")
-    scheduler.shutdown()
+    # scheduler.shutdown()
     
     # D) Desconectar Base de Datos (TU CÓDIGO ACTUAL)
     await close_db_connection()
