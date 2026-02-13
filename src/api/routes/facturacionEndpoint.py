@@ -15,7 +15,7 @@ router = APIRouter(
 
 @router.post(
     "/generar-cierre",
-    dependencies=[Depends(admin_required)],
+    dependencies=[Depends(staff_required)],
     response_model=List[FacturacionResponse],
     status_code=status.HTTP_201_CREATED,
     summary="Generar cierre de facturación quincenal"
@@ -35,7 +35,7 @@ async def generar_cierre(
 
 @router.get(
     "/reporte/{id_facturacion}",
-    dependencies=[Depends(admin_required)],
+    dependencies=[Depends(staff_required)],
     response_model=ReporteFacturacion,
     summary="Obtener reporte detallado de una facturación"
 )
@@ -55,6 +55,7 @@ async def obtener_reporte(
 
 @router.get(
     "/reporte/{id_facturacion}/pdf",
+    dependencies=[Depends(staff_required)],
     summary="Descargar/Visualizar reporte PDF",
     responses={
         200: {
@@ -93,6 +94,7 @@ async def obtener_reporte_pdf(
 @router.get(
     "/",
     response_model=List[FacturacionResponse],
+    dependencies=[Depends(staff_required)],
     summary="Listar historial de facturaciones (Solo Admin)",
     description="Devuelve todas las facturaciones generadas hasta la fecha."
 )
