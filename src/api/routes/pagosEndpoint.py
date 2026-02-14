@@ -38,6 +38,7 @@ async def iniciar_pago_cuota(
 
 
 # 2. Endpoint para recibir notificaciones (Para Mercado Pago)
+@router.post("/webhook/", include_in_schema=False)
 @router.post("/webhook", include_in_schema=False)
 async def recibir_notificacion_mp(request: Request, db: Connection = Depends(get_db)):
     try:
