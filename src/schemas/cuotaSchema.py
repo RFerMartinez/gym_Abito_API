@@ -12,6 +12,7 @@ class CuotaBase(BaseModel):
     anio: int
     metodoDePago: Optional[str] = None # <--- Nuevo campo
     idFacturacion: Optional[int] = None # <--- Nuevo campo
+    titular: Optional[str] = None
 
 class CuotaResponseAlumnoAuth(CuotaBase):
     trabajo: str

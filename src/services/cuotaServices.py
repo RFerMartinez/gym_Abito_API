@@ -222,27 +222,20 @@ async def eliminar_cuota(conn: Connection, id_cuota: int) -> bool:
 
 
 async def generar_cuotas_masivas_mensuales(conn: Connection) -> int:
-    """
-    Genera automáticamente las cuotas para TODOS los alumnos activos.
-    Se han agregado casteos explícitos (::DATE, ::VARCHAR, ::INTEGER) para evitar conflictos de tipos.
-    """
     try:
         hoy = date.today()
         vencimiento = hoy + timedelta(days=30)
         
-        # Nombre del mes
+        # Traducción del mes
         nombre_mes = calendar.month_name[hoy.month].capitalize()
         meses_trad = {
             "January": "Enero", "February": "Febrero", "March": "Marzo", "April": "Abril",
             "May": "Mayo", "June": "Junio", "July": "Julio", "August": "Agosto",
             "September": "Septiembre", "October": "Octubre", "November": "Noviembre", "December": "Diciembre"
         }
-        if nombre_mes in meses_trad:
-            nombre_mes = meses_trad[nombre_mes]
-
+        nombre_mes = meses_trad.get(nombre_mes, nombre_mes)
         anio_actual = hoy.year
 
-        # --- QUERY CORREGIDA CON CASTEOS ---
         query = """
         INSERT INTO "Cuota" (
             dni, 
@@ -252,33 +245,45 @@ async def generar_cuotas_masivas_mensuales(conn: Connection) -> int:
             "fechaFin", 
             mes, 
             "nombreTrabajo", 
-            "nombreSuscripcion"
+            "nombreSuscripcion",
+            titular
+        )
+        WITH "TitularActual" AS (
+            -- Buscamos el titular asignado al alumno en este momento
+            SELECT DISTINCT ON (asiste.dni)
+                asiste.dni,
+                p.nombre || ' ' || p.apellido as nombre_titular
+            FROM "Asiste" asiste
+            INNER JOIN "Pertenece" pert ON asiste."nroGrupo" = pert."nroGrupo"
+            INNER JOIN "Persona" p ON pert."dniEmpleado" = p.dni
+            WHERE pert."dniEmpleado" IS NOT NULL
         )
         SELECT 
             a.dni,
             FALSE as pagada,
             s.precio as monto,
-            $1::DATE as "fechaComienzo",  -- Casteo explícito a DATE
-            $2::DATE as "fechaFin",       -- Casteo explícito a DATE
-            $3::VARCHAR as mes,           -- Casteo explícito a VARCHAR (soluciona tu error)
+            $1::DATE,
+            $2::DATE,
+            $3::VARCHAR,
             a."nombreTrabajo",
-            a."nombreSuscripcion"
+            a."nombreSuscripcion",
+            COALESCE(ta.nombre_titular, 'Administración') as titular -- Guardamos el titular fijo
         FROM "Alumno" a
         JOIN "AlumnoActivo" aa ON a.dni = aa.dni
         JOIN "Suscripcion" s ON a."nombreSuscripcion" = s."nombreSuscripcion"
+        LEFT JOIN "TitularActual" ta ON a.dni = ta.dni
         WHERE NOT EXISTS (
             SELECT 1 FROM "Cuota" c 
             WHERE c.dni = a.dni 
-            AND c.mes = $3::VARCHAR       -- Usamos el mismo casteo aquí
-            AND EXTRACT(YEAR FROM c."fechaFin") = $4::INTEGER -- Casteo explícito a INTEGER
+            AND c.mes = $3::VARCHAR
+            AND EXTRACT(YEAR FROM c."fechaFin") = $4::INTEGER
         );
         """
 
         resultado = await conn.execute(query, hoy, vencimiento, nombre_mes, anio_actual)
-        
         filas_insertadas = int(resultado.split(" ")[-1])
         
-        print(f"--- [AUTOMATIZACIÓN] Se generaron {filas_insertadas} cuotas nuevas para el mes de {nombre_mes}. ---")
+        print(f"--- [AUTOMATIZACIÓN] Se generaron {filas_insertadas} cuotas con titular persistido para {nombre_mes}. ---")
         return filas_insertadas
 
     except Exception as e:
