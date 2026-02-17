@@ -37,8 +37,8 @@ class Settings(BaseSettings):
     BACKEND_URL: str
 
     # -- Mercado Pago
-    MP_ACCESS_TOKEN: SecretStr
-    MP_ACCESS_TOKEN_DAVOR: SecretStr
+    MP_ACCESS_TOKEN_AMD: SecretStr
+    MP_ACCESS_TOKEN_EMP: SecretStr
 
     # -- NGROK
     # URL_NGROK: str
