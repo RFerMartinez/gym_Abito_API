@@ -15,9 +15,11 @@ sys.path.append(current_dir)
 # --- 2. IMPORTAR SETTINGS ---
 try:
     from core.config import settings
+    print("Se importó Settings")
 except ImportError:
     # Intento alternativo por si se ejecuta desde la raíz del proyecto
     sys.path.append(os.path.join(current_dir, '..'))
+
     from src.core.config import settings
 
 # Contexto para hashear contraseñas
@@ -40,6 +42,8 @@ async def crear_administrador():
         database_url = f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
         
         print(f"Conectando a: {db_host}:{db_port}/{db_name}")
+
+        print(database_url)
         
     except AttributeError as e:
         print(f"Error en configuración: Falta alguna variable en settings. {e}")
