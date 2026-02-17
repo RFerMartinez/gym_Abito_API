@@ -33,7 +33,7 @@ async def crear_administrador():
     # Asumimos que settings tiene estos atributos mapeados desde el .env
     try:
         db_user = settings.PSQL_USER
-        db_pass = settings.PSQL_PASSWORD
+        db_pass = settings.PSQL_PASSWORD.get_secret_value()
         db_host = settings.PSQL_SERVER
         db_port = settings.PSQL_PORT
         db_name = settings.PSQL_DB # O settings.PSQL_DB_TEST si prefieres
