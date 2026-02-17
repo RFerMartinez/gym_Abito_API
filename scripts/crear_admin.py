@@ -16,7 +16,7 @@ load_dotenv(env_path)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 async def crear_administrador():
-    print("👨‍💼 Creando Usuario Administrador")
+    print("Creando Usuario Administrador")
     print("================================")
     
     # Obtener datos de conexión directamente de .env
