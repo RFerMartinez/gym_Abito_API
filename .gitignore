@@ -2,5 +2,6 @@ venv/
 
 .env
 .log
+scheduler.log
 
 __pycache__/
