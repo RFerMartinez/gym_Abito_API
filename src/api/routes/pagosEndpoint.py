@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse
 from asyncpg import Connection
 
 from core.session import get_db
-from api.dependencies.security import admin_required, alumno_required
+from api.dependencies.security import admin_required, alumno_required, staff_required
 from services.pagoServices import crear_preferencia_pago, marcar_pago_manual, procesar_pago_exitoso, obtener_estado_pago_cuota
 from schemas.pagoSchema import PreferenciaPagoResponse
 
@@ -132,7 +132,7 @@ async def descargar_comprobante(
 @router.put(
     "/marcar-pagada/{id_cuota}",
     summary="Marcar cuota como pagada (Admin)",
-    dependencies=[Depends(admin_required)]
+    dependencies=[Depends(staff_required)]
 )
 async def registrar_pago_manual(
     id_cuota: int,
@@ -144,4 +144,3 @@ async def registrar_pago_manual(
     El body debe ser un JSON: { "metodo_pago": "Efectivo" }
     """
     return await marcar_pago_manual(conn=db, id_cuota=id_cuota, metodo_pago=metodo_pago)
-

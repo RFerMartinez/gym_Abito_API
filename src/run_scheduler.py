@@ -27,23 +27,23 @@ async def tarea_generar_cuotas():
         async for db in get_db():
             cantidad = await generar_cuotas_masivas_mensuales(db)
             if cantidad > 0:
-                logging.info(f"[Scheduler] Se generaron {cantidad} cuotas.")
+                logging.info(f"Scheduler Se generaron {cantidad} cuotas.")
             else:
-                logging.info("[Scheduler] No hubo cuotas para generar hoy.")
+                logging.info("Scheduler No hubo cuotas para generar hoy.")
             break # Importante romper el loop del generador
     except Exception as e:
-        logging.error(f"[Scheduler] Error generando cuotas: {e}")
+        logging.error(f"Scheduler Error generando cuotas: {e}")
 
 async def tarea_cierre_facturacion():
     """Se ejecuta el día 1 y 15 para cerrar la facturación."""
-    logging.info("[Scheduler] Iniciando cierre de facturación automático...")
+    logging.info("Scheduler Iniciando cierre de facturación automático...")
     try:
         async for db in get_db(): 
             await procesar_cierre_automatico(db)
-            logging.info("[Scheduler] Cierre de facturación finalizado con éxito.")
+            logging.info("Scheduler Cierre de facturación finalizado con éxito.")
             break 
     except Exception as e:
-        logging.error(f"[Scheduler] Error en cierre de facturación: {e}")
+        logging.error(f"Scheduler Error en cierre de facturación: {e}")
 
 async def main():
     # 1. Iniciar conexión a DB
@@ -55,7 +55,7 @@ async def main():
     # Tarea: Generar Cuotas
     scheduler.add_job(
         tarea_generar_cuotas, 
-        CronTrigger(day=6, hour=0, minute=0),
+        CronTrigger(day=2, hour=0, minute=0),
         id="generacion_cuotas_mensual"
     )
 
