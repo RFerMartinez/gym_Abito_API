@@ -62,13 +62,17 @@ async def main():
     # Tarea: Generar Cierre quincenal (Dias 1 y 15 a las 23:30)
     scheduler.add_job(
         tarea_cierre_facturacion,
-        CronTrigger(day='1,15', hour=23, minute=30), # Días 1 y 15 a las 23:30
+        CronTrigger(day='1,15', hour=23, minute=30),
         id="cierre_facturacion_auto"
     )
-    
+
     # 3. Iniciar
     scheduler.start()
     logging.info("Scheduler iniciado y esperando tareas...")
+    
+    # 4. Informe de tiempo (AQUI ES EL LUGAR CORRECTO)
+    for job in scheduler.get_jobs():
+        logging.info(f"Tarea '{job.name}' proxima ejecucion: {job.next_run_time}")
     
     # Mantener el script vivo infinitamente
     try:
