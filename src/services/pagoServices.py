@@ -94,12 +94,14 @@ async def crear_preferencia_pago(conn: Connection, id_cuota: int, monto_final: f
     except Exception as e:
         print(f"Error creando preferencia: {e}")
         raise DatabaseException("iniciar pago", str(e))
+
+
 # -------------------------
 # Webhook
 # -------------------------
 async def procesar_pago_exitoso(conn: Connection, payment_id: str, owner: str = "mia") -> bool:
     try:
-        # Usamos el SDK correcto para validar el pago
+        # ... (código inicial para obtener SDK y payment_info igual que antes) ...
         sdk = obtener_sdk(owner)
         payment_info = sdk.payment().get(payment_id)
         
@@ -110,34 +112,45 @@ async def procesar_pago_exitoso(conn: Connection, payment_id: str, owner: str = 
         payment_data = payment_info["response"]
         estado = payment_data.get("status")
         id_cuota_str = payment_data.get("external_reference")
-        
-        # Obtenemos cuánto pagó realmente el usuario (transaction_amount)
-        monto_pagado_real = payment_data.get("transaction_amount") 
+        monto_pagado_mp = payment_data.get("transaction_amount") 
 
-        print(f"🔔 Webhook: Pago {payment_id} para Cuota {id_cuota_str} - Estado: {estado} - Monto: {monto_pagado_real}")
+        print(f"🔔 Webhook: Pago {payment_id} para Cuota {id_cuota_str} - Estado: {estado} - Monto MP: {monto_pagado_mp}")
 
-        # 2. Si el pago está aprobado, actualizamos la base de datos
         if estado == "approved" and id_cuota_str:
             id_cuota = int(id_cuota_str)
             
-            # Actualizamos 'monto' con lo que realmente pagó (para que el comprobante salga bien)
+            # --- CORRECCIÓN DE IDEMPOTENCIA ---
+            # Agregamos "AND pagada = FALSE" al final.
+            # Esto evita que si MP manda el aviso 2 veces, se aplique el recargo 2 veces.
             query = '''
                 UPDATE "Cuota" 
                 SET pagada = TRUE, 
                     "fechaDePago" = CURRENT_DATE, 
                     "horaDePago" = CURRENT_TIME(0),
-                    monto = $2,
-                    "metodoDePago" = 'qr' -- <--- Registramos el método digital
-                WHERE "idCuota" = $1
+                    "metodoDePago" = 'qr',
+                    monto = CASE 
+                                WHEN "fechaFin" < CURRENT_DATE THEN ROUND(monto * 1.10, 2)
+                                ELSE monto 
+                            END
+                WHERE "idCuota" = $1 AND pagada = FALSE 
             '''
-            # Pasamos id_cuota y el monto_pagado_real
-            result = await conn.execute(query, id_cuota, float(monto_pagado_real))
+            
+            result = await conn.execute(query, id_cuota)
             
             if result == "UPDATE 1":
-                print(f"✅ Cuota {id_cuota} actualizada: PAGADA. Monto final registrado: {monto_pagado_real}")
+                print(f"✅ Cuota {id_cuota} pagada. Base de datos actualizada correctamente.")
                 return True
             else:
-                print(f"❌ Error: La cuota {id_cuota} no se encontró.")
+                # Si el UPDATE no afectó ninguna fila, verificamos por qué
+                # Puede ser que no exista O que ya estuviera pagada (por el primer webhook)
+                chequeo = await conn.fetchrow('SELECT pagada FROM "Cuota" WHERE "idCuota" = $1', id_cuota)
+                
+                if chequeo and chequeo['pagada']:
+                    print(f"ℹ️ Webhook duplicado: La cuota {id_cuota} ya estaba registrada como pagada. No se realizan cambios.")
+                    return True # Retornamos True porque el estado final es correcto (Pagada)
+                else:
+                    print(f"❌ Error: La cuota {id_cuota} no se encontró.")
+                    return False
         
         return False
 
