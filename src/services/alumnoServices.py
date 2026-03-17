@@ -218,33 +218,22 @@ async def obtener_horarios_alumno(conn: Connection, dni: str) -> List[HorarioAlu
         if not alumno_existe:
             raise NotFoundException("Alumno", dni)
 
-        # Modificamos la consulta para unir con la tabla Horario
+        # Modificamos la consulta para hacer JOIN con la tabla Horario
+        # TO_CHAR extrae solo la hora y minuto (HH24:MI) descartando los segundos
         query = """
         SELECT
-            dia,
-            "nroGrupo"
-        FROM "Asiste"
-        WHERE dni = $1
-        ORDER BY dia;
+            a.dia,
+            a."nroGrupo",
+            TO_CHAR(h."horaInicio", 'HH24:MI') as "horaInicio",
+            TO_CHAR(h."horaFin", 'HH24:MI') as "horaFin"
+        FROM "Asiste" a
+        JOIN "Horario" h ON a."nroGrupo" = h."nroGrupo"
+        WHERE a.dni = $1
+        ORDER BY a.dia;
         """
         
         resultados_db = await conn.fetch(query, dni)
         
-        # Formateamos la respuesta en Python
-        # horarios_formateados = []
-        # for row in resultados_db:
-        #     hora_inicio: time = row["horaInicio"]
-        #     hora_fin: time = row["horaFin"]
-            
-        #     # Creamos el string "HH:MM-HH:MM"
-        #     horario_str = f"{hora_inicio.strftime('%H:%M')}-{hora_fin.strftime('%H:%M')}"
-            
-        #     horarios_formateados.append(
-        #         HorarioAlumno(dia=row["dia"], horario=horario_str)
-        #     )
-            
-        # return horarios_formateados
-    
         return [HorarioAlumno(**dict(row)) for row in resultados_db]
 
     except NotFoundException:

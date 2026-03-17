@@ -63,6 +63,8 @@ class AlumnoDetalle(BaseModel):
 class HorarioAlumno(BaseModel):
     dia: str
     nroGrupo: str # <--- Volvemos a nroGrupo
+    horaInicio: Optional[str] = None    # Agregado
+    horaFin: Optional[str] = None       # Agregado
 
     class Config:
         from_attributes = True
