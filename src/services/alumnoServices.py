@@ -174,7 +174,7 @@ async def obtener_detalle_alumno(conn: Connection, dni: str) -> AlumnoDetalle:
                     SELECT
                         CASE
                             WHEN LEFT(MIN(asis."nroGrupo"), 1) IN ('1', '2') THEN 'Mañana'
-                            WHEN LEFT(MIN(asis."nroGrupo"), 1) IN ('3', '4', '5') THEN 'Tarde'
+                            WHEN LEFT(MIN(asis."nroGrupo"), 1) IN ('3', '4', '5', '6') THEN 'Tarde'
                             ELSE 'No asignado'
                         END
                     FROM "Asiste" asis
