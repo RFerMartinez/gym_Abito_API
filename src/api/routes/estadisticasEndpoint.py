@@ -88,7 +88,7 @@ async def get_stats_entrenador(
     response_model=List[EntrenadorStats],
     summary="Rendimiento de todo el Staff (Admin)",
     description="Devuelve una lista con las métricas de cada empleado.",
-    dependencies=[Depends(admin_required)]
+    dependencies=[Depends(staff_required)]
 )
 async def get_all_staff_stats(
     db: Connection = Depends(get_db)
