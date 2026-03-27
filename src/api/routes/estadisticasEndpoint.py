@@ -20,7 +20,7 @@ router = APIRouter(
     response_model=List[EstadisticaTrabajoItem],
     summary="Obtener cantidad de alumnos por tipo de trabajo (Admin)",
     response_description="Lista con la cantidad de alumnos inscritos en cada trabajo.",
-    dependencies=[Depends(admin_required)] # <-- ¡Protegido para Administradores!
+    dependencies=[Depends(staff_required)] # <-- ¡Protegido para Administradores!
 )
 async def get_estadisticas_alumnos_por_trabajo(
     db: Connection = Depends(get_db)
@@ -37,7 +37,7 @@ async def get_estadisticas_alumnos_por_trabajo(
     "/kpis",
     response_model=DashboardKPIs,
     summary="Obtener KPIs principales",
-    dependencies=[Depends(admin_required)] 
+    dependencies=[Depends(staff_required)] 
 )
 async def get_dashboard_kpis(
     db: Connection = Depends(get_db)
@@ -55,7 +55,7 @@ async def get_dashboard_kpis(
     "/alumnos-turno",
     response_model=GraficoTurnosResponse,
     summary="Datos para gráfico de barras (Turnos)",
-    dependencies=[Depends(admin_required)]
+    dependencies=[Depends(staff_required)]
 )
 async def get_stats_alumnos_turno(
     db: Connection = Depends(get_db)
