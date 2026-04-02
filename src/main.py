@@ -40,7 +40,10 @@ from api.routes.adminExample import router as admin_example_endpoint            
 from api.routes.alumnosExample import router as alumnos_example_endpoint        # ejemplo alumnos
 
 from services.cuotaServices import generar_cuotas_masivas_mensuales
+from services.facturacionServices import procesar_cierre_automatico
 
+
+# FUNCIONES WRAPPER -----------
 async def tarea_generar_cuotas():
     """Esta función se ejecutará automáticamente el día 5."""
     print("⏰ [Scheduler] Iniciando generación automática de cuotas...")
@@ -49,6 +52,15 @@ async def tarea_generar_cuotas():
         if cantidad > 0:
             print(f"✅ [Scheduler] Se generaron {cantidad} cuotas.")
         break
+
+async def tarea_cierre_facturacion():
+    """Se ejecuta el día 1 y 15 para cerrar la facturación."""
+    print("⏰ [Scheduler] Iniciando cierre de facturación automático...")
+    # Usamos el generador de dependencias tal como en tarea_generar_cuotas
+    async for db in get_db(): 
+        await procesar_cierre_automatico(db)
+        break # Importante: romper el bucle ya que get_db es un generador
+# ------------------------------
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -61,11 +73,19 @@ async def lifespan(app: FastAPI):
 
     # B) Iniciar Scheduler (LO NUEVO)
     scheduler = AsyncIOScheduler()
+
     scheduler.add_job(
         tarea_generar_cuotas, 
         CronTrigger(day=5, hour=0, minute=0), # Día 5 de cada mes a las 08:00 hs
         id="generacion_cuotas_mensual"
     )
+
+    scheduler.add_job(
+        tarea_cierre_facturacion,
+        CronTrigger(day='1,15', hour=23, minute=30),
+        id="cierre_facturacion_auto"
+    )
+    
     scheduler.start()
     print("📅 Planificador de tareas (Scheduler) iniciado.")
     

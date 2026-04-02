@@ -6,7 +6,7 @@ from datetime import date
 from core.session import get_db
 from schemas.facturacionSchema import FacturacionResponse, ReporteFacturacion
 from services import facturacionServices
-from api.dependencies.security import admin_required
+from api.dependencies.security import admin_required, staff_required
 
 router = APIRouter(
     prefix="/facturacion",
@@ -88,4 +88,24 @@ async def obtener_reporte_pdf(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al generar PDF: {str(e)}")
+
+
+@router.get(
+    "/",
+    response_model=List[FacturacionResponse],
+    summary="Listar historial de facturaciones (Solo Admin)",
+    description="Devuelve todas las facturaciones generadas hasta la fecha."
+)
+async def listar_facturaciones(
+    db: Connection = Depends(get_db),
+    current_user: dict = Depends(staff_required) # <--- Candado de seguridad
+):
+    try:
+        facturas = await facturacionServices.obtener_todas_facturaciones(db)
+        return facturas
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=f"Error al obtener el historial: {str(e)}"
+        )
 

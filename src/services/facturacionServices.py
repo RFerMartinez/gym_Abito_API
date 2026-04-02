@@ -1,7 +1,7 @@
 # src/services/facturacionServices.py
 
 from asyncpg import Connection
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import List, Optional
 from decimal import Decimal
 from io import BytesIO
@@ -40,9 +40,9 @@ async def generar_cierre_quincenal(conn: Connection, fecha_inicio: date, fecha_f
         FROM "Cuota" c
         LEFT JOIN "TitularAsignado" ta ON c.dni = ta.dni
         WHERE c."fechaDePago" BETWEEN $1 AND $2
-          AND c.pagada = True 
-          AND c.facturado = False
-          AND c."metodoDePago" IN ('qr', 'transferencia')  -- <--- FILTRO AGREGADO
+            AND c.pagada = True 
+            AND c.facturado = False
+            AND c."metodoDePago" IN ('qr', 'transferencia')  -- <--- FILTRO AGREGADO
     """
 
     async with conn.transaction():
@@ -243,4 +243,68 @@ def generar_pdf_reporte(reporte: ReporteFacturacion) -> bytes:
     pdf = buffer.getvalue()
     buffer.close()
     return pdf
+
+async def obtener_todas_facturaciones(conn: Connection) -> List[FacturacionResponse]:
+    """
+    Recupera el historial completo de facturaciones realizadas.
+    Ordenado por fecha de generación descendente.
+    """
+    query = """
+        SELECT 
+            "idFacturacion", 
+            "fechaInicio", 
+            "fechaFin", 
+            "fechaGeneracion", 
+            "montoTotal", 
+            "cantidadCuotas", 
+            "titular"
+        FROM "Facturacion"
+        ORDER BY "fechaGeneracion" DESC
+    """
+    
+    rows = await conn.fetch(query)
+    
+    # Convertimos cada fila en un objeto Pydantic
+    return [FacturacionResponse(**dict(row)) for row in rows]
+
+async def procesar_cierre_automatico(conn: Connection):
+    """
+    Determina el periodo a cerrar basándose en la fecha actual y ejecuta el cierre.
+    Se espera que esta función corra los días 1 y 15.
+    """
+    hoy = date.today()
+    fecha_inicio = None
+    fecha_fin = None
+
+    # Lógica de Fechas
+    if hoy.day == 1:
+        # Caso: Es día 1. Cerramos la quincena del mes ANTERIOR (día 16 al fin de mes).
+        # Restamos 1 día para volver al mes pasado
+        ultimo_dia_mes_anterior = hoy - timedelta(days=1)
+        fecha_fin = ultimo_dia_mes_anterior
+        fecha_inicio = date(ultimo_dia_mes_anterior.year, ultimo_dia_mes_anterior.month, 16)
+        
+    elif hoy.day == 15:
+        # Caso: Es día 15. Cerramos la primera quincena del mes ACTUAL (día 1 al 15).
+        fecha_inicio = date(hoy.year, hoy.month, 1)
+        fecha_fin = hoy
+    else:
+        # Por seguridad, si el scheduler corre otro día, no hacemos nada o asumimos manual
+        print(f"⚠️ [Facturacion Auto] Ejecución en día no estándar ({hoy.day}). Se omitirá.")
+        return
+
+    print(f"🔄 [Facturacion Auto] Procesando cierre para periodo: {fecha_inicio} al {fecha_fin}")
+
+    try:
+        # Llamamos a la función que ya creamos antes
+        reportes = await generar_cierre_quincenal(conn, fecha_inicio, fecha_fin)
+        
+        if reportes:
+            print(f"✅ [Facturacion Auto] Cierre exitoso. {len(reportes)} facturas generadas.")
+        else:
+            print("ℹ️ [Facturacion Auto] No hubo movimientos para facturar en este periodo.")
+            
+    except Exception as e:
+        print(f"❌ [Facturacion Auto] Error crítico: {str(e)}")
+
 
