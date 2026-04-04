@@ -281,15 +281,18 @@ async def obtener_estadisticas_entrenador(conn: Connection, dni_empleado: str) -
 
         # B) Monto Recaudado (Mes Actual) de MIS alumnos
         # Sumamos las cuotas pagadas este mes, pero SOLO de los DNIs que me pertenecen
-        query_recaudado = f'''
+        # Armamos el nombre tal como se guarda en el campo titular de la BD
+        nombre_completo_titular = f"{empleado['nombre']} {empleado['apellido']}"
+        
+        query_recaudado = '''
             SELECT COALESCE(SUM(c.monto), 0)
             FROM "Cuota" c
             WHERE c.pagada = TRUE
-                AND EXTRACT(MONTH FROM c."fechaDePago") = $2
-                AND EXTRACT(YEAR FROM c."fechaDePago") = $3
-                AND c.dni IN ({subquery_mis_alumnos})
+                AND EXTRACT(MONTH FROM c."fechaDePago") = $1
+                AND EXTRACT(YEAR FROM c."fechaDePago") = $2
+                AND c.titular = $3
         '''
-        monto_recaudado = await conn.fetchval(query_recaudado, dni_empleado, mes_actual, anio_actual)
+        monto_recaudado = await conn.fetchval(query_recaudado, mes_actual, anio_actual, nombre_completo_titular)
 
         # C) Cuotas Pendientes de MIS alumnos
         # Contamos todas las cuotas impagas de mis alumnos (históricas)
