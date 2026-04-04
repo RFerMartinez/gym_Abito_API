@@ -44,3 +44,30 @@ class EntrenadorStats(BaseModel):
     monto_recaudado_mes: float
     cuotas_pendientes: int
 
+
+# === Desglose de GANANCIAS ===
+class DesgloseAdmin(BaseModel):
+    totalRecaudado: float
+    totalEfectivo: float
+    totalTransferencia: float
+
+class DesgloseEmpleado(BaseModel):
+    nombre: str
+    totalRecaudado: float
+    totalEfectivo: float
+    totalTransferencia: float
+
+class Desglose(BaseModel):
+    administrador: DesgloseAdmin
+    empleados: List[DesgloseEmpleado]
+
+class ReporteRecaudacion(BaseModel):
+    mes: int
+    anio: int
+    totalRecaudado: float
+    desglose: Desglose
+
+class EstadisticasResponse(BaseModel):
+    reporte: ReporteRecaudacion
+
+

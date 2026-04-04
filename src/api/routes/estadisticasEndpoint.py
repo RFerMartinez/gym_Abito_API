@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status # Añadir status si no está
+from fastapi import APIRouter, Depends, Query, status # Añadir status si no está
 from asyncpg import Connection
 from typing import List
 
@@ -7,7 +7,13 @@ from api.dependencies.security import admin_required, staff_required
 from api.dependencies.auth import get_current_user
 
 # --- Importaciones para Estadísticas ---
-from schemas.estadisticasSchema import DashboardKPIs, EntrenadorStats, EstadisticaTrabajoItem, GraficoTurnosResponse
+from schemas.estadisticasSchema import (
+    DashboardKPIs,
+    EntrenadorStats,
+    EstadisticaTrabajoItem,
+    GraficoTurnosResponse,
+    EstadisticasResponse
+)
 from services import estadisticasService # Importamos el nuevo servicio
 
 router = APIRouter(
@@ -94,3 +100,22 @@ async def get_all_staff_stats(
     db: Connection = Depends(get_db)
 ):
     return await estadisticasService.obtener_stats_todos_empleados(db)
+
+
+@router.get(
+    "/recaudacion",
+    response_model=EstadisticasResponse,
+    summary="Obtener estadísticas de recaudación mensual",
+    dependencies=[Depends(staff_required)] # Solo administradores/empleados
+)
+async def get_recaudacion(
+    mes: int = Query(..., description="Mes a consultar (1-12)"),
+    anio: int = Query(..., description="Año a consultar (ej. 2026)"),
+    db: Connection = Depends(get_db)
+):
+    """
+    Obtiene el total recaudado en un mes y año específico, 
+    desglosado por el administrador y los empleados, 
+    discriminando los métodos de pago.
+    """
+    return await estadisticasService.obtener_recaudacion_mensual(conn=db, mes=mes, anio=anio)

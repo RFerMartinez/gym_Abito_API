@@ -10,7 +10,12 @@ from schemas.estadisticasSchema import (
     EntrenadorStats,
     EstadisticaTrabajoData,
     EstadisticaTrabajoItem,
-    GraficoTurnosResponse
+    GraficoTurnosResponse,
+    EstadisticasResponse, 
+    ReporteRecaudacion, 
+    Desglose, 
+    DesgloseAdmin, 
+    DesgloseEmpleado
 )
 
 from utils.exceptions import DatabaseException, NotFoundException
@@ -134,7 +139,6 @@ async def obtener_kpis_generales(conn: Connection) -> DashboardKPIs:
     except Exception as e:
         raise DatabaseException("Error al calcular KPIs del dashboard", str(e))
 
-
 async def obtener_alumnos_por_turno_mensual(conn: Connection) -> GraficoTurnosResponse:
     try:
         hoy = date.today()
@@ -231,7 +235,6 @@ async def obtener_alumnos_por_turno_mensual(conn: Connection) -> GraficoTurnosRe
         # Imprimir error en consola del backend para debug fácil
         print(f"DEBUG ERROR: {str(e)}")
         raise DatabaseException("Error al calcular gráfico de turnos", str(e))
-
 
 async def obtener_estadisticas_entrenador(conn: Connection, dni_empleado: str) -> EntrenadorStats:
     """
@@ -344,3 +347,65 @@ async def obtener_stats_todos_empleados(conn: Connection) -> List[EntrenadorStat
         raise DatabaseException("Error listando stats de empleados", str(e))
 
 
+
+async def obtener_recaudacion_mensual(conn: Connection, mes: int, anio: int) -> EstadisticasResponse:
+    try:
+        # Consulta optimizada en PostgreSQL: Agrupa por titular y suma condicionalmente
+        query = """
+            SELECT 
+                titular,
+                COALESCE(SUM(monto), 0) AS total_recaudado,
+                COALESCE(SUM(CASE WHEN "metodoDePago" ILIKE '%efectivo%' THEN monto ELSE 0 END), 0) AS total_efectivo,
+                COALESCE(SUM(CASE WHEN "metodoDePago" ILIKE '%transferencia%' THEN monto ELSE 0 END), 0) AS total_transferencia
+            FROM "Cuota"
+            WHERE pagada = true 
+                AND EXTRACT(MONTH FROM "fechaDePago") = $1
+                AND EXTRACT(YEAR FROM "fechaDePago") = $2
+            GROUP BY titular;
+        """
+        
+        # Usamos fetch de asyncpg pasando los parámetros
+        resultados = await conn.fetch(query, mes, anio)
+
+        total_general = 0.0
+        admin_data = DesgloseAdmin(totalRecaudado=0.0, totalEfectivo=0.0, totalTransferencia=0.0)
+        empleados_data = []
+
+        # Recorremos los registros devueltos por asyncpg (asyncpg.Record se comporta como dict)
+        for row in resultados:
+            titular = row["titular"]
+            total_rec = float(row["total_recaudado"])
+            total_efec = float(row["total_efectivo"])
+            total_transf = float(row["total_transferencia"])
+
+            total_general += total_rec
+
+            if titular == 'Administración':
+                admin_data.totalRecaudado = total_rec
+                admin_data.totalEfectivo = total_efec
+                admin_data.totalTransferencia = total_transf
+            else:
+                empleados_data.append(
+                    DesgloseEmpleado(
+                        nombre=titular,
+                        totalRecaudado=total_rec,
+                        totalEfectivo=total_efec,
+                        totalTransferencia=total_transf
+                    )
+                )
+
+        reporte = ReporteRecaudacion(
+            mes=mes,
+            anio=anio,
+            totalRecaudado=total_general,
+            desglose=Desglose(
+                administrador=admin_data,
+                empleados=empleados_data
+            )
+        )
+
+        return EstadisticasResponse(reporte=reporte)
+
+    except Exception as e:
+        # Usamos tu estructura de manejo de errores
+        raise DatabaseException("obtener estadísticas de recaudación mensual", str(e))
