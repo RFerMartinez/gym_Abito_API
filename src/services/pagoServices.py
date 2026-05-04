@@ -332,24 +332,18 @@ async def generar_comprobante_pdf(conn: Connection, id_cuota: int):
 async def marcar_pago_manual(conn: Connection, id_cuota: int, metodo_pago: str) -> bool:
     """
     Marca una cuota como pagada manualmente.
-    Si la cuota está vencida (fechaFin < HOY), aplica un 10% de recargo al monto automáticamente.
+    Registra fecha, hora y método de pago, manteniendo siempre el monto original (sin recargos por vencimiento).
     """
     try:
-        # Consulta SQL inteligente:
-        # 1. Actualiza el estado a pagado y registra fecha/hora/metodo.
-        # 2. En la columna 'monto', verifica si la fechaFin es menor a la fecha actual (CURRENT_DATE).
-        # 3. Si es menor (vencida), multiplica el monto actual por 1.10. Si no, deja el monto igual.
+        # Consulta SQL:
+        # Actualiza el estado a pagado y registra fecha/hora/metodo de pago.
         query = """
             UPDATE "Cuota"
             SET 
                 pagada = TRUE,
                 "fechaDePago" = CURRENT_DATE,
                 "horaDePago" = CURRENT_TIME,
-                "metodoDePago" = $2,
-                monto = CASE 
-                            WHEN "fechaFin" < CURRENT_DATE THEN ROUND(monto * 1.10, 2)
-                            ELSE monto 
-                        END
+                "metodoDePago" = $2
             WHERE "idCuota" = $1
             RETURNING "idCuota"; 
         """
@@ -365,5 +359,4 @@ async def marcar_pago_manual(conn: Connection, id_cuota: int, metodo_pago: str) 
     except Exception as e:
         print(f"Error en marcar_pago_manual: {e}")
         raise DatabaseException("marcar pago manual", str(e))
-
 
